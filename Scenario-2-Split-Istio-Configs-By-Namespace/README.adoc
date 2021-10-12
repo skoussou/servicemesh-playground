@@ -25,7 +25,7 @@ TBD
 
 1. httpbin namespace & httpbin deployment
 
-  link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
+link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
 
 
 2. travel-agency, travel-control, travel-portal namespace & deployments

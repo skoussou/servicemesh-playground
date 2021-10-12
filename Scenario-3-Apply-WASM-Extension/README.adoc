@@ -85,7 +85,7 @@
 
 * Create
 
-  link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
+link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
 
 * Remove 	
 	oc delete -f httpbin-namespace.yaml 	
