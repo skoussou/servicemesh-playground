@@ -85,10 +85,7 @@
 
 * Create
 
-	oc apply -f httpbin-namespace.yaml
-	oc project httpbin
-	oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin.yaml
-        oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin-gateway.yaml
+  link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
 
 * Remove 	
 	oc delete -f httpbin-namespace.yaml 	
