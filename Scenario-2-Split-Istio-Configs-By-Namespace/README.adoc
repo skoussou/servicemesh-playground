@@ -69,17 +69,6 @@
 
 	oc delete -f smmr.yaml
 
-4. Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
-
-	kind: Sidecar
-	  metadata:
-	    name: default
-	    namespace: <istio-system-tenant-2>
-	  spec:
-	    egress:
-	    - hosts:
-	      - "./*"
-              - "<istio-system-tenant-2>/*""
 
 == Setup Mesh Deployments
 
@@ -100,8 +89,18 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 == Apply SideCar CR overrides
 
+[[anchor-1]]
+* Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
+
+  oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
+
+
+[[anchor-2]]
 * `travel-control` namespace _istio configuration_ override with `Sidecar` CR
 
+   oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
+
+        apiVersion: networking.istio.io/v1alpha3
 	kind: Sidecar
 	metadata:
 	  name: override
@@ -118,6 +117,7 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 * `travel-portal` namespace _istio configuration_ override with `Sidecar` CR
 
+        apiVersion: networking.istio.io/v1alpha3
 	kind: Sidecar
 	metadata:
 	  name: override
@@ -151,15 +151,35 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 == Testing
 
-1. Get configurations of `istio-proxy` sidecar before applying the override resources
+1. Get configurations of `istio-proxy` sidecar before applying any xref:anchor-1[`Sidecar`] CR override resources
 
-	oc rsh -Tc istio-proxy <POD NAME> curl http://localhost:15000/config_dump >> <POD-NAME>-config-original.txt
+  ** Retrieve `istio-proxy` (envoy) `cluster`, `endpoint`, `route` configurations from multiple PODs in the namespaces (ex. below) and compare. They contain cross namespace configurations
+  
+  	istioctl proxy-config cluster control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
+  	 
+   *** Full configuration can be extracted	 
+   	
+	oc rsh -Tc istio-proxy control-5fcd7bb48d-zgnwf curl http://localhost:15000/config_dump >> <POD-NAME>-config-original.txt	
+	
 
-2. 
+2. Get configurations of `istio-proxy` sidecar after applying xref:anchor-1[`Sidecar`]  CR in `ServiceMesh` control plane namespace for the whole mesh
 
-
-
-
+  
+  	istioctl proxy-config cluster control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
+  	 
+   *** Full configuration can be extracted	 
+   	
+	oc rsh -Tc istio-proxy control-5fcd7bb48d-zgnwf curl http://localhost:15000/config_dump >> <POD-NAME>-config-original.txt
+	
+3. Get configurations of `istio-proxy` sidecar for PODs in `travel-control`, `travel-portal`, `travel-agency`, `httpbin` namespaces after applying xref:anchor-2[`Sidecar`]  override CRs. The 3 first should have configs for each other but not for `httpbin` and vice-versa.
+	
+  	istioctl proxy-config cluster control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
+  	istioctl proxy-config route control-5fcd7bb48d-zgnwf
 
 
 
