@@ -1,3 +1,8 @@
 = Purpose
 
 `ServiceMesh` scenario configurations
+
+* ./Scenario-1-Service-And-Weight-Splitting/README.adoc[Traffic Management - Cross-Cluster Mesh Services]
+* link:./Scenario-2-Split-Istio-Configs-By-Namespace/README.adoc[Configuration/Visibility Split Per Namespace]
+* link:./Scenario-3-Apply-WASM-Extension/README.adoc[Apply WASM Extension]
+* ./Scenario-4-Cross-Cluster-Traffic-Management/README.adoc[Traffic Management - Cross-Cluster Mesh Services]
