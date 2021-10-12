@@ -1,0 +1,117 @@
+= Splitting Istio Configs Visibility Per Namespace
+:toc:
+
+Version: 2.0
+Purpose: Configs will not be distributed to _Envoy istio-proxy_ sidecar beyond the same namespace unless overriden by configurations of _SideCar_ CR resource
+
+== Setup ServiceMesh installation
+
+TBD
+1. SCMCP
+2. SMBR
+3. SideCar
+
+	kind: Sidecar
+	  metadata:
+	    name: default
+	    namespace: istio-system
+	  spec:
+	    egress:Scenario-3-Apply-WASM-Extension
+	    - hosts:
+	      - "./*"
+
+
+== Setup Mesh Deployments
+
+1. httpbin namespace & httpbin deployment
+
+link:../Scenario-3-Apply-WASM-Extension#setup-mesh-deployments
+
+2. travel-agency, travel-control, travel-portal namespace & deployments
+
+Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shifting[Kiali Tutorial]
+
+3. echo-grpc ??
+
+4. getting started??
+
+== Apply SideCar CR overrides
+
+* `travel-control` namespace _istio configuration_ override with `Sidecar` CR
+
+	kind: Sidecar
+	metadata:
+	  name: override
+	  namespace: travel-control
+	spec:
+	  egress:
+	  - hosts:
+	    - "./*"
+	    - "istio-system/*"
+	    - "travel-control/*"
+	    - "travel-portal/*"
+	    - "travel-agency/*""| oc -n travel-control apply -f -
+
+
+* `travel-portal` namespace _istio configuration_ override with `Sidecar` CR
+
+	kind: Sidecar
+	metadata:
+	  name: override
+	  namespace: travel-portal
+	spec:
+	  egress:
+	  - hosts:
+	    - "./*"
+	    - "istio-system/*"
+	    - "travel-control/*"
+	    - "travel-portal/*"
+	    - "travel-agency/*""| oc -n travel-portal apply -f -
+
+
+
+* `travel-agency` namespace _istio configuration_ override with `Sidecar` CR
+
+	kind: Sidecar
+	metadata:
+	  name: override
+	  namespace: travel-agency
+	spec:
+	  egress:
+	  - hosts:
+	    - "./*"
+	    - "istio-system/*"
+	    - "travel-control/*"
+	    - "travel-portal/*"
+	    - "travel-agency/*""| oc -n travel-agency apply -f -
+
+
+== Testing
+
+1. Get configurations of `istio-proxy` sidecar before applying the override resources
+
+	oc rsh -Tc istio-proxy <POD NAME> curl http://localhost:15000/config_dump >> <POD-NAME>-config-original.txt
+
+2. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
