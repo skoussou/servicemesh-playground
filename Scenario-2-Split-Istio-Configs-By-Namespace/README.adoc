@@ -132,17 +132,19 @@ image::graphs/travel-app-graph.png[400,400]
 image::graphs/travel-app-external-graph.png[400,400]
 
 
-== Apply `Sidecar` CR overrides
+== Apply `Sidecar` for configuration distribution & visibility restrictions in the mesh
 
 [[anchor-1]]
 * Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
 
-	oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
+	#use as is or change istio control plane namespace details
+	oc apply -f sidecar-all-mesh.yaml 
 
 
 [[anchor-2]]
 * Apply `Sidecar` CR override to `travel-control`, `travel-portal`, `travel-agency` namespace _istio configuration_ 
 
+	#use as is or change istio control plane namespace details
 	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-control
 	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-portal
 	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-agency
