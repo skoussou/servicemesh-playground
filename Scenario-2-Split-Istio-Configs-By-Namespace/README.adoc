@@ -85,68 +85,7 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 4. getting started??
 
-5. 
 
-== Apply `Sidecar` CR overrides
-
-[[anchor-1]]
-* Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
-
-  oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
-
-
-[[anchor-2]]
-* `travel-control` namespace _istio configuration_ override with `Sidecar` CR
-
-   oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
-
-        apiVersion: networking.istio.io/v1alpha3
-	kind: Sidecar
-	metadata:
-	  name: override
-	  namespace: travel-control
-	spec:
-	  egress:
-	  - hosts:
-	    - "./*"
-	    - "istio-system/*"
-	    - "travel-control/*"
-	    - "travel-portal/*"
-	    - "travel-agency/*""| oc -n travel-control apply -f -
-
-
-* `travel-portal` namespace _istio configuration_ override with `Sidecar` CR
-
-        apiVersion: networking.istio.io/v1alpha3
-	kind: Sidecar
-	metadata:
-	  name: override
-	  namespace: travel-portal
-	spec:
-	  egress:
-	  - hosts:
-	    - "./*"
-	    - "istio-system/*"
-	    - "travel-control/*"
-	    - "travel-portal/*"
-	    - "travel-agency/*""| oc -n travel-portal apply -f -
-
-
-
-* `travel-agency` namespace _istio configuration_ override with `Sidecar` CR
-
-	kind: Sidecar
-	metadata:
-	  name: override
-	  namespace: travel-agency
-	spec:
-	  egress:
-	  - hosts:
-	    - "./*"
-	    - "istio-system/*"
-	    - "travel-control/*"
-	    - "travel-portal/*"
-	    - "travel-agency/*""| oc -n travel-agency apply -f -
 
 
 == Testing
@@ -166,12 +105,11 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 2. Get configurations of `istio-proxy` sidecar after applying xref:anchor-1[`Sidecar`]  CR in `ServiceMesh` control plane namespace for the whole mesh
 
-  
   	istioctl proxy-config cluster control-5fcd7bb48d-zgnwf
   	istioctl proxy-config route control-5fcd7bb48d-zgnwf
   	istioctl proxy-config route control-5fcd7bb48d-zgnwf
   	 
-   *** Full configuration can be extracted	 
+   ** Full configuration can be extracted	 
    	
 	oc rsh -Tc istio-proxy control-5fcd7bb48d-zgnwf curl http://localhost:15000/config_dump >> <POD-NAME>-config-original.txt
 	
@@ -181,8 +119,33 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
   	istioctl proxy-config route control-5fcd7bb48d-zgnwf
   	istioctl proxy-config route control-5fcd7bb48d-zgnwf
 
+  	
+   ** Send Requests on httpbin
+
+   	watch -n 5 curl -i -X GET "http://httpbin2-httpbin-gateway-525eca1d5089dbdc-istio-wasm-poc.apps.cluster-6tzwm.6tzwm.sandbox256.opentlc.com//response-headers?freeform=" -H "accept: application/json"
+
+   ** Send Requests on travel-control (not required)
+   
+   	watch -n 5 curl -i -X GET "http://istio-ingressgateway-istio-wasm-poc.apps.cluster-6tzwm.6tzwm.sandbox256.opentlc.com/"  
+
+image::graphs/travel-app-graph.png[400,400]
+image::graphs/travel-app-external-graph.png[400,400]
 
 
+== Apply `Sidecar` CR overrides
+
+[[anchor-1]]
+* Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
+
+	oc apply -f sidecar-all-mesh.yaml (use as is or change istio control plane namespace details)
+
+
+[[anchor-2]]
+* Apply `Sidecar` CR override to `travel-control`, `travel-portal`, `travel-agency` namespace _istio configuration_ 
+
+	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-control
+	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-portal
+	oc apply -f sidecar-override-travel-namespaces.yaml -n travel-agency
 
 
 

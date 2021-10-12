@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: override
+spec:
+  egress:
+  - hosts:
+    - "./*"
+    - "istio-system-tenant-2/*"
+    - "travel-control/*"
+    - "travel-portal/*"
+    - "travel-agency/*"
