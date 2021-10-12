@@ -87,7 +87,7 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel
 
 5. 
 
-== Apply SideCar CR overrides
+== Apply `Sidecar` CR overrides
 
 [[anchor-1]]
 * Apply `ServiceMesh` wide CR `Sidecar` to force configuration distribution and `mesh` visibility within namespace and control plane namespace only
