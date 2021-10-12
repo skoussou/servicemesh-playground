@@ -1,0 +1,13 @@
+= Various Deployments for the ServiceMesh
+:toc:
+
+== httpbin
+
+	oc new-project httpbin
+	oc project httpbin
+	oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin.yaml
+        oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin-gateway.yaml
+        
+== travel agency 
+
+
