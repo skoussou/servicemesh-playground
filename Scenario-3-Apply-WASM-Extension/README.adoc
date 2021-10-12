@@ -21,7 +21,7 @@
 	oc apply -f smcp-2.0.yaml
 	
   ** or modify/apply the following
-
++
 	----
 	apiVersion: maistra.io/v2
 	kind: ServiceMeshControlPlane
@@ -61,7 +61,7 @@
 	  telemetry:
 	    type: Istiod
 	----    
-
++
   ** Reset
 
 	oc delete -f smcp-2.0.yaml
