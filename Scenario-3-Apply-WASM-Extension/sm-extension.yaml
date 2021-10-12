@@ -1,0 +1,12 @@
+apiVersion: maistra.io/v1alpha1
+kind: ServiceMeshExtension
+metadata:
+  name: header-append
+spec:
+  config: test
+  image: quay.io/maistra-dev/header-append-filter:2.0
+  phase: PostAuthZ
+  priority: 1000
+  workloadSelector:
+    labels:
+      app: httpbin
