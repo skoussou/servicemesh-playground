@@ -44,6 +44,46 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 
 	oc apply -f travel-agency/0-initial-service-mesh-config.yaml
 	
+== greetings-client-server
 	
+* Create namespaces	
+
+	oc new-project greetings-client
+	oc new-project greetings-service
+
+* Add deployments in the mesh
+
+  ** Add `rest-greeting-remote` service in the mesh
+
+	oc project greetings-service
+	mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests 
+	oc patch deployment/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-service
+
+  *** Define local/external cluster location of deployment 
+
+	oc set env dc/rest-greeting-remote GREETING_LOCATION='Local Cluster' (Default)
+	oc set env dc/rest-greeting-remote GREETING_LOCATION='Remote Cluster'	(oc rollout latest dc/rest-greeting-remote)
+
+  ** Add `rest-client-greeting` service in the mesh
+
+	oc project greetings-client
+	mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests 
+	oc patch deployment/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-client
+
+  *** Define local/external service location of `rest-greeting-remote` service
+
+	oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION=http://rest-greeting-remote.greetings-service.svc.cluster.local:8080 (Default)
+	oc set env dc/rest-greeting-remote GREETINGS_SVC_LOCATION='http://hello.remote.com'	(oc rollout latest dc/rest-greeting-remote)
+
+* Apply initial mesh configs
+
+*TBD*
+
+* Call `rest-client-greeting` via mesh
+
+        curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane>)/say/goodday-to/Stelios
+	
+
+
 	
 	
