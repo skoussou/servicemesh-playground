@@ -1,8 +1,8 @@
 = Apply WASM Mesh Extension
 :toc:
 
-- ServiceMesh Version: 2.0
-- Purpose: Extend the capabilities of the Mesh with a WASM Extension
+* ServiceMesh Version: 2.0
+* Purpose: Extend the capabilities of the Mesh with a WASM Extension
 
 == Setup ServiceMesh installation
 
@@ -17,53 +17,11 @@
 	oc new-project <istio-system-wasm-poc>
 
 2. SMCP
-+
+
 	oc apply -f smcp-2.0.yaml
-+
-* or modify/apply the following
-+
-	----
-	apiVersion: maistra.io/v2
-	kind: ServiceMeshControlPlane
-	metadata:
-	  name: <tenant-1>
-	  namespace: <istio-system-wasm-poc>
-	spec:
-	  techPreview:
-	    wasmExtensions:
-	      enabled: true
-	  tracing:
-	    sampling: 10000
-	    type: Jaeger
-	  general:
-	    logging:
-	      logAsJSON: true
-	  profiles:
-	    - default
-	  proxy:
-	    accessLogging:
-	      file:
-		name: /dev/stdout
-	  policy:
-	    type: Istiod
-	  addons:
-	    grafana:
-	      enabled: true
-	    jaeger:
-	      install:
-		storage:
-		  type: Memory
-	    kiali:
-	      enabled: true
-	    prometheus:
-	      enabled: true
-	  version: v2.0
-	  telemetry:
-	    type: Istiod
-	----    
-+
+
 * Reset
-+
+
 	oc delete -f smcp-2.0.yaml
 
 3. SMBR
