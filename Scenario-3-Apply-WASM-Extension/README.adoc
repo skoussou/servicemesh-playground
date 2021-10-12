@@ -1,5 +1,5 @@
 = Apply WASM Mesh Extension
-:toc:
+
 
 * ServiceMesh Version: 2.0
 * Purpose: Extend the capabilities of the Mesh with a WASM Extension
