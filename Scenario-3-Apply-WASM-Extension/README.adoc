@@ -20,7 +20,7 @@
 
 	oc apply -f smcp-2.0.yaml
 
-  Reset
+  * Reset
 
 	oc delete -f smcp-2.0.yaml
 
@@ -28,7 +28,7 @@
 
 	oc apply -f smmr.yaml
 
-  Reset	
+  * Reset	
 
 	oc delete -f smmr.yaml
 
@@ -36,7 +36,7 @@
 
 	oc apply -f sm-extension.yaml	
 
-  Reset	
+  * Reset	
 
 	oc delete -f sm-extension.yaml	
 
