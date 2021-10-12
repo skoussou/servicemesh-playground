@@ -1,0 +1,46 @@
+kind: Gateway
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: control-gateway
+  namespace: travel-control
+spec:
+  servers:
+    - hosts:
+        - >-
+          istio-ingressgateway-istio-wasm-poc.apps.cluster-6tzwm.6tzwm.sandbox256.opentlc.com
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+  selector:
+    istio: ingressgateway
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: control
+  namespace: travel-control
+spec:
+  hosts:
+    - >-
+      istio-ingressgateway-istio-wasm-poc.apps.cluster-6tzwm.6tzwm.sandbox256.opentlc.com
+  gateways:
+    - travel-control/control-gateway
+  http:
+    - route:
+        - destination:
+            host: control.travel-control.svc.cluster.local
+            subset: v1
+          weight: 100
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: control
+  namespace: travel-control
+spec:
+  host: control.travel-control.svc.cluster.local
+  subsets:
+    - labels:
+        version: v1
+      name: v1

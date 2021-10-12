@@ -40,4 +40,10 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 	oc patch deployment/mysqldb-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency	
 	oc patch deployment/travels-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency	
 
+* Apply initial mesh configs
+
+	oc apply -f travel-agency/0-initial-service-mesh-config.yaml
+	
+	
+	
 	
