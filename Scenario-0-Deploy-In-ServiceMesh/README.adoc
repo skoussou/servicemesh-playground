@@ -8,6 +8,36 @@
 	oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin.yaml
         oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/httpbin/httpbin-gateway.yaml
         
-== travel agency 
+== travel-agency 
 
+Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shifting[Kiali Tutorial]
 
+* Create namespaces
+
+	oc new-project travel-agency
+	oc new-project travel-portal
+	oc new-project travel-control
+
+* Create deployments
+
+	oc apply -f <(curl -L https://raw.githubusercontent.com/kiali/demos/master/travels/travel_agency.yaml) -n travel-agency
+	oc apply -f <(curl -L https://raw.githubusercontent.com/kiali/demos/master/travels/travel_portal.yaml) -n travel-portal
+	oc apply -f <(curl -L https://raw.githubusercontent.com/kiali/demos/master/travels/travel_control.yaml) -n travel-control
+	
+* Add deployments in the mesh
+
+	oc patch deployment/control -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-control
+	
+	oc patch deployment/travels -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-portal
+	oc patch deployment/viaggi -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-portal
+	oc patch deployment/voyages -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-portal		
+
+	oc patch deployment/cars-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency
+	oc patch deployment/discounts-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency
+	oc patch deployment/flights-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency	
+	oc patch deployment/hotels-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency
+	oc patch deployment/insurances-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency
+	oc patch deployment/mysqldb-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency	
+	oc patch deployment/travels-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n travel-agency	
+
+	
