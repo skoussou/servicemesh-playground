@@ -25,7 +25,7 @@ TBD
 
 1. httpbin namespace & httpbin deployment
 
-link:../Scenario-3-Apply-WASM-Extension#setup-mesh-deployments
+link:./Scenario-3-Apply-WASM-Extension#setup-mesh-deployments
 
 2. travel-agency, travel-control, travel-portal namespace & deployments
 
