@@ -88,7 +88,7 @@
 link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
 
 * Remove 	
-	oc delete -f httpbin-namespace.yaml 	
+	oc delete project httpbin
 
 	
 == Testing	

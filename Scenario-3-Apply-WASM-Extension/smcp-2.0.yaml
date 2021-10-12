@@ -1,8 +1,8 @@
 apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
-  name: tenant-1
-  namespace: istio-wasm-poc
+  name: tenant-3
+  namespace: istio-system-wasm-poc-tenant-3
 spec:
   techPreview:
     wasmExtensions:
