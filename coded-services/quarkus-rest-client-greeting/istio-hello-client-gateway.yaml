@@ -16,7 +16,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: rest-client-quickstart
+  name: rest-client-greeting
 spec:
   hosts:
   - "*"
@@ -28,6 +28,6 @@ spec:
         prefix: /say
     route:
     - destination:
-        host: rest-client-quickstart
+        host: rest-client-greeting
         port:
           number: 8080          

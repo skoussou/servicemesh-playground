@@ -21,8 +21,8 @@
 2. SMCP & SMMR (apply the following *on client & service clusters* for cross-cluster topology testing)
 
 	./create-smcp-smmr.sh <istio-system-tenant-6> <tenant digit x> <istio-smmr-namespace>
-	./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-client-6
-	./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-service-6
+	eg. ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-client-6
+	eg. ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-service-6
 	
   ** or modify/apply the following SMCP
   
@@ -103,5 +103,5 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[De
 
 == Testing		
 	
-   link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Test greetings client/service]
+link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Test greetings client/service]
 	
