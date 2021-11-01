@@ -81,9 +81,9 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#httpbin[Deploy httpbin]
 
 link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#travel-agency[Deploy travel agency]
 
-3. echo-grpc ??
+3. *TBD* echo-grpc ??
 
-4. getting started??
+4. *TBD* hello client/service
 
 
 
