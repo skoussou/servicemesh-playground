@@ -1,0 +1,107 @@
+= Sending Traffic Cross-Cluster to Other (non-multi cluster) Service Mesh Services 
+:toc:
+
+* `ServiceMesh` Version: 2.0
+* Purpose: Client will send traffic to External Services
+
+
+== Setup ServiceMesh installation
+
+* Pre-Requisites
+
+1. `ServiceMesh` Operators Installation *TBD method of Membership (manual/yaml based*
+2. Setup of 3 OCP Clusters (1 client, 2 service clusters)
+
+* Setup
+
+1. Control Plane Namespace Creation (apply on client & service clusters)
+
+	oc new-project <istio-system-tenant-x>
+
+2. SMCP & SMMR (apply the following *on client & service clusters* for cross-cluster topology testing)
+
+	./create-smcp-smmr.sh <istio-system-tenant-6> <tenant digit x> <istio-smmr-namespace>
+	./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-client-6
+	./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-service-6
+	
+  ** or modify/apply the following SMCP
+  
+	apiVersion: maistra.io/v2
+	kind: ServiceMeshControlPlane
+	metadata:
+	  name: <tenant-x>
+	  namespace: <istio-system-tenant-x>
+	spec:
+	  addons:
+	    grafana:
+	      enabled: true
+	    jaeger:
+	      install:
+		storage:
+		  type: Memory
+	    kiali:
+	      enabled: true
+	    prometheus:
+	      enabled: true
+	  general:
+	    logging:
+	      logAsJSON: true
+	  policy:
+	    type: Istiod
+	  profiles:
+	    - default
+	  proxy:
+	    accessLogging:
+	      file:
+		name: /dev/stdout
+	    networking:
+	      trafficControl:
+		outbound:
+		  policy: REGISTRY_ONLY
+	  telemetry:
+	    type: Istiod
+	  tracing:
+	    sampling: 10000
+	    type: Jaeger
+	  version: v2.0  
+	  
+  ** or modify/apply the following SMMR
+  
+	apiVersion: maistra.io/v1
+	kind: ServiceMeshMemberRoll
+	metadata:
+	  name: default
+	spec:
+	  members:
+	    - ${SM_MR_NS}"  
+	    
+  ** Reset
+
+	oc delete smcp <tenant-x> -n <istio-system-tenant-x>
+	oc delete -f smmr-greetings-client.yaml -n <istio-system-tenant-x> (on Client Cluster)
+	oc delete -f smmr-greetings-service.yaml -n <istio-system-tenant-x> (on Service Clusters)
+		
+	
+== Setup Mesh Deployments
+	
+* Create
+
+*Important*: Deploy Client and Service on separate OCP Clusters/Meshes if topology to be cross-cluster
+
+link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Deploy greetings client/service]
+
+* Remove 	
+
+  ** Client Cluster
+  
+	oc delete project greetings-client	
+	
+  ** Service Cluster
+
+	oc delete project greetings-service	
+
+
+== Testing		
+	
+   link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Test greetings client/service]
+	

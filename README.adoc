@@ -1,8 +1,14 @@
 = Purpose
 
-`ServiceMesh` scenario configurations
+`Service Mesh` scenario configurations
 
+== Application Driven Capabilities on the `Service Mesh`
 * ./Scenario-1-Service-And-Weight-Splitting/README.adoc[Traffic Management - Cross-Cluster Mesh Services]
 * link:./Scenario-2-Split-Istio-Configs-By-Namespace/README.adoc[Configuration/Visibility Split Per Namespace]
 * link:./Scenario-3-Apply-WASM-Extension/README.adoc[Apply WASM Extension]
-* ./Scenario-4-Cross-Cluster-Traffic-Management/README.adoc[Traffic Management - Cross-Cluster Mesh Services]
+* ./Scenario-4-Cross-Cluster-Traffic-Management/README.adoc[Traffic Management - Cross-Cluster (non-Multi) Mesh Services]
+
+== `Service Mesh` Platform Driven Capabilities
+* Certificates (different locations)
+* External storage of metrics (ES, Jaeger etc.)
+* Authentication/Authorisation 
