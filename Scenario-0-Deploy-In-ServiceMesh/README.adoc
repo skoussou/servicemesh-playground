@@ -44,46 +44,67 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 
 	oc apply -f travel-agency/0-initial-service-mesh-config.yaml
 	
-== greetings-client-server
+== greetings-client-service
 	
-* Create namespaces	
+*Note:* Scripts can be found in link:../coded-services/quarkus-rest-client-greeting[quarkus-rest-client-greeting] and link:../coded-services/quarkus-rest-greeting-remote[quarkus-rest-greeting-remote]
+	
+* Create Deployments & Service Mesh Configs	
 
-	oc new-project greetings-client
-	oc new-project greetings-service
+  ** In *Service Clusters*(_must match SMCP SMMR namespace details_) add `rest-greeting-remote` service in the mesh
+  *** *Service Cluster 1*
+	
+	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
+	eg. ./create-greeting-remote-service.sh istio-system-tenant-6 greetings-service-6 istio-ingressgateway-istio-system-tenant-6.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com greeting.remote.com OCP-48-Cluster		
 
-* Add deployments in the mesh
+  *** *Service Cluster 2*
 
-  ** Add `rest-greeting-remote` service in the mesh
+	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
+	eg. ./create-greeting-remote-service.sh istio-system-tenant-6 greetings-service-6 istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com Rosa-Remote-Cluster
+	
+  ** In *Client Clusters*(_must match SMCP SMMR namespace details_) add `rest-greeting-remote` service in the mesh
+	
+	./create-greeting-client.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <Remote 1 - SMCP Ingress Gateway URL>  <Remote 2 - SMCP Ingress Gateway URL> <REMOTE Service Route HostName>
+	eg. ./create-greeting-client.sh istio-system-tenant-6 greetings-client-6 istio-ingressgateway-istio-system-tenant-6.apps.cluster-vnm7p.vnm7p.sandbox1792.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com
 
-	oc project greetings-service
-	mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests 
-	oc patch deployment/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-service
 
-  *** Define local/external cluster location of deployment 
+* How is local/external service location of `rest-greeting-remote` service is defined for `rest-client-greeting`
 
-	oc set env dc/rest-greeting-remote GREETING_LOCATION='Local Cluster' (Default)
-	oc set env dc/rest-greeting-remote GREETING_LOCATION='Remote Cluster'	(oc rollout latest dc/rest-greeting-remote)
+.Remote Service Location Setting on `rest-client-greeting`  deployment
+====
+[cols="2*^",options="header"]
+|===
+|How To Use
+|Set Value
 
-  ** Add `rest-client-greeting` service in the mesh
+|*Default*
+|oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION=http://rest-greeting-remote.greetings-service.svc.cluster.local:8080 
 
-	oc project greetings-client
-	mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests 
-	oc patch deployment/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-client
+|oc rollout latest dc/rest-greeting-remote
+|oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION='http://hello.remote.com'
 
-  *** Define local/external service location of `rest-greeting-remote` service
+|===
+====
 
-	oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION=http://rest-greeting-remote.greetings-service.svc.cluster.local:8080 (Default)
-	oc set env dc/rest-greeting-remote GREETINGS_SVC_LOCATION='http://hello.remote.com'	(oc rollout latest dc/rest-greeting-remote)
 
-* Apply initial mesh configs
+* Test `rest-client-greeting` via mesh
 
-*TBD*
+  ** Calling directly service cluster deployments
+  
+	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/Stelios        
 
-* Call `rest-client-greeting` via mesh
-
-        curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane>)/say/goodday-to/Stelios
+  ** Calling client cluster deployments
+	
+	curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/goodday-to/Stelios  
+	
+  **  Continuous execution and changes in availability of service in the clusters
+  
+  	watch -n 2 curl -i http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/goodday-to/Stelios	
+  	oc scale --replicas=0 dc rest-greeting-remote -n greetings-service-6
+  	oc scale --replicas=1 dc rest-greeting-remote -n greetings-service-6
+  	
+  	
+	
+	
 	
 
 
-	
-	
