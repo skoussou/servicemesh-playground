@@ -91,6 +91,7 @@
 === Service Mesh greetings-client-service scripted deployments
 	
 *Note 1:* The Scripts can be found in link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh] and link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh]
+
 *Note 2:* We use below scripted deployments of 2 services _*Greeting Client*_ link:../coded-services/quarkus-rest-client-greeting[quarkus-rest-client-greeting] and _Greeting Service_ link:../coded-services/quarkus-rest-greeting-remote[quarkus-rest-greeting-remote] in the Service Mesh (more on the services at link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[greetings client/service])
 	
 * Create Deployments & Service Mesh Configs	
