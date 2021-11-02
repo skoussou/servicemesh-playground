@@ -96,7 +96,7 @@
 	
 * Create Deployments & Service Mesh Configs	
 
-  ** In *Service Clusters* (_must match SMCP SMMR namespace details_) add `rest-greeting-remote` service in the mesh
+  ** In *Service Clusters* (_must match SMCP/SMMR namespace details from above_) add `rest-greeting-remote` service in the mesh
   *** *Service Cluster 1*
 	
 	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
