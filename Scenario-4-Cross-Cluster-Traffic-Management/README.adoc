@@ -107,7 +107,7 @@
 	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
 	eg. ./create-greeting-remote-service.sh istio-system-tenant-6 greetings-service-6 istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com Rosa-Remote-Cluster
 	
-  ** In *Client Clusters* (_must match SMCP/SMMR namespace details from above_) add `rest-greeting-client` service in the mesh
+  ** In *Client Clusters* (_must match SMCP/SMMR namespace details from above_) add `rest-client-greeting` service in the mesh
 	
 	./create-greeting-client.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <Remote 1 - SMCP Ingress Gateway URL>  <Remote 2 - SMCP Ingress Gateway URL> <REMOTE Service Route HostName>
 	eg. ./create-greeting-client.sh istio-system-tenant-6 greetings-client-6 istio-ingressgateway-istio-system-tenant-6.apps.cluster-vnm7p.vnm7p.sandbox1792.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com
