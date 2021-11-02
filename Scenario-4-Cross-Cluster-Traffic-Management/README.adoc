@@ -148,7 +148,7 @@
   	oc scale --replicas=0 dc rest-greeting-remote -n greetings-service-6
   	oc scale --replicas=1 dc rest-greeting-remote -n greetings-service-6
 
-* Remove 	
+== Reset Deployments & Service Mesh	
 
   ** Client Cluster
   
