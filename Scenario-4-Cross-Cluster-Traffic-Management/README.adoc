@@ -82,13 +82,70 @@
 	oc delete -f smmr-greetings-service.yaml -n <istio-system-tenant-x> (on Service Clusters)
 		
 	
-== Setup Mesh Deployments
+== Setup Service Mesh Deployments
 	
-* Create
+*Important*: Deploy _Greeting Client_ and _Greeting Service_ on separate OCP Clusters/Meshes if topology to be cross-cluster
 
-*Important*: Deploy Client and Service on separate OCP Clusters/Meshes if topology to be cross-cluster
 
-link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Deploy greetings client/service]
+
+=== Service Mesh greetings-client-service scripted deployments
+	
+*Note 1:* The Scripts can be found in link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh] and link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh]
+*Note 2:* We use below scripted deployments of 2 services _*Greeting Client*_ link:../coded-services/quarkus-rest-client-greeting[quarkus-rest-client-greeting] and _Greeting Service_ link:../coded-services/quarkus-rest-greeting-remote[quarkus-rest-greeting-remote] in the Service Mesh (more on the services at link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[greetings client/service])
+	
+* Create Deployments & Service Mesh Configs	
+
+  ** In *Service Clusters* (_must match SMCP SMMR namespace details_) add `rest-greeting-remote` service in the mesh
+  *** *Service Cluster 1*
+	
+	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
+	eg. ./create-greeting-remote-service.sh istio-system-tenant-6 greetings-service-6 istio-ingressgateway-istio-system-tenant-6.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com greeting.remote.com OCP-48-Cluster		
+
+  *** *Service Cluster 2*
+
+	./create-greeting-remote-service.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <REMOTE Service Route HostName> <Greeting Cluster Specific Message>
+	eg. ./create-greeting-remote-service.sh istio-system-tenant-6 greetings-service-6 istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com Rosa-Remote-Cluster
+	
+  ** In *Client Clusters* (_must match SMCP SMMR namespace details_) add `rest-greeting-client` service in the mesh
+	
+	./create-greeting-client.sh <SMCP Namspace> <SMMR namespace> <SMCP Ingress Gateway URL> <Remote 1 - SMCP Ingress Gateway URL>  <Remote 2 - SMCP Ingress Gateway URL> <REMOTE Service Route HostName>
+	eg. ./create-greeting-client.sh istio-system-tenant-6 greetings-client-6 istio-ingressgateway-istio-system-tenant-6.apps.cluster-vnm7p.vnm7p.sandbox1792.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com istio-ingressgateway-istio-system-tenant-6.apps.rosa-e532.qxhy.p1.openshiftapps.com greeting.remote.com
+
+
+* How is local/external service location of `rest-greeting-remote` service is defined for `rest-client-greeting`
+
+.Remote Service Location Setting on `rest-client-greeting`  deployment
+====
+[cols="2*^",options="header"]
+|===
+|How To Use
+|Set Value
+
+|*Default*
+|oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION=http://rest-greeting-remote.greetings-service.svc.cluster.local:8080 
+
+|oc rollout latest dc/rest-greeting-remote
+|oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION='http://hello.remote.com'
+
+|===
+====
+
+
+== Testing `rest-client-greeting` in Service Mesh
+
+  ** Calling directly one of the *Service Cluster* deployments
+  
+	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/Stelios        
+
+  ** Calling the *Client Cluster* deployment
+	
+	curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/goodday-to/Stelios  
+	
+  **  Continuous execution and changes in availability of service in the clusters
+  
+  	watch -n 2 curl -i http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/goodday-to/Stelios	
+  	oc scale --replicas=0 dc rest-greeting-remote -n greetings-service-6
+  	oc scale --replicas=1 dc rest-greeting-remote -n greetings-service-6
 
 * Remove 	
 
@@ -99,9 +156,20 @@ link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[De
   ** Service Cluster
 
 	oc delete project greetings-service	
-
-
-== Testing		
 	
-link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[Test greetings client/service]
+  ** Service Cluster
+
+	oc delete project  <istio-system-control-plane-namespace>	
+
+
+
+
+
+
+
+
+
+
+
+  	
 	
