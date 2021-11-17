@@ -19,11 +19,13 @@ oc project  $SM_MR_NS
 
 mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 
+echo 'sleeping 15s'
+sleep 15
 oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n  $SM_MR_NS
 oc set env dc/rest-greeting-remote GREETINGS_SVC_LOCATION=$REMOTE_SERVICE_ROUTE -n  $SM_MR_NS
 oc set env dc/rest-greeting-remote GREETING_LOCATION=$CLUSTER_NAME -n  $SM_MR_NS
-echo 'sleeping 15s'
-sleep 15
+#echo 'sleeping 15s'
+#sleep 15
 oc rollout latest dc/rest-greeting-remote  -n  $SM_MR_NS
 
    

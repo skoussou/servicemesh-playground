@@ -23,12 +23,13 @@ oc project $SM_MR_NS
 
 mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 
+echo 'sleeping 15s'
+sleep 15
+
 oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n  $SM_MR_NS
 oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="http://${REMOTE_SERVICE_ROUTE}"  -n  $SM_MR_NS
 #oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"127.0.0.1"},{"hostnames":["hello2.client.com"]}]}]}}}}'  -n  $SM_MR_NS
 #oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"10.1.2.3"},{"hostnames":["hello2.remote.com"]}]}]}}}}'  -n  $SM_MR_NS
-echo 'sleeping 15s'
-sleep 15
 oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS            
 
 
