@@ -123,5 +123,7 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 
         curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane>)/hello/Stelios
 
+== bookinfo 
 
+https://github.com/kiali/kiali/blob/master/hack/istio/install-sm2.sh#L566-L579
 	
