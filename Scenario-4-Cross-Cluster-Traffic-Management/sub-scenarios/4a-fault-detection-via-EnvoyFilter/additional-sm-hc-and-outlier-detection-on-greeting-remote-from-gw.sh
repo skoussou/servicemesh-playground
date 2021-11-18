@@ -4,9 +4,15 @@ SERVICE_NAME=$1
 SERVICE_NAMESPACE=$2
 SERVICE_HEALTHCHECK_URI=$3
 GW_APP_NAME=$4
-GW_NAMESPACE=$4
+GW_NAMESPACE=$5
 
-
+echo 'SERVICE_NAME '$SERVICE_NAME
+echo 'SERVICE_NAMESPACE '$SERVICE_NAMESPACE
+echo 'SERVICE_HEALTHCHECK_URI '$SERVICE_HEALTHCHECK_URI
+echo 'GW_APP_NAME '$GW_APP_NAME
+echo 'GW_NAMESPACE '$GW_NAMESPACE
+echo ''
+echo ''
 echo "################# EnvoyFilter - ${SERVICE_NAME}-status-check-healthcheck [$GW_NAMESPACE] #################"
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter

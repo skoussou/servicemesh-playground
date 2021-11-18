@@ -181,7 +181,7 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
 1. Add Service Mesh Healthcheck and Outlier Detection on default Service Mesh `istio-ingressgateway` workload on both *Service Cluster* sides
 
 	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh <SERVICE_NAME> <SERVICE_NAMESPACE> <SERVICE_HEALTHCHECK_URI> <GW_APP_NAME> <GW_NAMESPACE>
-	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh rest-greeting-remote greetings-service-1 /status/check istio-ingressgateway
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh rest-greeting-remote greetings-service-1 /status/check istio-ingressgateway istio-system-tenant-1
 
 2. Set additional URI `status` to `200 SUCCESS` on both *Service Cluster* sides
 
