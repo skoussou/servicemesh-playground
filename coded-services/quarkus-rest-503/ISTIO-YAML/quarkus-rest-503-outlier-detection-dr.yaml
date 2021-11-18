@@ -1,0 +1,11 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: quarkus-rest-503-outlier-detection-dr
+spec:
+  host: quarkus-rest-503.greetings-service-1.svc.cluster.local
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 1
+      interval: 30s
+      baseEjectionTime: 2m

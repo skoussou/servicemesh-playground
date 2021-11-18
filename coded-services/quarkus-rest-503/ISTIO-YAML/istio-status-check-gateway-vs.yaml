@@ -1,0 +1,36 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: status-check-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "istio-ingressgateway-istio-system-tenant-1.apps.<CLUSTER-DOMAIN>"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: status-check
+spec:
+  hosts:
+  - "istio-ingressgateway-istio-system-tenant-1.apps.<CLUSTER-DOMAIN>"
+  gateways:
+  - status-check-gateway
+  - mesh
+  http:
+  - match:
+    - uri:
+        exact: /status
+    - uri:
+        prefix: /status
+    route:
+    - destination:
+        host: quarkus-rest-503.greeting-service.svc.cluster.local
+        port:
+          number: 8080
