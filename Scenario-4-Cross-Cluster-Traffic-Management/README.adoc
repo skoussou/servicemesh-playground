@@ -139,7 +139,7 @@
 
 The following tests simulate the states depicted in the images
 
-image::images/basic-scenario/Lab-2-Failover-Custom-HC-State-Sequence.png[400,800]
+image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-Sequence.png[400,800]
 
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-1.png[400,400]
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-2.png[400,400] 
