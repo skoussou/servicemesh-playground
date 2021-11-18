@@ -9,7 +9,10 @@
 
 * Pre-Requisites
 
-1. `ServiceMesh` Operators Installation *TBD method of Membership (manual/yaml based*
+1. `ServiceMesh` Operators Installation 
+
+	scripts/add-operators-subscriptions-sm-2.1.sh (*Elastic Search Works only from console due to openshift-operators-redhat namespace creation need*)
+
 2. Setup of 3 OCP Clusters (1 client, 2 service clusters)
 
 * Setup
