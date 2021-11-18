@@ -1,4 +1,4 @@
-= Sending Traffic Cross-Cluster to Other (non-federated cluster) Service Mesh Services 
+= Sending Traffic Cross-Cluster to Other (non-Federated cluster) Service Mesh Services 
 :toc:
 
 * `ServiceMesh` Version: 2.0
@@ -139,15 +139,12 @@
 
 The following tests simulate the states depicted in the images
 
-[.clearfix]
---
-[.left]
+image::images/basic-scenario/Lab-2-Failover-Custom-HC-State-Sequence.png[400,800]
+
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-1.png[400,400]
-[.left]
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-2.png[400,400] 
-[.left]
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-3.png[400,400] 
---
+
 
   ** Calling directly one of the *Service Cluster* deployments
   
