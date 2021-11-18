@@ -287,7 +287,7 @@ image::images/4b-multiple-gw-scenario/Lab-3-Additional-GW-Bypass-Custom-HC.png[4
   **  Update SMCP & SMMR with additional ingress gateway (apply the following *on service clusters* only)
 
 	./create-smcp-smmr-sc-4b.sh <istio-system-tenant-6> <tenant digit x> <istio-smmr-namespace>
-	eg. [SERVICE ONLY] ./create-smcp-smmr.sh-sc-4b.sh istio-system-tenant-1 1 greetings-service-1             
+	eg. [SERVICE ONLY] ./create-smcp-smmr-sc-4b.sh istio-system-tenant-1 1 greetings-service-1             
             
 2. Add Service Mesh Configs `Gateway` and `VirtualService` to allow traffic to the `rest-greeting-remote` workload via the new `admin-ingressgateway`
       
