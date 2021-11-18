@@ -225,9 +225,9 @@ Greetings (OCP-Cluster-47) Stelios. And have a good day!
     *** Shows if healthcheck is succeeding or failing for `rest-greeting-remote` 
 
 ---- 
-	oc exec istio-ingressgateway-6567f7d756-4gvh8  -- curl localhost:15000/clusters |egrep 'health|rest-greeting-remote'
+oc exec istio-ingressgateway-6567f7d756-4gvh8  -- curl localhost:15000/clusters |egrep 'health|rest-greeting-remote'
 	
-	(look for something like outbound|8080||quarkus-rest-503.greetings-service-1.svc.cluster.local::10.128.2.21:8080::health_flags::/failed_active_hc)
+(look for something like outbound|8080||quarkus-rest-503.greetings-service-1.svc.cluster.local::10.128.2.21:8080::health_flags::/failed_active_hc)
 ---- 
 
   ** Service Envoy Proxy Access Logs (service cluster 1, service cluster 2)
