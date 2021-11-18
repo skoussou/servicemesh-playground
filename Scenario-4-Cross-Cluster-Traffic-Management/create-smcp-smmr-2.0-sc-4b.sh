@@ -43,7 +43,7 @@ spec:
           policy: REGISTRY_ONLY
   gateways:
     additionalIngress:
-      admin-ingress:
+      admin-ingressgateway:
         enabled: true
         runtime:
           deployment:
@@ -52,9 +52,9 @@ spec:
         service:
           metadata:
             labels:
-              app: admin-ingress
+              app: admin-ingressgateway
           selector:
-            app: admin-ingress          
+            app: admin-ingressgateway          
   telemetry:
     type: Istiod
   tracing:

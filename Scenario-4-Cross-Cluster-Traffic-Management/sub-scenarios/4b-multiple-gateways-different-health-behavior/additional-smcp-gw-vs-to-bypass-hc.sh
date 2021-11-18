@@ -3,11 +3,14 @@
 GW_APP_NAME=$1
 GW_NAMESPACE=$2
 SERVICE_NAMESPACE=$3
+GW_ROUTE=$(oc get route $GW_APP_NAME -o jsonpath='{.spec.host}' -n $GW_NAMESPACE)
 
-GW_ROUTE=$(oc get route $GW_APP_NAME -o jsonpath='{.spec.host}' -n GW_NAMESPACE)
 
-echo "GW_ROUTE=$GW_ROUTE"
-
+echo "GW_APP_NAME: 	 $GW_APP_NAME" 
+echo "GW_NAMESPACE: 	 $GW_NAMESPACE" 
+echo "SERVICE_NAMESPACE: $SERVICE_NAMESPACE" 
+echo "GW_ROUTE:		 $GW_ROUTE"
+echo ''
 echo "################# Gateway - rest-greeting-remote-${GW_APP_NAME} [${SERVICE_NAMESPACE}] #################"     
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
