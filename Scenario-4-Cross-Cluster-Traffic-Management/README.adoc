@@ -21,8 +21,8 @@
 2. SMCP & SMMR (apply the following *on client & service clusters* for cross-cluster topology testing)
 
 	./create-smcp-smmr.sh <istio-system-tenant-6> <tenant digit x> <istio-smmr-namespace>
-	eg. ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-client-6
-	eg. ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-service-6
+	eg. [CLIENT ONLY] ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-client-6
+	eg. [SERVICE ONLY] ./create-smcp-smmr.sh istio-system-tenant-6 6 greetings-service-6
 	
   ** or modify/apply the following SMCP
   
@@ -90,7 +90,7 @@
 
 === Service Mesh greetings-client-service scripted deployments
 	
-*Note 1:* The Scripts can be found in link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh] and link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh]
+*Note 1:* The Scripts can be found in link:./create-greeting-client.sh[create-greeting-client.sh] and link:./create-greeting-remote-service.sh[create-greeting-remote-service.sh]
 
 *Note 2:* We use below scripted deployments of 2 services _*Greeting Client*_ link:../coded-services/quarkus-rest-client-greeting[quarkus-rest-client-greeting] and _Greeting Service_ link:../coded-services/quarkus-rest-greeting-remote[quarkus-rest-greeting-remote] in the Service Mesh (more on the services at link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[greetings client/service])
 	
@@ -134,6 +134,12 @@
 
 == Testing `rest-client-greeting` in Service Mesh
 
+The following tests simulate the states depicted in the images
+
+image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-1.png[400,400] 
+image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-2.png[400,400] 
+image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-3.png[400,400] 
+
   ** Calling directly one of the *Service Cluster* deployments
   
 	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/Stelios        
@@ -162,8 +168,141 @@
 
 	oc delete project  <istio-system-control-plane-namespace>	
 
+== Sub-Scenario 4a: Setup Service Mesh Additional Active Healthcheck
+
+*Aim:* Incorporate a uri from within the targeted workload which re-directs requests from all workloads (in this case `rest-greeting-remote`) to a workload which determines the overall namespace/service side health state to be  in Service Mesh as a healthcheck which determines upstream cluster health and access
+
+The following setup/tests simulate the states depicted in the images
+
+image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-1.png[400,400] 
+image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-2.png[400,400] 
+image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-3.png[400,400] 
+
+1. Add Service Mesh Healthcheck and Outlier Detection on default Service Mesh `istio-ingressgateway` workload on both *Service Cluster* sides
+
+	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh <SERVICE_NAME> <SERVICE_NAMESPACE> <SERVICE_HEALTHCHECK_URI> <GW_APP_NAME> <GW_NAMESPACE>
+	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh rest-greeting-remote greetings-service-1 /status/check istio-ingressgateway
+
+2. Set additional URI `status` to `200 SUCCESS` on both *Service Cluster* sides
+
+	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	
+3. Check *Service Cluster* sides for behavior
+
+  ** watch client
+  
+  3. Check *Service Cluster* sides for behavior
+
+	watch -n 2 curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-mfkjv.mfkjv.sandbox1680.opentlc.com/say/goodday-to/Stelios                                                    
+	...
+	Greetings (OCP-Cluster-47) Stelios. And have a good day!
+  
+  ** KIALI (client, service cluster 1, service cluster 2)
+  ** GW Logs (service cluster 1, service cluster 2)
+  ** Service Envoy Proxy Access Logs (service cluster 1, service cluster 2)
+  
+4. Set additional URI `status` to `503 FAIL` on 1 of the 2 *Service Cluster* sides
+
+	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
 
 
+5. Check *Service Cluster* sides for behavior
+
+  ** watch client (once HC has been executed)
+  
+	watch -n 2 curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-mfkjv.mfkjv.sandbox1680.opentlc.com/say/goodday-to/Stelios                                                    
+	...
+	Greetings (OCP-Cluster-4.8) Stelios. And have a good day
+  
+  ** KIALI (client, service cluster 1, service cluster 2)
+  ** GW Logs (service cluster 1, service cluster 2)
+  ** Service Envoy Proxy Access Logs (service cluster 1, service cluster 2)
+
+6. Re-Set additional URI `status` to `200 SUCCESS` on the failing *Service Cluster* side
+
+	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	
+7. Check *Service Cluster* sides for behavior
+
+WARNING: Recheck `EnvoyFilter` and `DestinationRules` configuration as it takes a few minutes to be rectified
+
+  ** watch client (traffic once SM via HealthCheck & DestinationRule rectified goes back to primary *Service Cluster* side). 
+  
+	watch -n 2 curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-mfkjv.mfkjv.sandbox1680.opentlc.com/say/goodday-to/Stelios                                                    
+	...
+	Greetings (OCP-Cluster-47) Stelios. And have a good day!	
+
+
+== Sub-Scenario 4b: Setup Service Mesh Additional Gateway
+
+*Aim:* Following *Sub-Scenario 4a* there is the need to access the workload `rest-greeting-remote` even when the `status` URI shows failures (eg. admin actions on the workloads). The scenario is depicted in the images
+
+The following setup/tests simulate the state depicted in the image
+
+image::images/4b-multiple-gw-scenario/Lab-3-Additional-GW-Bypass-Custom-HC.png[400,400] 
+
+1. Add Additional Ingress Gateway with new metadata to `SMCP` (apply the following *on service clusters* only)
+
+  ** Effective changes to SMCP
+  
+  gateways:
+    additionalIngress:
+      admin-ingress:
+        enabled: true
+        runtime:
+          deployment:
+            autoScaling:
+              enabled: false
+        service:
+          metadata:
+            labels:
+              app: admin-ingressgateway
+          selector:
+            app: admin-ingressgateway
+            
+  **  Update SMCP & SMMR with additional ingress gateway (apply the following *on service clusters* only)
+
+	./create-smcp-smmr-sc-4b.sh <istio-system-tenant-6> <tenant digit x> <istio-smmr-namespace>
+	eg. [SERVICE ONLY] ./create-smcp-smmr.sh-sc-4b.sh istio-system-tenant-1 1 greetings-service-1             
+            
+2. Add Service Mesh Configs `Gateway` and `VirtualService` to allow traffic to the `rest-greeting-remote` workload via the new `admin-ingressgateway`
+      
+      sub-scenarios/4b-multiple-gateways-different-health-behavior/additional-smcp-gw-vs-to-bypass-hc.sh <GW_APP_NAME> <GW_NAMESPACE> <SERVICE_NAMESPACE>
+      eg. sub-scenarios/4b-multiple-gateways-different-health-behavior/additional-smcp-gw-vs-to-bypass-hc.sh admin-ingressgateway istio-system-tenant-1 greetings-service-1          
+
+3. Test behavior on different routes
+
+  ** DEFAULT ROUTE (on failing by healthcheck cluster it should be failing: 
+  
+    	curl -iv -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/say/hello/Nick
+    	no healthy upstream
+
+  ** ADMIN ROUTE (should get a response: 
+  
+  	curl -iv -X GET http://$(oc get route admin-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/say/hello/Nick
+	Greetings (OCP-Cluster-47) Nick
+
+  
+
+
+
+
+4. change EnvoyFilter below to use as workload selector app=istio-ingressgateway
+spec:
+  workloadSelector:
+    labels:
+      app: istio-ingressgateway
+
+5. After that although failures in EnvoyFilter stop remote client to access cluster 4.7 usint the admin Gateway
+
+$ curl -X GET http://admin-ingressgateway-istio-system-tenant-1.apps.cluster-t7v5g.t7v5g.sandbox1318.opentlc.com/hello/greeting/Nick
+Greetings (OCP-Cluster-47) Nick
+
+$ curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-t7v5g.t7v5g.sandbox1318.opentlc.com/hello/greeting/Nick
+no healthy upstream
 
 
 

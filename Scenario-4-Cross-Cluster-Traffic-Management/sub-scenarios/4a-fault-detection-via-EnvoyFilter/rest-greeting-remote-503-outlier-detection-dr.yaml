@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: rest-greeting-remote-503-outlier-detection-dr
+spec:
+  host: rest-greeting-remote.greetings-service-1.svc.cluster.local
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 1
+      interval: 30s
+      baseEjectionTime: 1m
+      maxEjectionPercent: 100

@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: status-check-healthcheck
+spec:    
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: CLUSTER
+      match:
+        cluster:
+          service: rest-greeting-remote.greetings-service.svc.cluster.local
+        context: GATEWAY
+      patch:
+        operation: MERGE
+        value:
+          health_checks:
+            - always_log_health_check_failures: true
+              event_log_path: /dev/stdout
+              healthy_threshold: 1
+              http_health_check:
+                host: >-
+                  rest-greeting-remote.greetings-service.svc.cluster.local
+                path: /status/check
+              interval: 5s
+              timeout: 5s
+              unhealthy_threshold: 1
