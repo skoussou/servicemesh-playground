@@ -47,10 +47,10 @@ echo "################# VirtualService - rest-greeting-remote-${GW_APP_NAME} [${
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: rest-greeting-remote-${GW_APP_NAME}
+  name: rest-greeting-remote-${GW_APP_NAME}-vs
 spec:
   hosts:
-  - ${GW_APP_NAME}
+  - ${GW_ROUTE}
   gateways:
   - rest-greeting-${GW_APP_NAME}
   - mesh
@@ -70,12 +70,12 @@ spec:
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: rest-greeting-remote-${GW_APP_NAME}
+  name: rest-greeting-remote-${GW_APP_NAME}-vs
 spec:
   hosts:
-  - ${GW_APP_NAME}
+  - ${GW_ROUTE}
   gateways:
-  - rest-greeting-${GW_APP_NAME}
+  - rest-greeting-remote-${GW_APP_NAME}
   - mesh
   http:
   - match:

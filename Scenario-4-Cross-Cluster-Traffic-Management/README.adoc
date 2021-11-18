@@ -271,7 +271,7 @@ image::images/4b-multiple-gw-scenario/Lab-3-Additional-GW-Bypass-Custom-HC.png[4
   
   gateways:
     additionalIngress:
-      admin-ingress:
+      admin-ingressgateway:
         enabled: true
         runtime:
           deployment:
@@ -298,32 +298,13 @@ image::images/4b-multiple-gw-scenario/Lab-3-Additional-GW-Bypass-Custom-HC.png[4
 
   ** DEFAULT ROUTE (on failing by healthcheck cluster it should be failing: 
   
-    	curl -iv -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/say/hello/Nick
+    	curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/hello/greeting/Nick
     	no healthy upstream
 
   ** ADMIN ROUTE (should get a response: 
   
-  	curl -iv -X GET http://$(oc get route admin-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/say/hello/Nick
+  	curl -X GET http://$(oc get route admin-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/hello/greeting/Nick
 	Greetings (OCP-Cluster-47) Nick
-
-  
-
-
-
-
-4. change EnvoyFilter below to use as workload selector app=istio-ingressgateway
-spec:
-  workloadSelector:
-    labels:
-      app: istio-ingressgateway
-
-5. After that although failures in EnvoyFilter stop remote client to access cluster 4.7 usint the admin Gateway
-
-$ curl -X GET http://admin-ingressgateway-istio-system-tenant-1.apps.cluster-t7v5g.t7v5g.sandbox1318.opentlc.com/hello/greeting/Nick
-Greetings (OCP-Cluster-47) Nick
-
-$ curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-t7v5g.t7v5g.sandbox1318.opentlc.com/hello/greeting/Nick
-no healthy upstream
 
 
 
