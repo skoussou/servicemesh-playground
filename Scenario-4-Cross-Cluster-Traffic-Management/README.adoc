@@ -180,13 +180,13 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
 
 1. Add Service Mesh Healthcheck and Outlier Detection on default Service Mesh `istio-ingressgateway` workload on both *Service Cluster* sides
 
-	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh <SERVICE_NAME> <SERVICE_NAMESPACE> <SERVICE_HEALTHCHECK_URI> <GW_APP_NAME> <GW_NAMESPACE>
-	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh rest-greeting-remote greetings-service-1 /status/check istio-ingressgateway
+	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh <SERVICE_NAME> <SERVICE_NAMESPACE> <SERVICE_HEALTHCHECK_URI> <GW_APP_NAME> <GW_NAMESPACE>
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-and-outlier-detection-on-greeting-remote-from-gw.sh rest-greeting-remote greetings-service-1 /status/check istio-ingressgateway
 
 2. Set additional URI `status` to `200 SUCCESS` on both *Service Cluster* sides
 
-	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
-	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
 	
 3. Check *Service Cluster* sides for behavior
 
@@ -204,8 +204,8 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
   
 4. Set additional URI `status` to `503 FAIL` on 1 of the 2 *Service Cluster* sides
 
-	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
-	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-503-fail.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
 
 
 5. Check *Service Cluster* sides for behavior
@@ -222,8 +222,8 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
 
 6. Re-Set additional URI `status` to `200 SUCCESS` on the failing *Service Cluster* side
 
-	sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
-	eg. sub-scenarios/fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
 	
 7. Check *Service Cluster* sides for behavior
 
