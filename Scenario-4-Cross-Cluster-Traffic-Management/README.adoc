@@ -176,9 +176,7 @@ image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-Sequence.png[400,1000]
 
 The following setup/tests simulate the states depicted in the images
 
-image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-1.png[400,400] 
-image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-2.png[400,400] 
-image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-3.png[400,400] 
+image::Lab-2-Failover-Custom-HC-State-Sequence.png[400,1000] 
 
 1. Add Service Mesh Healthcheck and Outlier Detection on default Service Mesh `istio-ingressgateway` workload on both *Service Cluster* sides
 
