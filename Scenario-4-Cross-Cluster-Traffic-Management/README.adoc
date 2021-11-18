@@ -1,4 +1,4 @@
-= Sending Traffic Cross-Cluster to Other (non-multi cluster) Service Mesh Services 
+= Sending Traffic Cross-Cluster to Other (non-federated cluster) Service Mesh Services 
 :toc:
 
 * `ServiceMesh` Version: 2.0
@@ -9,11 +9,11 @@
 
 * Pre-Requisites
 
-1. `ServiceMesh` Operators Installation 
+1. Setup of 3 OCP Clusters (1 client, 2 service clusters)
+
+2. `ServiceMesh` Operators Installation in the 3 clusters
 
 	scripts/add-operators-subscriptions-sm-2.1.sh (*Elastic Search Works only from console due to openshift-operators-redhat namespace creation need*)
-
-2. Setup of 3 OCP Clusters (1 client, 2 service clusters)
 
 * Setup
 
@@ -139,9 +139,15 @@
 
 The following tests simulate the states depicted in the images
 
-image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-1.png[400,400] 
+[.clearfix]
+--
+[.left]
+image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-1.png[400,400]
+[.left]
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-2.png[400,400] 
+[.left]
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-3.png[400,400] 
+--
 
   ** Calling directly one of the *Service Cluster* deployments
   
