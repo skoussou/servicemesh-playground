@@ -1,0 +1,112 @@
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: remote-getting-started
+  namespace: istio-system-tenant-4
+spec:
+  hosts:
+    - hello.remote.com
+  ports:
+    - name: http
+      number: 80
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: >-
+        istio-ingressgateway-istio-system-tenant-4.apps.cluster-ac6a.ac6a.sandbox1173.opentlc.com
+      labels:
+        cluster: primary
+      locality: primary
+      ports:
+        http: 80
+    - address: >-
+        istio-ingressgateway-istio-system-tenant-4.apps.rosa-e532.qxhy.p1.openshiftapps.com
+      labels:
+        cluster: secondary
+      locality: secondary
+      ports:
+        http: 80
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: egress-for-target-sunset-destination-rule
+  namespace: istio-system-tenant-4
+spec:
+  host: hello.remote.com
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 5
+        http2MaxRequests: 5
+        maxRetries: 5
+  subsets:
+    - name: target-subset
+      trafficPolicy:
+        loadBalancer:
+          simple: ROUND_ROBIN
+---
+kind: Gateway
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: istio-egressgateway
+  namespace: istio-system-tenant-4
+spec:
+  servers:
+    - hosts:
+        - '*'
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+  selector:
+    istio: egressgateway
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: gateway-routing
+  namespace: istio-system-tenant-4
+spec:
+  hosts:
+    - hello.remote.com
+  gateways:
+    - mesh
+    - istio-egressgateway
+  http:
+    - match:
+        - gateways:
+            - mesh
+          port: 80
+      route:
+        - destination:
+            host: istio-egressgateway.istio-system-tenant-4.svc.cluster.local
+    - match:
+        - gateways:
+            - istio-egressgateway
+          port: 80
+      route:
+        - destination:
+            host: hello.remote.com
+            subset: target-subset
+          weight: 100
+  exportTo:
+    - '*'
+
+
+
+
+
+
+
+
+
+          
+          
+          
+          
+          
+          
+          
+          

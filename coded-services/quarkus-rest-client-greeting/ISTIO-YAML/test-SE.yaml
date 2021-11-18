@@ -1,0 +1,29 @@
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: remote-getting-started
+#  namespace: istio-system
+spec:
+  hosts:
+    - hello.remote.com
+  ports:
+    - name: http
+      number: 80
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: istio-ingressgateway-istio-system.apps.cluster-1139.1139.sandbox724.opentlc.com
+      locality: primary
+      labels:
+        cluster: primary
+      ports:
+        http: 80
+    - address: istio-ingressgateway-istio-system.apps.rosa-1194.6d0b.p1.openshiftapps.com
+      locality: secondary
+      labels:
+        cluster: secondary
+      ports:
+        http: 80
+#  exportTo:
+#    - istio-system        

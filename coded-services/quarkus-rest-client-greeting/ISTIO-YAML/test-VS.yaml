@@ -1,0 +1,31 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gateway-routing
+#  namespace: istio-system #(using namespace in gateways below to point to correct gateway rather than placing in istio-system)
+spec:
+  hosts: 
+  - hello.remote.com
+  exportTo:
+  - "*"
+  gateways:
+  - mesh
+# reverted  - istio-system/istio-egressgateway
+  - istio-egressgateway
+  http:
+  - match:
+    - port: 80
+      gateways:
+      - mesh
+    route:
+    - destination:
+        host: istio-egressgateway.istio-system.svc.cluster.local
+  - match:
+    - port: 80
+      gateways:
+      - istio-egressgateway
+    route:
+    - destination:
+        host: hello.remote.com
+        subset: target-subset
+      weight: 100        

@@ -1,0 +1,27 @@
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: egress-for-target-sunset-destination-rule
+#  namespace: istio-system    
+spec:
+  host: hello.remote.com
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 5
+        http2MaxRequests: 5
+        maxRetries: 5
+  subsets:
+    - name: target-subset
+      trafficPolicy:
+        loadBalancer:
+          simple: ROUND_ROBIN        
+#          localityLbSetting:
+#            enabled: true
+#            failover:
+#              - from: primary
+#                to: secondary      
+        outlierDetection:
+          baseEjectionTime: 1m
+          consecutiveErrors: 3
+          interval: 10s
