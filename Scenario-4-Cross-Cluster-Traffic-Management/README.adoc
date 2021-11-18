@@ -190,16 +190,42 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
 	
 3. Check *Service Cluster* sides for behavior
 
-  ** watch client
+  ** watch client (logged in *Client Cluster*)
   
-  3. Check *Service Cluster* sides for behavior
-
-	watch -n 2 curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-mfkjv.mfkjv.sandbox1680.opentlc.com/say/goodday-to/Stelios                                                    
+	watch -n 2 curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/say/goodday-to/Stelios                                                    
 	...
 	Greetings (OCP-Cluster-47) Stelios. And have a good day!
   
-  ** KIALI (client, service cluster 1, service cluster 2)
-  ** GW Logs (service cluster 1, service cluster 2)
+  ** Check KIALI Graphs/Istio Configs (in client cluster, service cluster 1, service cluster 2)
+  ** GW Logs (service cluster 1, service cluster 2) for healtcheck execution
+  ** Istio Configs for healthcheck and current healthcheck state
+  
+    *** Shows if healthcheck is applied on Ingress Gateway POD Config
+
+	istioctl proxy-config cluster istio-ingressgateway-6567f7d756-4gvh8 -i istio-system-tenant-1 -n istio-system-tenant-1 --fqdn rest-greeting-remote.greetings-service-1.svc.cluster.local -o json
+	... (on result look for something like)
+        "healthChecks": [
+            {
+                "timeout": "5s",
+                "interval": "5s",
+                "unhealthyThreshold": 1,
+                "healthyThreshold": 1,
+                "httpHealthCheck": {
+                    "host": "rest-greeting-remote.greetings-service-1.svc.cluster.local",
+                    "path": "/status/check"
+                },
+                "eventLogPath": "/dev/stdout",
+                "alwaysLogHealthCheckFailures": true
+            }
+        ],
+	
+
+    *** Shows if healthcheck is succeeding or failing for `rest-greeting-remote` 
+
+	oc exec istio-ingressgateway-6567f7d756-4gvh8  -- curl localhost:15000/clusters |egrep 'health|rest-greeting-remote'
+	
+	(look for something like outbound|8080||quarkus-rest-503.greetings-service-1.svc.cluster.local::10.128.2.21:8080::health_flags::/failed_active_hc)
+
   ** Service Envoy Proxy Access Logs (service cluster 1, service cluster 2)
   
 4. Set additional URI `status` to `503 FAIL` on 1 of the 2 *Service Cluster* sides
@@ -210,15 +236,8 @@ image::images/4a-envoyfilter-hc-scenario/Lab-2-Failover-Custom-HC-State-Sequence
 
 5. Check *Service Cluster* sides for behavior
 
-  ** watch client (once HC has been executed)
-  
-	watch -n 2 curl -X GET http://istio-ingressgateway-istio-system-tenant-1.apps.cluster-mfkjv.mfkjv.sandbox1680.opentlc.com/say/goodday-to/Stelios                                                    
-	...
-	Greetings (OCP-Cluster-4.8) Stelios. And have a good day
-  
-  ** KIALI (client, service cluster 1, service cluster 2)
-  ** GW Logs (service cluster 1, service cluster 2)
-  ** Service Envoy Proxy Access Logs (service cluster 1, service cluster 2)
+	Do the same checks as above on point 3
+	
 
 6. Re-Set additional URI `status` to `200 SUCCESS` on the failing *Service Cluster* side
 
