@@ -261,9 +261,7 @@ WARNING: Recheck `EnvoyFilter` and `DestinationRules` configuration as it takes 
 
 == Sub-Scenario 4b: Setup Service Mesh Additional Gateway
 
-*Aim:* Following *Sub-Scenario 4a* there is the need to access the workload `rest-greeting-remote` even when the `status` URI shows failures (eg. admin actions on the workloads). The scenario is depicted in the images
-
-The following setup/tests simulate the state depicted in the image
+*Aim:* Following *Sub-Scenario 4a* there is the need to access the workload `rest-greeting-remote` even when the `status` URI shows failures (eg. admin actions on the workloads). The scenario is depicted in the image below.
 
 image::images/4b-multiple-gw-scenario/Lab-3-Additional-GW-Bypass-Custom-HC.png[400,400] 
 
