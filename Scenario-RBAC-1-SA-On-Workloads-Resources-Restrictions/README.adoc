@@ -109,7 +109,7 @@ The following tests simulate the states depicted in the images
 	
 * Modify the file adding _-wrong_ at the end of the SA name. Both *(a)* and *(b)* will succeed
 	    
-	    
+Additional Configurations can be drawn from: https://istio.io/latest/docs/reference/config/security/authorization-policy/#Rule	    
 	    
 	    
 	    
