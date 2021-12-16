@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-sa-greetings-client
+  namespace: greetings-client  
+spec:
+  rules:
+    - from:
+        - source:
+            principals:
+              - >-
+                cluster.local/ns/<istio-system-test-2>/sa/istio-ingressgateway-service-account
+      to:
+        - operation:
+            methods:
+              - GET
+            paths:
+              - /say/goodday-to*
+  action: DENY

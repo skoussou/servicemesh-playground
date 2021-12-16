@@ -1,0 +1,117 @@
+= Applying RBAC cases on In Mesh Workloads
+:toc:
+
+* `ServiceMesh` Version: 2.0
+* Purpose: Configs will not be distributed to _Envoy istio-proxy_ sidecar beyond the same namespace unless overriden by configurations of _SideCar_ CR resource
+
+== Setup ServiceMesh installation
+
+* Pre-Requisites
+
+1. Setup of 1 OCP Clusters 
+
+2. `ServiceMesh` Operators Installation in the the cluster
+
+	scripts/add-operators-subscriptions-sm-2.1.sh (*Elastic Search Works only from console due to openshift-operators-redhat namespace creation need*)
+
+* Setup
+
+1. Control Plane Namespace Creation
+
+	oc new-project <istio-system-tenant-2>
+
+2. SMCP
+
+	oc apply -f smcp-2.1.yaml
+	
+  ** or modify/apply the following
+  
+	apiVersion: maistra.io/v2
+	kind: ServiceMeshControlPlane
+	metadata:
+	  name: <tenant-x>
+	  namespace: <istio-system-tenant-x>
+	spec:
+	  tracing:
+	    sampling: 10000
+	    type: Jaeger
+	  general:
+	    logging:
+	      logAsJSON: true
+	  profiles:
+	    - default
+	  proxy:
+	    accessLogging:
+	      file:
+		name: /dev/stdout
+	  policy:
+	    type: Istiod
+	  addons:
+	    grafana:
+	      enabled: true
+	    jaeger:
+	      install:
+		storage:
+		  type: Memory
+	    kiali:
+	      enabled: true
+	    prometheus:
+	      enabled: true
+	  security:
+	    controlPlane:
+	      mtls: true
+	    dataPlane:
+	      mtls: true
+	  version: v2.1
+	  telemetry:
+	    type: Istiod
+	    
+
+  ** Reset
+
+	oc delete -f smcp-2.1.yaml	    
+	    
+	    
+== Setup Service Mesh Deployments
+	
+*Important*: Deploy _Greeting Client_ and _Greeting Service_ on the *same* OCP Clusters/Meshes
+
+
+=== Service Mesh greetings-client-service scripted deployments
+	
+Follow instructions at link:../Scenario-0-Deploy-In-ServiceMesh/README.adoc#greetings-client-service[greetings client/service] _*Greeting Client*_ to add link:../coded-services/quarkus-rest-client-greeting[quarkus-rest-client-greeting] and _Greeting Service_ link:../coded-services/quarkus-rest-greeting-remote[quarkus-rest-greeting-remote] in the Service Mesh (Note: in the folders there is subfolder ISTIO_YAML to create GW/VS for the services)
+
+== Testing `rest-client-greeting` in Service Mesh
+
+The following tests simulate the states depicted in the images
+
+
+  ** Calling directly one of the *Greeting Service* deployments
+  
+	watch -n 2 curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/Stelios        
+
+  ** Calling the *Client* deployment
+	
+	(a) watch -n 2 curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/goodday-to/Stelios  
+	(b) watch -n 2 curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/say/hello  		    
+
+== Sub-Scenario RBAC 1a: Restrict Access DENY_ALL
+
+* Apply restriction to access anything in `greeting_client` namespace
+
+	oc apply -f deny_all_greeting_client_ns.yaml
+
+== Sub-Scenario RBAC 1b: Restrict to resources for specific SA
+
+* Apply restriction to access anything under resource `/say/goodday-to` for specific SA (Note modify the YAML below for the SA to point to your istio-system namespace). The test *(a)* will fail RBAC but *(b)* will succeed
+
+	oc apply -f sc1b-deny_sa-based_greeting_client_ns.yaml
+	
+* Modify the file adding _-wrong_ at the end of the SA name. Both *(a)* and *(b)* will succeed
+	    
+	    
+	    
+	    
+	    
+	    
+	    
