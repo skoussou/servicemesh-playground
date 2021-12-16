@@ -14,7 +14,7 @@
 
 == `Service Mesh` Security
 * Authentication/Authorisation 
-* link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc
+* link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc[RBAC Scenarios]
 
 == 'Service Mesh' Deployment Scenarios
 * Scenario-D1-Offline-Deployments.adoc
