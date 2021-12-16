@@ -113,7 +113,10 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 	oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-service
 	oc rollout latest dc/rest-greeting-remote -n greetings-service
 	
-	
+* Apply for local cluster setup `Service Mesh` configs to enable external access
+
+	oc apply -f ISTIO-YAML/istio-hello-client-gateway.yaml	
+	oc apply -f ISTIO_YAML/istio-helloworld-gateway.yaml		
 
 * Call `rest-client-greeting` via Service Mesh
   
