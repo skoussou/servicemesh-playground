@@ -11,7 +11,10 @@
 == `Service Mesh` Platform Driven Capabilities
 * Certificates (different locations)
 * External storage of metrics (ES, Jaeger etc.)
+
+== `Service Mesh` Security
 * Authentication/Authorisation 
+* link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc
 
 == 'Service Mesh' Deployment Scenarios
 * Scenario-D1-Offline-Deployments.adoc
