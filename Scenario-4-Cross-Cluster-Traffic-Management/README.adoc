@@ -5,7 +5,7 @@
 * Purpose: Client will send traffic to External Services
 
 
-== Setup ServiceMesh installation
+== Setup Service Mesh Installation
 
 * Pre-Requisites
 
@@ -13,7 +13,7 @@
 
 2. `ServiceMesh` Operators Installation in the 3 clusters
 
-	scripts/add-operators-subscriptions-sm-2.1.sh (*Elastic Search Works only from console due to openshift-operators-redhat namespace creation need*)
+	scripts/add-operators-subscriptions-sm-2.1.1.sh
 
 * Setup
 
@@ -258,6 +258,36 @@ WARNING: Recheck `EnvoyFilter` and `DestinationRules` configuration as it takes 
 	...
 	Greetings (OCP-Cluster-47) Stelios. And have a good day!	
 
+=== Sub-Scenario 4a1: Setup Service Mesh Additional Active Healthcheck (separate workload)
+
+*Aim:* Setups as *Sub-Scenario 4a* but rather than *re-direction* from the main `rest-greeting-remote` the Service Mesh Configs instead will re-direct healthcheck requests to `rest-greeting-remote` uri `/status` to `quarkus-rest-503`
+
+1. Create Deployments & Service Mesh Configs
+	
+  ** In *Service Clusters* (_must match SMCP/SMMR namespace details from Setup Service Mesh Installation section_) add `quarkus-rest-503` service in the mesh
+  *** *Service Cluster 1*
+
+	./create-healthcheck-503-service.sh  <Service Namspace> <SMCP Ingress Gateway URL> <STATE RETURNED (fail/other)>
+	eg. ./create-healthcheck-503-service.sh greetings-service-1 istio-ingressgateway-istio-system-tenant-1.apps.cluster-9f45.9f45.sandbox221.opentlc.com fail	
+
+  *** *Service Cluster 2*
+
+	./create-healthcheck-503-service.sh  <Service Namspace> <SMCP Ingress Gateway URL> <STATE RETURNED (fail/other)>
+	eg. ./create-healthcheck-503-service.sh greetings-service-1 istio-ingressgateway-istio-system-tenant-1.apps.cluster-9f45.9f45.sandbox221.opentlc.com fail	
+
+2. Check that currently uri `/status/check` on workload `rest-greeting-remote` is returning _SUCCESS_ state
+
+	curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/hello/greeting/Nick
+	curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tenant-1)/status/check
+	
+  ** If it is returning *503* set it to success
+  
+	sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh <SERVICE_POD> <SERVICE_NAME> <SERVICE_NAMESPACE>
+	eg. sub-scenarios/4a-fault-detection-via-EnvoyFilter/additional-sm-hc-uri-set-200-success.sh rest-greeting-remote-2-hfd5l rest-greeting-remote greetings-service-1
+	
+3. Set Service Mesh `VirtualService` configuration to re-direct all healthcheck requests to `rest-greeting-remote` uri `/status` to `quarkus-rest-503`
+
+	  
 
 == Sub-Scenario 4b: Setup Service Mesh Additional Gateway
 

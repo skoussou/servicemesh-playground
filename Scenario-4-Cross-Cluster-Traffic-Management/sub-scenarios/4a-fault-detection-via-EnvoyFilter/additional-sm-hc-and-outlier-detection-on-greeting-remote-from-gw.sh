@@ -97,5 +97,5 @@ spec:
       baseEjectionTime: 1m
       consecutive5xxErrors: 1
       interval: 30s
-      maxEjectionPercent: 100" | oc apply -n $GW_NAMESPACE -f - 
+      maxEjectionPercent: 100" | oc apply -n $SERVICE_NAMESPACE -f - 
 
