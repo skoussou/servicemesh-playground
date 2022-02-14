@@ -15,6 +15,7 @@
 == `Service Mesh` Security
 * Authentication/Authorisation 
 * link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc[RBAC Scenarios]
+* link:./Scenario-MTLS-1-External-Request-Per-Service-Cert/README.adoc[Securing Access to Deployments in the ServiceMesh with TLS]
 
 == 'Service Mesh' Deployment Scenarios
 * Scenario-D1-Offline-Deployments.adoc

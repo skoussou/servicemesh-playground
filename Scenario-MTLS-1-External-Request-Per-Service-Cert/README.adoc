@@ -1,4 +1,4 @@
-= Securing Deployments in the ServiceMesh
+= Securing Access to Deployments in the ServiceMesh with TLS
 :toc:
 
 == Setup `SIMPLE TLS` Authentication for a Service Mesh based service
