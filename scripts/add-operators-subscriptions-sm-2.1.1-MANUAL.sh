@@ -11,25 +11,26 @@ metadata:
   name: elasticsearch-operator
   namespace: openshift-operators-redhat
 spec:
-  channel: "4.6"
+  channel: stable-5.3
   installPlanApproval: Manual
   name: elasticsearch-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: elasticsearch-operator.4.6.0-202110262229
+  startingCSV: elasticsearch-operator.5.3.4-13
 ' | oc apply -f -  
 
 echo 'apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: elasticsearch-operator
+  namespace: openshift-operators-redhat
 spec:
-  channel: "4.6"
-  installPlanApproval: Automatic
+  channel: stable-5.3
+  installPlanApproval: Manual
   name: elasticsearch-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: elasticsearch-operator.4.6.0-202110262229' | oc apply -f -  
+  startingCSV: elasticsearch-operator.5.3.4-13' | oc apply -f -  
 
 
 echo 'sleeping 20s'
@@ -46,11 +47,11 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: jaeger-operator.v1.24.1
+  startingCSV: jaeger-operator.v1.29.1
 "
 
 echo "apiVersion: operators.coreos.com/v1alpha1
@@ -60,11 +61,11 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: jaeger-operator.v1.24.1" | oc apply -f -    
+  startingCSV: jaeger-operator.v1.29.1" | oc apply -f -    
 
 echo 'sleeping 20s'
 sleep 20
@@ -79,11 +80,11 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: kiali-ossm
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: kiali-operator.v1.36.5
+  startingCSV: kiali-operator.v1.36.7
 "
 
 echo "apiVersion: operators.coreos.com/v1alpha1
@@ -93,11 +94,11 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: kiali-ossm
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: kiali-operator.v1.36.5" | oc apply -f -   
+  startingCSV: kiali-operator.v1.36.7" | oc apply -f -   
 
 echo 'sleeping 20s'
 sleep 20
@@ -112,11 +113,11 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: servicemeshoperator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: servicemeshoperator.v2.1.0 
+  startingCSV: servicemeshoperator.v2.1.1
 "
 
 echo "apiVersion: operators.coreos.com/v1alpha1
@@ -126,8 +127,8 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: servicemeshoperator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: servicemeshoperator.v2.1.0" | oc apply -f -      
+  startingCSV: servicemeshoperator.v2.1.1" | oc apply -f -      

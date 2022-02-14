@@ -17,7 +17,7 @@ spec:
   source: redhat-operators
   sourceNamespace: openshift-marketplace
   startingCSV: elasticsearch-operator.4.6.0-202110262229
-' | oc apply -f -  
+'
 
 echo 'apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -25,7 +25,7 @@ metadata:
   name: elasticsearch-operator
 spec:
   channel: "4.6"
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: elasticsearch-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -34,8 +34,6 @@ spec:
 
 echo 'sleeping 20s'
 sleep 20
-
-operators.coreos.com/jaeger-product.openshift-operators
 
 echo "################# Adding Operator jaeger-product #################"   
 echo "
@@ -46,7 +44,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -60,7 +58,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -79,7 +77,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: kiali-ossm
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -93,7 +91,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: kiali-ossm
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -112,7 +110,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: servicemeshoperator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
@@ -126,7 +124,7 @@ metadata:
   namespace: openshift-operators
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: servicemeshoperator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
