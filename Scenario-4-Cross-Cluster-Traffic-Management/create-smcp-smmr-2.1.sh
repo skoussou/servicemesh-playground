@@ -46,7 +46,7 @@ spec:
   tracing:
     sampling: 10000
     type: Jaeger
-  version: v2.0" | oc apply -n $SM_CP_NS -f -    
+  version: v2.1" | oc apply -n $SM_CP_NS -f -    
 
 
 
