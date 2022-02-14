@@ -1,7 +1,7 @@
 = Securing Access to Deployments in the ServiceMesh with TLS
 :toc:
 
-== Setup `SIMPLE TLS` Authentication for a Service Mesh based service
+== Setup `SIMPLE TLS` Authentication for a Service Mesh included service
 
 
 1. Create Service Mesh & a Service in the mesh
@@ -79,7 +79,7 @@ These instructions are for self-signed certificates however PKI and CA based cer
 	    - greeting.remote.com" | oc apply -n greetings-service -f -
 
 
-== Setup `MUTUAL TLS` Authentication for a Service Mesh based service
+== Setup `MUTUAL TLS` Authentication for a Service Mesh included service
 
 5. Create client certificates
 
