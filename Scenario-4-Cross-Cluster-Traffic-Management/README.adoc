@@ -137,14 +137,14 @@
 
 == Testing `rest-client-greeting` in Service Mesh
 
-The following tests simulate the states depicted in the images
+The following tests simulate the states depicted in the images (if no DNS for `hello.remote.com` and `greeting.remote.com` you need to add entries for these in `hosts` file of your OS to resolve to the IP address of the OCP router)
 
 image::images/basic-scenario/Lab-1-CU-BCU-Failover-State-Sequence.png[400,1000]
 
 
   ** Calling directly one of the *Service Cluster* deployments
   
-	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/Stelios        
+	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/greeting/Stelios        
 
   ** Calling the *Client Cluster* deployment
 	
