@@ -43,9 +43,9 @@
 
   ** *NOTE:* Route can have one of the following configurations. We select passthrough so we can present a certificate at the `istio-ingressgateway` for the specific service host
 
-  ** *passthrough:* - the TLS handshake will be terminated at the next point (service POD) which is the `istio-ingressgateway` when the `Gateway` Object is set with a `credential` name (see below)
-  ** *Edge:* - present a certificate (default of the `ingresscontroller` - self-signed)
-  ** *ReEncrypt:* will present a certificate set by you on the route itself or the self-signed, and initiate a new TLS origination from the `ingresscontroller` to the destination service / pod (ie. `istio-ingressgateway` for Service Mesh)
+  *** *passthrough:* - the TLS handshake will be terminated at the next point (service POD) which is the `istio-ingressgateway` when the `Gateway` Object is set with a `credential` name (see below)
+  *** *Edge:* - present a certificate (default of the `ingresscontroller` - self-signed)
+  *** *ReEncrypt:* will present a certificate set by you on the route itself or the self-signed, and initiate a new TLS origination from the `ingresscontroller` to the destination service / pod (ie. `istio-ingressgateway` for Service Mesh)
 
 	echo "kind: Route
 	apiVersion: route.openshift.io/v1
