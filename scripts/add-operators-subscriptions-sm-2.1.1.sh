@@ -51,7 +51,7 @@ spec:
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: jaeger-operator.v1.29.1
+  startingCSV: jaeger-operator.v1.30.0
 "
 
 echo "apiVersion: operators.coreos.com/v1alpha1
@@ -65,7 +65,7 @@ spec:
   name: jaeger-product
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: jaeger-operator.v1.29.1" | oc apply -f -    
+  startingCSV: jaeger-operator.v1.30.0" | oc apply -f -    
 
 echo 'sleeping 20s'
 sleep 20
