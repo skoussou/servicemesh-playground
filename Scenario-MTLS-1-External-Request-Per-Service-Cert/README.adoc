@@ -88,7 +88,7 @@
 
 5. Test
 
-* The non-https request will now fail because the `Gateway` resource only exposses _HTTPS_ protocol to the service
+* The *_non-https-* request will now fail because the `Gateway` resource only exposses _HTTPS_ protocol to the service
 
 	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
 +	
