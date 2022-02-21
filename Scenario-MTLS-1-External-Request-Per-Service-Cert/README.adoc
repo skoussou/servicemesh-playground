@@ -8,7 +8,7 @@
 
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-installation[Setup a ServiceMeshControlPlane (only 1 cluster is required)]
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-deployments[Deploy the `rest-greeting-remote` service only]
-* Test it with http
+* Test it with http (add hello-remote to `hosts` file with IP for `istio-ingressgateway` Route if there is no DNS resolution for `greeting.remote.com`)
 
 	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/greeting/Stelios	
 
@@ -18,18 +18,19 @@
 
 	cd Scenario-MTLS-1-External-Request-Per-Service-Cert
 
-  ** Update/Copy & Modify 
+  ** Update/Copy & Modify (based on -self-signed- CA org information) `scripts/certs/app-default.conf`
 
-	../scripts/certs/app-default.conf
+	cd scripts/certs
+	vim app-default.conf
 
-  ** Create CA
+  ** Create CA (self-signed)
 
-	../scripts/certs/create-ca-root-certs-keys.sh
+	create-ca-root-certs-keys.sh
 	
-  ** Create CSR, Certificate for the app
+  ** Create CSR, Certificate for the app (self-signed)
 
-	../scripts/certs/create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
-	eg. ../scripts/certs/create-app-csr-certs-keys.sh app-default.conf greeting-remote
+	create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
+	eg. create-app-csr-certs-keys.sh app-default.conf greeting-remote
 
 4. Create secret with certificate in `istio-system`
 
