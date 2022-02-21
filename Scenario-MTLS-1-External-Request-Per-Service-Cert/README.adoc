@@ -120,7 +120,7 @@
 	  </body>
 	
 
-* The _*https*_ request will fail as it is expected that the client should accept the presented certificate
+* The *_https_* request will fail as it is expected that the client should accept the presented certificate
 
 	curl -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
 	curl: (60) SSL certificate problem: unable to get local issuer certificate
@@ -130,7 +130,7 @@
 	establish a secure connection to it. To learn more about this situation and
 	how to fix it, please visit the web page mentioned above.
 
-* The _*https*_ request with explicitly ignoring the presented certificate (-k , insecure Allow insecure server connections when using SSL) will succeed
+* The *_https_* request with explicitly ignoring the presented certificate (-k , insecure Allow insecure server connections when using SSL) will succeed
 
 	curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
 	Greetings (OCP-48-Cluster) Stelios
