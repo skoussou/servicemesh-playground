@@ -231,28 +231,6 @@
 	    hosts:
 	    - hello.openshift.com" | oc apply -n greetings-service -f -    
 
-	
-	echo "apiVersion: networking.istio.io/v1beta1
-	kind: VirtualService
-	metadata:
-	  name: hello-openshift
-	spec:
-	  gateways:
-	  - rest-greeting-remote-gateway
-	  - mesh
-	  hosts:
-	  - istio-ingressgateway-istio-system.apps.cluster-9232.9232.sandbox1416.opentlc.com
-	  - hello.openshift.com
-	  http:
-	  - match:
-	    - uri:
-		exact: /
-	    route:
-	    - destination:
-		host: hello-openshift
-		port:
-		  number: 8080" | oc apply -n greetings-service -f -
-
 
 4. Test (using the same client certificate since we are using same CA)
 
