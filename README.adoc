@@ -17,5 +17,11 @@
 * link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc[RBAC Scenarios]
 * link:./Scenario-MTLS-1-External-Request-Per-Service-Cert/README.adoc[Securing Access to Deployments in the ServiceMesh with TLS]
 
-== 'Service Mesh' Deployment Scenarios
+== `Service Mesh` DeploymentScenarios
 * Scenario-D1-Offline-Deployments.adoc
+
+
+== `Service Mesh` DAY-2 Operation Scenarios
+* link:https://github.com/skoussou/openshift-service-mesh-application-troubleshooting[Troubleshooting Applications in the Service Mesh]
+
+
