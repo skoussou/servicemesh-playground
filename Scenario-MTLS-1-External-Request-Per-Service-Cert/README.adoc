@@ -8,7 +8,7 @@
 
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-installation[Setup a ServiceMeshControlPlane (only 1 cluster is required)]
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-deployments[Deploy the `rest-greeting-remote` service only]
-* Test it with http (Route exposes service on hostname `greeting.remote.com`. If there is no DNS resolution for `greeting.remote.com` add mapping for `greeting.remote.com` to IP of `istio-ingressgateway` in the hosts file of the machine executing the following)
+* Test it with http (OCP `Route` will expose the service on hostname `greeting.remote.com`. If there is no DNS resolution for `greeting.remote.com` add mapping for `greeting.remote.com` to IP of `istio-ingressgateway` in the hosts file of the machine executing the following)
 
 	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/greeting/Stelios
 	Greetings (OCP-48-Cluster) Stelios	
