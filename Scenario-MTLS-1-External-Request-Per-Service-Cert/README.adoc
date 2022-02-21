@@ -8,9 +8,10 @@
 
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-installation[Setup a ServiceMeshControlPlane (only 1 cluster is required)]
 * link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-4-Cross-Cluster-Traffic-Management#setup-service-mesh-deployments[Deploy the `rest-greeting-remote` service only]
-* Test it with http (add hello-remote to `hosts` file with IP for `istio-ingressgateway` Route if there is no DNS resolution for `greeting.remote.com`)
+* Test it with http (Route exposes service on hostname `greeting.remote.com`. If there is no DNS resolution for `greeting.remote.com` add mapping for `greeting.remote.com` to IP of `istio-ingressgateway` in the hosts file of the machine executing the following)
 
-	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/greeting/Stelios	
+	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane-namespace>)/hello/greeting/Stelios
+	Greetings (OCP-48-Cluster) Stelios	
 
 2. Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service
 
@@ -84,6 +85,55 @@
 	      mode: SIMPLE	      
 	    hosts:
 	    - greeting.remote.com" | oc apply -n greetings-service -f -
+
+5. Test
+
+* The non-https request will now fail because the `Gateway` resource only exposses _HTTPS_ protocol to the service
+
+	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
++	
+	  <body>
+	    <div>
+	      <h1>Application is not available</h1>
+	      <p>The application is currently not serving requests at this endpoint. It may not have been started or is still starting.</p>
+
+	      <div class="alert alert-info">
+		<p class="info">
+		  Possible reasons you are seeing this page:
+		</p>
+		<ul>
+		  <li>
+		    <strong>The host doesn't exist.</strong>
+		    Make sure the hostname was typed correctly and that a route matching this hostname exists.
+		  </li>
+		  <li>
+		    <strong>The host exists, but doesn't have a matching path.</strong>
+		    Check if the URL path was typed correctly and that the route was created using the desired path.
+		  </li>
+		  <li>
+		    <strong>Route and path matches, but all pods are down.</strong>
+		    Make sure that the resources exposed by this route (pods, services, deployment configs, etc) have at least one pod running.
+		  </li>
+		</ul>
+	      </div>
+	    </div>
+	  </body>
+	
+
+* The _*https*_ request will fail as it is expected that the client should accept the presented certificate
+
+	curl -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
+	curl: (60) SSL certificate problem: unable to get local issuer certificate
+	More details here: https://curl.haxx.se/docs/sslcerts.html
++
+	curl failed to verify the legitimacy of the server and therefore could not
+	establish a secure connection to it. To learn more about this situation and
+	how to fix it, please visit the web page mentioned above.
+
+* The _*https*_ request with explicitly ignoring the presented certificate (-k , insecure Allow insecure server connections when using SSL) will succeed
+
+	curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
+	Greetings (OCP-48-Cluster) Stelios
 
 
 == Setup `MUTUAL TLS` Authentication for a Service Mesh included service
