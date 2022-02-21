@@ -136,12 +136,12 @@
 
 == Setup `MUTUAL TLS` Authentication for a Service Mesh included service
 
-5. Create client certificates
+1. Create client certificates
 
 	../scripts/certs/create-client-certs-keys.sh  <Certificate-Names-Prefix>
 	eg. ../scripts/certs/create-client-certs-keys.sh curl
 	
-6. Create/Update `Gateway` Configuration for `MUTUAL` TLS (change `name`, `credentialName`,`host` according to your configurations if exposing a different service)
+2. Create/Update `Gateway` Configuration for `MUTUAL` TLS (change `name`, `credentialName`,`host` according to your configurations if exposing a different service)
 
 	echo "apiVersion: networking.istio.io/v1alpha3
 	kind: Gateway
@@ -161,69 +161,16 @@
 	    hosts:
 	    - greeting.remote.com" | oc apply -n greetings-service -f -
 
-7. Call	with MTLS handshake the securted Service Mesh service.
+
+3. Call with `SIMPLE` TLS handshake fails
+
+	curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
+	curl: (56) OpenSSL SSL_read: error:1409445C:SSL routines:ssl3_read_bytes:tlsv13 alert certificate required, errno 0
+
+
+3. Call	with `MTLS` TLS handshake the securted Service Mesh service.
 
 	curl -v -X GET --cacert ca-root.crt --key client.key --cert client.pem https://<ROUTE_URL>	
 	eg. curl -v -X GET --cacert ca-root.crt --key curl-client.key --cert curl-client.crt https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
 	
-	curl --cacert ./localCA.pem --cert app-cert.pem --key app-cert.key https://URL
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-== ARCHIVE
-#!/bin/bash
-
-#generate KEY for CA
-
-#openssl genrsa -des3 -out localCA.key 4096
-
-#openssl req -x509 -config default.conf  -new -nodes -key localCA.key -sha256 -days 1825 -out localCA.pem
-echo "LOCALCA can already be here"
-
-# generate certificates with the CA
-#openssl genrsa -out app.key 2048
-#openssl req -new -config app.conf -passin pass:WebAS -nodes -keyout app.key -out app.csr
-openssl req -new -key app.key -out app.csr
-
-#openssl req -x509 -config app.conf -new -key app.key -out app.csr
-openssl x509 -req -in app.csr -CA localCA.pem -CAkey localCA.key -CAcreateserial -out app.crt -days 825 -sha256 -extfile app.ext
-
-
-
-where app.conf is the same as previous one
-default.conf
-[ req ]
-default_bits = 2048
-distinguished_name = req_distinguished_name
-prompt = no
-[ dn ]
-C = Belgium
-O = IBM
-CN = LOCAL-CA
-ST = Brussels
-L = Brussels
-OU=EU-Lisa
-[ req_distinguished_name ]
-countryName = BE
-stateOrProvinceName = Brussels
-localityName = Brussels
-organizationName = IBM
-commonName = LOCAL-CA
