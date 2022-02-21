@@ -91,7 +91,6 @@
 * The *_non-https-* request will now fail because the `Gateway` resource only exposses _HTTPS_ protocol to the service
 
 	curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
-+	
 	  <body>
 	    <div>
 	      <h1>Application is not available</h1>
@@ -125,7 +124,6 @@
 	curl -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system)/hello/greeting/Stelios
 	curl: (60) SSL certificate problem: unable to get local issuer certificate
 	More details here: https://curl.haxx.se/docs/sslcerts.html
-+
 	curl failed to verify the legitimacy of the server and therefore could not
 	establish a secure connection to it. To learn more about this situation and
 	how to fix it, please visit the web page mentioned above.
