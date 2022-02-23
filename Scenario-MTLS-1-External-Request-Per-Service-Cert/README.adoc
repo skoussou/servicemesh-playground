@@ -448,70 +448,99 @@ WARNING: Aside from the use of cert-manager a NON-SUPPORTED configuration at the
 	    termination: passthrough
 	  wildcardPolicy: None" | oc apply -n istio-system-certs -f -		  
  
+* Test it
 
+	curl -k -v https://hello-ocp.com  --resolve 'hello-ocp.com:443:<IP OF istio-ingressgateway ROUTE>' 
+	Hello OpenShift!
 
 [[anchor-2]]
 
-We need a own certificate provider that generates certificate, configured in this way
+=== Use `cert-manager` for Service Mesh certificates creation/rotation
+
+WARNING: This is failing 
+
+* Update/Create `ServiceMeshControlPlane` Resource with `security` section to create/rotate certs to Exposing workloads to the outside world
+
+echo "apiVersion: maistra.io/v2
+kind: ServiceMeshControlPlane
+metadata:
+  name: tenant-certs
+spec:
+  policy:
+    type: Istiod
+  addons:
+    grafana:
+      enabled: true
+    jaeger:
+      install:
+        storage:
+          type: Memory
+    kiali:
+      enabled: true
+    prometheus:
+      enabled: true
+  general:
+    logging:
+      logAsJSON: true
+  profiles:
+    - default
+  proxy:
+    accessLogging:
+      file:
+      name: /dev/stdout
+    networking:
+      trafficControl:
+        inbound: {}
+        outbound:
+          policy: REGISTRY_ONLY
+  telemetry:
+    type: Istiod
+  tracing:
+    sampling: 10000
+    type: Jaeger
+  security:
+    certificateAuthority:
+      type: Custom
+      custom:
+        address: cert-manager.istio-system-certs.svc:443
+  version: v2.1" | oc apply -n istio-system-certs -f - 
+
+* Define
 	certificateAuthority:
 	  type: Custom
 	  custom:
-	    address: cert-manager-istio-csr.cert-manager.svc:443
+	    address: cert-manager.istio-system-certs.svc:443
 
-However, istiod still uses a self-signed certificated for the communication from gateway – virtual-service.	    
-
-Exposing workloads to the outside world
-Securing traffic within the mesh (e.g. securing istiod) Automatically rotating all certificates on a e.g. daily bases is a must here.
-In a workshop RedHat pointed us towards the CertManager [1] for which we installed the operator from the RedHat MarketPlace.
-We were able to configure it in such a way, that it handles "Certificate" requests and creates a certificate from this request using the CA we provided. Here everything works well.
-
-The documentation you linked [2] uses istiod as an issuer. We want to use CertManager. We therefore set
-
-certificateAuthority:
-type: Custom
-custom:
-address: cert-manager-istio-csr.cert-manager.svc:443
-
-which works up to the point that goal #1 (Exposing workloads to the outside world) is reached: For every new gateway we deploy we can set a host like this
+* ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
 
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 ...
 spec:
-selector:
-istio: ingressgateway # use istio default controller
+  selector:
+    istio: ingressgateway # use istio default controller
 servers:
+  - port:
+    name: https
+    number: 443
+    protocol: HTTPS
+  tls:
+    mode: SIMPLE
+    credentialName: yawl-crt-secret
+  hosts:
+    "our-service.example.com"
+    
+* in mesh certs
 
-port:
-name: https
-number: 443
-protocol: HTTPS
-tls:
-mode: SIMPLE
-credentialName: yawl-crt-secret
-hosts:
-"our-service.example.com"
-ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
-However, istiod still uses a self-signed certificated for the communication from gateway<->virtual-service (thus goal #2 is not reached). We want istiod itself to also request a certificate from cert-manager. To achieve this, we tried setting certProvider in controlPlane to Custom:
+However, istiod still uses a self-signed certificated for the communication from gateway – virtual-service.	    
+However, istiod still uses a self-signed certificated for the communication from gateway<->virtual-service (thus goal #2 is not reached). 
+For istiod itself to also request a certificate from cert-manager. To achieve this, we tried setting certProvider in controlPlane to Custom:
 
-spec:
-security:
-controlPlane:
-mtls: true
-certProvider: Custom
+	spec:
+	  security:
+	    controlPlane:
+	      mtls: true
+	      certProvider: Custom
 
-This however fails with the errors we provided to you.
+This however fails with the errors 
 
-[1] https://cert-manager.io/docs/
-[2] https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security
-
-
-
-
-
-
-
-
-
-
-istio
