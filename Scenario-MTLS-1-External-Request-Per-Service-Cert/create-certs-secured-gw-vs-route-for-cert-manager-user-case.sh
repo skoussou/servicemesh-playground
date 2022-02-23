@@ -2,7 +2,7 @@
 
 NAMESPACE=$1
 ISTIO_NAMESPACE=$2
-HOSTNAME=$2
+HOSTNAME=$3
 SECRET_NAME=$4
 
 echo '-------------------------------------------------------------------------'

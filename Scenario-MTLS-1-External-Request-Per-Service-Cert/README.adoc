@@ -506,10 +506,13 @@ spec:
   version: v2.1" | oc apply -n istio-system-certs -f - 
 
 * Define
+
+To try: https://github.com/cert-manager/istio-csr
+
 	certificateAuthority:
 	  type: Custom
 	  custom:
-	    address: cert-manager.istio-system-certs.svc:443
+	    address: cert-manager-istio-csr.istio-system-certs.svc:443
 
 * ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
 
