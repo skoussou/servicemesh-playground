@@ -1,9 +1,11 @@
 #!/bin/bash
 
 NAMESPACE=$1
+ISTIO_NAMESPACE=$2
 
 echo '-------------------------------------------------------------------------'
 echo 'hello-openshift deployed in namespace      : '$NAMESPACE
+echo 'istio namespace                            : '$ISTIO_NAMESPACE
 echo '-------------------------------------------------------------------------'
 
 echo "################# Deployment - hello-openshift [$NAMESPACE] #################"             
@@ -58,12 +60,11 @@ spec:
   selector:
     app: hello-openshift" | oc apply -n $NAMESPACE -f -
     
-echo "################# Route - hello-openshift [istio-system] #################"   
+echo "################# Route - hello-openshift [$ISTIO_NAMESPACE] #################"   
 echo "kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: hello-openshift
-  namespace: istio-system
 spec:
   host: hello.openshift.com
   to:
@@ -72,4 +73,4 @@ spec:
     weight: 100
   port:
     targetPort: http
-  wildcardPolicy: None" | oc apply -f -  
+  wildcardPolicy: None" | oc apply -n $ISTIO_NAMESPACE -f -  

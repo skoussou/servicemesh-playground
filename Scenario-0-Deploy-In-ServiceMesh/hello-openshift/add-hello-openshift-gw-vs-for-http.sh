@@ -22,7 +22,7 @@ spec:
       name: hello-openshift
       protocol: HTTP
     hosts:
-    - hello.openshift.com" | oc $NAMESPACE -f -    
+    - hello.openshift.com" | oc apply -n $NAMESPACE -f -    
 
 
 

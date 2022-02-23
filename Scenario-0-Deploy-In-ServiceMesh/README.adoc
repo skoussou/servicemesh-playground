@@ -135,10 +135,10 @@ https://github.com/kiali/kiali/blob/master/hack/istio/install-sm2.sh#L566-L579
 * Deploy `hello-openshift` service
 
 	cd Scenario-0-Deploy-In-ServiceMesh/hello-openshift
-	deploy-hello-openshift.sh <NAMESPACE>
+	deploy-hello-openshift.sh <APP_NAMESPACE> <ISTIO_NAMESPACE>
 	
 * Add *_http_* external access to `hello-openshift` service on Service Mesh	
 
-	add-hello-openshift-gw-vs-for-http.sh <NAMESPACE>
+	add-hello-openshift-gw-vs-for-http.sh <APP_NAMESPACE>
 
 	
