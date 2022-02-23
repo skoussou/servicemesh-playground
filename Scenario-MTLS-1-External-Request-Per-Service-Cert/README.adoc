@@ -455,7 +455,7 @@ WARNING: Aside from the use of cert-manager a NON-SUPPORTED configuration at the
 
 [[anchor-2]]
 
-=== Use `cert-manager` for Service Mesh certificates creation/rotation
+=== Use `cert-manager` for Service Mesh certificates creation/rotation (`FAILING`)
 
 WARNING: This is failing 
 
@@ -513,22 +513,22 @@ spec:
 
 * ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
 
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-...
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-servers:
-  - port:
-    name: https
-    number: 443
-    protocol: HTTPS
-  tls:
-    mode: SIMPLE
-    credentialName: yawl-crt-secret
-  hosts:
-    "our-service.example.com"
+	apiVersion: networking.istio.io/v1alpha3
+	kind: Gateway
+	...
+	spec:
+	  selector:
+	    istio: ingressgateway # use istio default controller
+	servers:
+	  - port:
+	    name: https
+	    number: 443
+	    protocol: HTTPS
+	  tls:
+	    mode: SIMPLE
+	    credentialName: yawl-crt-secret
+	  hosts:
+	    "our-service.example.com"
     
 * in mesh certs
 
