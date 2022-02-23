@@ -42,11 +42,27 @@
 
 * Options
 
-Name		Description
-DISABLE		Do not setup a TLS connection to the upstream endpoint.
-SIMPLE		Originate a TLS connection to the upstream endpoint.
-MUTUAL		Secure connections to the upstream using mutual TLS by presenting client certificates for authentication.
-ISTIO_MUTUAL	Secure connections to the upstream using mutual TLS by presenting client certificates for authentication. Compared to Mutual mode, this mode uses certificates generated automatically by Istio for mTLS authentication. When this mode is used, all other fields in ClientTLSSettings should be empty.
+.DestinationRule mtls mode options
+====
+[cols="2*^",options="header"]
+|===
+|Name
+|Description
+
+|DISABLE
+|Do not setup a TLS connection to the upstream endpoint.
+
+|SIMPLE
+|Originate a TLS connection to the upstream endpoint.
+
+|MUTUAL
+|Secure connections to the upstream using mutual TLS by presenting client certificates for authentication.
+
+|ISTIO_MUTUAL
+|Secure connections to the upstream using mutual TLS by presenting client certificates for authentication. Compared to Mutual mode, this mode uses certificates generated automatically by Istio for mTLS authentication. When this mode is used, all other fields in ClientTLSSettings should be empty.
+
+|===
+====
 
 * Use different rules
 
