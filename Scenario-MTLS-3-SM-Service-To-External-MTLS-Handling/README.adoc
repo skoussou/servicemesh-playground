@@ -1,0 +1,77 @@
+= Securing traffic to external Services with mTLS
+:toc:
+
+
+
+== Option 1: To another external service (could be another ServiceMesh not managed by SM Federation)
+
+=== Option 1a: Option 1a: directly (via Sidecar)
+
+==== encrypted
+
+* ServiceEntry and If TLS origination from Envoy:
+
+DestinationRules to ServiceEntry hosts with:
+CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+
+* ServiceEntry and If TLS origination from application:
+
+Application configuration with:
+CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+
+==== un-encrypted
+
+* ServiceEntry
+
+=== Option 1b: via Egress Gateway
+
+==== encrypted
+
+* Better alternative is using link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[Service Mesh Federation]
+
+* Else ServiceEntry, Gateway, VirtualService, DestinationRule to Egress Gateway 
+** If TLS origination from Egress Gateway :
+
+DestinationRule to ServiceEntry hosts with:
+CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+ 
+** If TLS origination from application:
+
+Application configuration with:
+CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+ 
+==== unencrypted
+
+* ServiceEntry, Gateway, VirtualService, DestinationRule to Egress Gateway
+
+
+== Option 2: To an external service on another Federation managed Service Mesh
+
+=== Option 2a: directly
+- encrypted
+
+*TBD SHOWN VIA FEDERATION IMPL*
+(Federation uses a pair of Ingress/Egress gateways dedicated to access to imported services)
+
+* unencrypted
+
+WARNING: Impossible by design 
+
+=== Option 2b: via Egress Gateway
+
+- encrypted
+
+*TBD SHOWN VIA FEDERATION IMPL*
+ServiceMeshPeer, ExportedServiceSets, ImportedServiceSets
+Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
+
+- unencrypted
+
+
+Unencrypted traffic is not possible by design.
+
+
