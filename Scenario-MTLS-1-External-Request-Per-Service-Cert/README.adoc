@@ -196,7 +196,7 @@
 
 	oc create -n istio-system secret generic hello-openshift-secret \
 	--from-file=tls.key=hello-openshift-app.key \
-	--from-file=tls.crt=ohello-openshift-app.crt \
+	--from-file=tls.crt=hello-openshift-app.crt \
 	--from-file=ca.crt=ca-root.crt \
 	-n istio-system
 
@@ -242,3 +242,276 @@
 
 
 
+
+== Integrate `cert-manager` with `OSSM` for certificate creation (UNSUPPORTED For `Service Mesh`)
+
+Purpose: Showcase additional `ServiceMeshControlPlane` capabilities for security
+
+* *Aim 1:* Use `cert-manager` as a certificate issuer when exposing Service Mesh workloads to the outside world (*_https_*). (xref:anchor-1[Achieved here])
+* *Aim 2:* Use `cert-manager` as an issuer ??? they wont use the self-signed certificates that the mesh uses by default (xref:anchor-2[Note Achieved but described here])
+
+
+=== Configure `ServiceMeshControlPlane` for services secured by cert-manager
+
+* Create `ServiceMeshControlPlane`, `Namespace` for the service, `ServiceMeshMemberRoll` in one step by
+
+	cd Scenario-MTLS-1-External-Request-Per-Service-Cert
+	create-sm-for-cert-manager-use-case.sh <APPLICATION_NAMESPACE> <ISTIO_NAMESPACE>
+
+* Service Mesh `Namespace` Resource
+
+	oc new-project istio-system-certs
+
+* `ServiceMeshControlPlane` Resource
+
+	echo "apiVersion: maistra.io/v2
+	kind: ServiceMeshControlPlane
+	metadata:
+	  name: tenant-certs
+	spec:
+	  policy:
+	    type: Istiod
+	  addons:
+	    grafana:
+	      enabled: true
+	    jaeger:
+	      install:
+		storage:
+		  type: Memory
+	    kiali:
+	      enabled: true
+	    prometheus:
+	      enabled: true
+	  general:
+	    logging:
+	      logAsJSON: true
+	  profiles:
+	    - default
+	  proxy:
+	    accessLogging:
+	      file:
+		name: /dev/stdout
+	    networking:
+	      trafficControl:
+		inbound: {}
+		outbound:
+		  policy: REGISTRY_ONLY
+	  telemetry:
+	    type: Istiod
+	  tracing:
+	    sampling: 10000
+	    type: Jaeger
+	  version: v2.1" | oc apply -n istio-system-certs -f -  
+
+* Application `Namespace` Resource
+
+	oc new-project hello
+	
+* `ServiceMeshMemberRoll` Resource to 'hello' to the service mesh
+
+	echo "apiVersion: maistra.io/v1
+	kind: ServiceMeshMemberRoll
+	metadata:
+	  namespace: istio-system-certs
+	  name: default
+	spec:
+	  members:
+	    - hello" | oc apply -n istio-system-certs -f -  
+
+=== Deploy and Configure `cert-manager`
+
+WARNING: Aside from the use of cert-manager a NON-SUPPORTED configuration at the moment the following is a setup with *_Self-Signed_* issuer. `cert-manager` offers many different link:https://cert-manager.io/docs/configuration/[issuer configurations].
+
+* Create all the following in one step by executing
+
+	cd Scenario-MTLS-1-External-Request-Per-Service-Cert
+	scripts/certs/add-configure-certs-manager.sh <ISTIO_NAMESPACE>
+
+* Or
+
+** Create subscription for `cert-manager` operator
+
+	echo "apiVersion: operators.coreos.com/v1alpha1
+	kind: Subscription
+	metadata:
+	  name: cert-manager-operator
+	  namespace: openshift-operators
+	spec:
+	  channel: stable
+	  installPlanApproval: Automatic
+	  name: cert-manager-operator
+	  source: certified-operators
+	  sourceNamespace: openshift-marketplace
+	  startingCSV: cert-manager-operator.v1.1.0" | oc apply -f - 
+
+** Create `cert-manager`
+
+	echo "apiVersion: operator.cert-manager.io/v1alpha1
+	kind: CertManager
+	metadata:
+	  name: cert-manager
+	spec: {} | oc apply -n istio-system-certs -f -  
+	
+** Create Self-Signed `issuer` from link:https://cert-manager.io/docs/configuration/selfsigned/[selfsigned configs] (see also link:../scripts/certs/certs-manager-self-signed-issuer.yaml[certs-manager-self-signed-issuer.yaml])
+
+[[anchor-1]]
+	    
+=== Deploy application and use `cert-manager` certificates to access it
+
+* Deploy the service link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#hello-openshift[hello-openshift]
+
+* Create the following in one step by executing:
+
+	cd Scenario-MTLS-1-External-Request-Per-Service-Cert
+	scripts/certs/add-configure-certs-manager.sh <APP_NAMESPACE> <ISTIO_NAMESPACE> <HOSTNAME> <SECRET_NAME>
+	eg. scripts/certs/add-configure-certs-manager.sh hello istio-system-certs hello-ocp.com hello-openshift-cert 
+
+* Create certificate with `cert-manager` for service `hello-openshift`
+
+	echo "apiVersion: cert-manager.io/v1
+	kind: Certificate
+	metadata:
+	  name: hello-openshift-cert
+	spec:
+	  secretName: hello-openshift-cert
+	  commonName: hello-ocp.com
+	  issuerRef:
+	    name: selfsigned-issuer
+	    kind: ClusterIssuer	    
+	  dnsNames:
+	  - hello-ocp.com" | oc apply -n istio-system-certs -f - 
+	  
+** Some Troubleshooting commands in case the certificate is not created
+*** a) Check the outcome of the `Certificate` creation under the `status` section
+
+	oc describe Certificate
+	
+*** b) Look here for more link:https://cert-manager.io/docs/faq/troubleshooting/[Troubleshooting advice	]
+
+* Create `Gateway` Resource for TLS access utilizing the `hello-openshift-cert` secret
+
+	echo "apiVersion: networking.istio.io/v1alpha3
+	kind: Gateway
+	metadata:
+	  name: hello-openshift-gateway
+	spec:
+	  selector:
+	    istio: ingressgateway
+	  servers:
+	  - port:
+	      number: 443
+	      name: https
+	      protocol: HTTPS
+	    tls:
+	      mode: SIMPLE
+	      credentialName: hello-openshift-cert 
+	    hosts:
+	    - hello-ocp.com" | oc apply -n hello -f - 
+
+* Create `VirtualService` for `hello-openshift`
+
+	echo "apiVersion: networking.istio.io/v1beta1
+	kind: VirtualService
+	metadata:
+	  name: hello-openshift
+	spec:
+	  gateways:
+	  - hello-openshift-gateway
+	  - mesh
+	  hosts:
+	  - hello-ocp.com
+	  http:
+	  - match:
+	    - uri:
+		exact: /
+	    route:
+	    - destination:
+		host: hello-openshift
+		port:
+		  number: 8080" | oc apply -n hello -f -   
+		  
+* Create `Route` with TLS `pasthrough` strategy and with hostname utilized in the creation of the cert-manager `certificate`		  
+
+	echo "kind: Route
+	apiVersion: route.openshift.io/v1
+	metadata:
+	  name: hello-ocp
+	spec:
+	  host: hello-ocp.com
+	  to:
+	    kind: Service
+	    name: istio-ingressgateway
+	    weight: 100
+	  port:
+	    targetPort: https
+	  tls:
+	    termination: passthrough
+	  wildcardPolicy: None" | oc apply -n istio-system-certs -f -		  
+ 
+
+
+[[anchor-2]]
+
+We need a own certificate provider that generates certificate, configured in this way
+	certificateAuthority:
+	  type: Custom
+	  custom:
+	    address: cert-manager-istio-csr.cert-manager.svc:443
+
+However, istiod still uses a self-signed certificated for the communication from gateway – virtual-service.	    
+
+Exposing workloads to the outside world
+Securing traffic within the mesh (e.g. securing istiod) Automatically rotating all certificates on a e.g. daily bases is a must here.
+In a workshop RedHat pointed us towards the CertManager [1] for which we installed the operator from the RedHat MarketPlace.
+We were able to configure it in such a way, that it handles "Certificate" requests and creates a certificate from this request using the CA we provided. Here everything works well.
+
+The documentation you linked [2] uses istiod as an issuer. We want to use CertManager. We therefore set
+
+certificateAuthority:
+type: Custom
+custom:
+address: cert-manager-istio-csr.cert-manager.svc:443
+
+which works up to the point that goal #1 (Exposing workloads to the outside world) is reached: For every new gateway we deploy we can set a host like this
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+...
+spec:
+selector:
+istio: ingressgateway # use istio default controller
+servers:
+
+port:
+name: https
+number: 443
+protocol: HTTPS
+tls:
+mode: SIMPLE
+credentialName: yawl-crt-secret
+hosts:
+"our-service.example.com"
+ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
+However, istiod still uses a self-signed certificated for the communication from gateway<->virtual-service (thus goal #2 is not reached). We want istiod itself to also request a certificate from cert-manager. To achieve this, we tried setting certProvider in controlPlane to Custom:
+
+spec:
+security:
+controlPlane:
+mtls: true
+certProvider: Custom
+
+This however fails with the errors we provided to you.
+
+[1] https://cert-manager.io/docs/
+[2] https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security
+
+
+
+
+
+
+
+
+
+
+istio
