@@ -128,7 +128,17 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 
 == bookinfo 
 
-https://github.com/kiali/kiali/blob/master/hack/istio/install-sm2.sh#L566-L579
+* maistra
+
+	oc new-project bookinfo
+	oc patch smmr default --type='json' -p='[{"op": "add", "path": "/spec/members/-", "value":"bookinfo"}]' -n istio-system-certs
+	oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/bookinfo/platform/kube/bookinfo.yaml
+	oc apply -f https://raw.githubusercontent.com/maistra/istio/maistra-2.1/samples/bookinfo/networking/bookinfo-gateway.yaml
+	curl -s "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-certs)/productpage" | grep -o "<title>.*</title>"
+
+* istio
+
+	https://github.com/kiali/kiali/blob/master/hack/istio/install-sm2.sh#L566-L579
 
 == hello-openshift
 
