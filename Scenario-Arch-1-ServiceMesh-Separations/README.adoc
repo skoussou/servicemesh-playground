@@ -1,0 +1,27 @@
+= Architecture Choices Service Mesh Topologies
+:toc:
+
+Consider architecture choices for the definition of single, multi-tenant, mutlt-cluster service mesh topologies
+
+
+
+TBR - but it’s necessary for the Route objects in the istio-system Namespace
+TBR - (one thing I learned for sure in this project is that different environments should have dedicated clusters …)
+
+the level of "seperation" can be argued
+
+cluster = env
+or
+servicemesh = env
+or 
+namespace = env
+
+each has its own merrits
+
+ie. one does not exclude the other however what is a good practice is
+
+1 servicemesh = Many environemtns .... that is defintely anti-pattern of the use of the mesh
+
+and as I said much earlier in my explanations in my view it is better to think ServiceMesh as part of the APP which would mean 1 cluster => MANY APPS = 1-1 ServiceMesh
+
+what you have now is the "anti-pattern" ie. 1 servicemesh = many environments

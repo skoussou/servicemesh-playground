@@ -8,9 +8,10 @@
 * link:./Scenario-3-Apply-WASM-Extension/README.adoc[Apply WASM Extension]
 * link:./Scenario-4-Cross-Cluster-Traffic-Management/README.adoc[Traffic Management - Cross-Cluster (non-Federated) Mesh Services]
 
-== `Service Mesh` Platform Driven Capabilities
+== `Service Mesh` Platform Architectures
 * Certificates (different locations)
 * External storage of metrics (ES, Jaeger etc.)
+* link:./Scenario-Arch-1-ServiceMesh-Separations/README.adoc[Service Mesh Topology Architectures]
 
 == `Service Mesh` Security
 * Authentication/Authorisation 
