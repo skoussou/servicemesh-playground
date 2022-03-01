@@ -27,36 +27,36 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 Connect to External Service with `ServiceEntry` definition
 
-1. Setup link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] within a mesh (`namespace: greetings-client`) but `Greetings Service` is outside (namespace: `greetings-service`)
+* *Step 1:* Setup link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] within a mesh (`namespace: greetings-client`) but `Greetings Service` is outside (namespace: `greetings-service`)
 
 	oc apply -f smcp-2.1.1-allow_any-auto-mtls.yaml -n <ISTIO_NAMESPACE>
 
-* `ServiceMeshControlPlane` setup
-** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
-** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
-* `ServiceMeshMemberRoll` include `greetings-client` namespace
-* Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
+** `ServiceMeshControlPlane` setup
+*** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
+*** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
+** `ServiceMeshMemberRoll` include `greetings-client` namespace
+** Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
 
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
 
 image::./images/1-allow-any-passthroughcluster.png[400,1000]  
 
-* Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
+** Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
 +
 image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.png[400,1000]  
 
 
-2. Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
+* *Step 2:* Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
 ** `proxy.networking.trafficControl.outbound.policy: REGISTRY_ONLY`
 **  mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 
 	oc apply -f smcp-2.1.1-registry_only-auto-mtls.yaml -n <ISTIO_NAMESPACE>
     
-* The result is requests to start being directed to `BlackHoleCluster`
+** The result is requests to start being directed to `BlackHoleCluster`
 +
 image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
 
-* Create `ServiceEntry` to register external details
+** Create `ServiceEntry` to register external details
       
 	echo "kind: ServiceEntry
 	apiVersion: networking.istio.io/v1alpha3
@@ -73,7 +73,7 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
 	  location: MESH_EXTERNAL
 	  resolution: DNS" |oc apply -n greetings-client -f -  
 
-* The requests will now start going through to external `rest-greeting-remote-mesh-ext`
+** The requests will now start going through to external `rest-greeting-remote-mesh-ext`
 +
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,1000]
             
@@ -165,4 +165,13 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 
 Unencrypted traffic is not possible by design.
 
-     
+
+
+
+
+
+
+
+
+
+       
