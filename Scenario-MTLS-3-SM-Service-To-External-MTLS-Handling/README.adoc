@@ -37,16 +37,14 @@ Connect to External Service with `ServiceEntry` resource definition
 ** `ServiceMeshMemberRoll` include `greetings-client` namespace
 ** Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
 
-[source,]
-----
-watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
-----
-+
+	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
+
 image::./images/1-allow-any-passthroughcluster.png[400,800]  
 
 ** Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach when going via `PassThroughCluster` (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
 +
 image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.png[400,8000]  
++
 * *Step 2:* Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
 ** `proxy.networking.trafficControl.outbound.policy: REGISTRY_ONLY`
 **  mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
