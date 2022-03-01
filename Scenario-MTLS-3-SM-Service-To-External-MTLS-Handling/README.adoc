@@ -23,11 +23,11 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 ==== un-encrypted
 
-===== Variation 1: in Service Mesh security `PERMISSIVE`
+===== Variation 1: In a Service Mesh with security `PERMISSIVE`
 
 Connect to External Service with `ServiceEntry` resource definition
 
-* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the meshbut whilst leaving `Greetings Service` outside (namespace: `greetings-service`)
+* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-service`)
 
 	oc apply -f smcp-2.1.1-allow_any-auto-mtls.yaml -n <ISTIO_NAMESPACE>
 
@@ -78,7 +78,7 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 +
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]   
 
-===== Variation 2: in Service Mesh security `STRICT`
+===== Variation 2: In a Service Mesh with security `STRICT`
 
 In a Service Mesh where mTLS security is `STRICT` between workloads, connect to External Service with `ServiceEntry` definition and `DestinationRule` to EXCLUDE `details` from the rule
 
@@ -100,16 +100,16 @@ image::./images/5-STRICT-mTLS-Fails-External.png[400,800]
         
 * Create `DestinationRule` to `DISABLE` mTLS for the external service communication
       
-echo "apiVersion: "networking.istio.io/v1alpha3"
-kind: "DestinationRule"
-metadata:
-  name: "disable-mtls-rest-greeting-remote-ext"
-  namespace: "greetings-client"
-spec:
-  host: rest-greeting-remote.greetings-service.svc.cluster.local
-  trafficPolicy:
-    tls:
-      mode: DISABLE" |oc apply -n greetings-client -f - 
+	echo "apiVersion: "networking.istio.io/v1alpha3"
+	kind: "DestinationRule"
+	metadata:
+	  name: "disable-mtls-rest-greeting-remote-ext"
+	  namespace: "greetings-client"
+	spec:
+	  host: rest-greeting-remote.greetings-service.svc.cluster.local
+	  trafficPolicy:
+	    tls:
+	      mode: DISABLE" |oc apply -n greetings-client -f - 
 
 
 * The requests will now start again to flow through to external `rest-greeting-remote-mesh-ext`
