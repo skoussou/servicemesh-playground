@@ -29,56 +29,11 @@ Connect to External Service with `ServiceEntry` definition
 
 1. Setup link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] within a mesh (`namespace: greetings-client`) but `Greetings Service` is outside (namespace: `greetings-service`)
 
-	apiVersion: maistra.io/v2
-	kind: ServiceMeshControlPlane
-	metadata:
-	  name: tenant-1
-	  namespace: istio-system
-	spec:
-	  security:
-	    controlPlane:
-	      mtls: false
-	    dataPlane:
-	      automtls: true
-	      mtls: false
-	  tracing:
-	    sampling: 10000
-	    type: Jaeger
-	  general:
-	    logging:
-	      logAsJSON: true
-	  profiles:
-	    - default
-	  proxy:
-	    accessLogging:
-	      file:
-		name: /dev/stdout
-	    networking:
-	      trafficControl:
-		inbound: {}
-		outbound:
-		  policy: ALLOW_ANY
-	  policy:
-	    type: Istiod
-	  addons:
-	    grafana:
-	      enabled: true
-	    jaeger:
-	      install:
-		storage:
-		  type: Memory
-	    kiali:
-	      enabled: true
-	    prometheus:
-	      enabled: true
-	  version: v2.1
-	  telemetry:
-	    type: Istiod
-
+	oc apply -f smcp-2.1.1-allow_any-auto-mtls.yaml -n <ISTIO_NAMESPACE>
 
 * `ServiceMeshControlPlane` setup
 ** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
-** mesh security for mtls is permissive (`automtls: true` or `mtls: false`)
+** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 * `ServiceMeshMemberRoll` include `greetings-client` namespace
 * Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
 
@@ -93,53 +48,9 @@ image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.
 
 2. Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
 ** `proxy.networking.trafficControl.outbound.policy: REGISTRY_ONLY`
-- mesh security for mtls is permissive (`automtls: true` or `mtls: false`)
+**  mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 
-	apiVersion: maistra.io/v2
-	kind: ServiceMeshControlPlane
-	metadata:
-	  name: tenant-1
-	  namespace: istio-system
-	spec:
-	  security:
-	    controlPlane:
-	      mtls: false
-	    dataPlane:
-	      automtls: true
-	      mtls: false
-	  tracing:
-	    sampling: 10000
-	    type: Jaeger
-	  general:
-	    logging:
-	      logAsJSON: true
-	  profiles:
-	    - default
-	  proxy:
-	    accessLogging:
-	      file:
-		name: /dev/stdout
-	    networking:
-	      trafficControl:
-		inbound: {}
-		outbound:
-		  policy: REGISTRY_ONLY
-	  policy:
-	    type: Istiod
-	  addons:
-	    grafana:
-	      enabled: true
-	    jaeger:
-	      install:
-		storage:
-		  type: Memory
-	    kiali:
-	      enabled: true
-	    prometheus:
-	      enabled: true
-	  version: v2.1
-	  telemetry:
-	    type: Istiod
+	oc apply -f smcp-2.1.1-registry_only-auto-mtls.yaml -n <ISTIO_NAMESPACE>
     
 * The result is requests to start being directed to `BlackHoleCluster`
 +
@@ -166,65 +77,16 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
 +
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,1000]
             
-                            
 
 ===== Variation 2: in Service Mesh security `STRICT`
 
 In a Service Mesh where mTLS security is `STRICT` between workloads, connect to External Service with `ServiceEntry` definition and `DestinationRule` to EXCLUDE `details` from the rule
 
-
-mesh security for mtls is permissive (automtls: true or mtls: false)
-
-	apiVersion: maistra.io/v2
-	kind: ServiceMeshControlPlane
-	metadata:
-	  name: tenant-1
-	  namespace: istio-system
-	spec:
-	  security:
-	    controlPlane:
-	      mtls: false
-	    dataPlane:
-	      automtls: false
-	      mtls: true
-	  tracing:
-	    sampling: 10000
-	    type: Jaeger
-	  general:
-	    logging:
-	      logAsJSON: true
-	  profiles:
-	    - default
-	  proxy:
-	    accessLogging:
-	      file:
-		name: /dev/stdout
-	    networking:
-	      trafficControl:
-		inbound: {}
-		outbound:
-		  policy: REGISTRY_ONLY
-	  policy:
-	    type: Istiod
-	  addons:
-	    grafana:
-	      enabled: true
-	    jaeger:
-	      install:
-		storage:
-		  type: Memory
-	    kiali:
-	      enabled: true
-	    prometheus:
-	      enabled: true
-	  version: v2.1
-	  telemetry:
-	    type: Istiod
-
+	oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n <ISTIO_NAMESPACE>
 
 * `ServiceMeshControlPlane` setup
 ** `proxy.networking.trafficControl.outbound.policy: REGISTRY_ONLY`
-** mesh security for mtls is stric (`mtls: true`)
+** mesh security for mtls is strict (`spec.security.dataPlane.mtls: true`)
 * `ServiceMeshMemberRoll` include `greetings-client` namespace
 * Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
 
@@ -303,6 +165,4 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 
 Unencrypted traffic is not possible by design.
 
-
-
-
+     
