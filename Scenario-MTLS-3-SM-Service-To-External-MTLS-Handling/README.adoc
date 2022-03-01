@@ -39,10 +39,10 @@ Connect to External Service with `ServiceEntry` resource definition
 
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
 
-image::./images/1-allow-any-passthroughcluster.png[400,800]  
+* image::./images/1-allow-any-passthroughcluster.png[400,800]  
 
 ** Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach when going via `PassThroughCluster` (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
-+
+
 image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.png[400,800]  
 
 * *Step 2:* Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
@@ -114,6 +114,7 @@ spec:
 +        
 image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 
+
 === Option 1b: via Egress Gateway
 
 ==== encrypted
@@ -162,11 +163,6 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 
 
 Unencrypted traffic is not possible by design.
-
-
-
-
-
 
 
 
