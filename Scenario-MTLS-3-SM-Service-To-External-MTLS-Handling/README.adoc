@@ -35,11 +35,13 @@ Connect to External Service with `ServiceEntry` resource definition
 *** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
 *** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 ** `ServiceMeshMemberRoll` include `greetings-client` namespace
-** Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
+** Test it 
 
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
 
-* image::./images/1-allow-any-passthroughcluster.png[400,800]  
+** And watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
++
+image::./images/1-allow-any-passthroughcluster.png[400,800]  
 
 ** Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach when going via `PassThroughCluster` (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
 
