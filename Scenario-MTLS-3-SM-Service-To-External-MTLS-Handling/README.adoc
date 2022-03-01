@@ -27,7 +27,7 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 Connect to External Service with `ServiceEntry` resource definition
 
-* *Step 1:* Setup link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] within a mesh (namespace: `greetings-client`) but `Greetings Service` is outside (namespace: `greetings-service`)
+* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the meshbut whilst leaving `Greetings Service` outside (namespace: `greetings-service`)
 
 	oc apply -f smcp-2.1.1-allow_any-auto-mtls.yaml -n <ISTIO_NAMESPACE>
 
