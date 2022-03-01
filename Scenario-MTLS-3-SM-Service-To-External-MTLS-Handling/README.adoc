@@ -25,7 +25,7 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 ===== Variation 1: in Service Mesh security `PERMISSIVE`
 
-Connect to External Service with `ServiceEntry` definition
+Connect to External Service with `ServiceEntry` resource definition
 
 * *Step 1:* Setup link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] within a mesh (`namespace: greetings-client`) but `Greetings Service` is outside (namespace: `greetings-service`)
 
@@ -75,8 +75,7 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
 
 ** The requests will now start going through to external `rest-greeting-remote-mesh-ext`
 +
-image::./images/4-apply-SE-REGISTRY_ONLY.png[400,1000]
-            
+image::./images/4-apply-SE-REGISTRY_ONLY.png[400,1000]   
 
 ===== Variation 2: in Service Mesh security `STRICT`
 
@@ -164,6 +163,8 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 
 
 Unencrypted traffic is not possible by design.
+
+
 
 
 
