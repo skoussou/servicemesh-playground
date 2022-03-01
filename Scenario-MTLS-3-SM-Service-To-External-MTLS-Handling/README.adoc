@@ -44,7 +44,7 @@ Connect to External Service with `ServiceEntry` resource definition
 image::./images/1-allow-any-passthroughcluster.png[400,800]  
 
 ** Metrics show the service `rest-greeting-remote.greetings-service.svc.cluster.local:8080` that requests reach when going via `PassThroughCluster` (`istio_requests_total{destination_service_name="PassthroughCluster", destination_service="rest-greeting-remote.greetings-service.svc.cluster.local:8080}`)
-
++
 image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.png[400,800]  
 
 * *Step 2:* Change `ServiceMeshControlPlane` setup to block external services access with `REGISTRY_ONLY` 
@@ -55,7 +55,7 @@ image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.
     
 ** The result is requests to start being directed to `BlackHoleCluster`
 +
-image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
+image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 
 ** Create `ServiceEntry` to register external details
       
@@ -76,7 +76,7 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,1000]
 
 ** The requests will now start going through to external `rest-greeting-remote-mesh-ext`
 +
-image::./images/4-apply-SE-REGISTRY_ONLY.png[400,1000]   
+image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]   
 
 ===== Variation 2: in Service Mesh security `STRICT`
 
@@ -95,7 +95,7 @@ In a Service Mesh where mTLS security is `STRICT` between workloads, connect to 
 
 * The result is requests  to external `rest-greeting-remote-mesh-ext` are starting to fail
 +
-image::./images/5-STRICT-mTLS-Fails-External.png[400,1000]
+image::./images/5-STRICT-mTLS-Fails-External.png[400,800]
 
         
 * Create `DestinationRule` to `DISABLE` mTLS for the external service communication
