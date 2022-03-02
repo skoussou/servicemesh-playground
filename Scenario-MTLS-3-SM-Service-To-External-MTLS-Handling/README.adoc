@@ -13,29 +13,29 @@ In this scenario a `ServiceEntry` to the remote service will be required and for
 a) `CA Certificate` for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
 b) `Client certificate/key pair` if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
 
-. *Step 1:* Setup a _Service Side_ Service Mesh (command below) and add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom ROUTE with TLS certificate as follows:
+. * *Step 1:* Setup a _Service Side_ Service Mesh (command below) and add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom ROUTE with TLS certificate as follows:
 
-	----
-	oc new project client-tenant <1>
-	oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n client-tenant  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-tenant) <2>
-	cd ../scripts/certs 
-	# Create secrets <3>
-	oc create -n istio-system-client secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
-	# Create app namespace and deploy app <5>
-	./create-service-membership.sh istio-system-client client-tenant greetings-service <6>
-	echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-	./create-greeting-service-1a.sh client-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
-	----
-	<1> Create *_client_* Service Mesh Control Plane namespace 
-	<2> Create a service mesh control plane for the client application
-	Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
-	<3> Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
-	<4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate ]
-	<5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
-	<6> Add the application to the Service Mesh 
-	<7> Create the `Gateway`, `VirtualService` and `Route` resources to give access to the application via Service Mesh and over TLS
+----
+oc new project client-tenant <1>
+oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n client-tenant  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-tenant) <2>
+cd ../scripts/certs 
+# Create secrets <3>
+oc create -n istio-system-client secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
+# Create app namespace and deploy app <5>
+./create-service-membership.sh istio-system-client client-tenant greetings-service <6>
+echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
+./create-greeting-service-1a.sh client-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
+----
+<1> Create *_client_* Service Mesh Control Plane namespace 
+<2> Create a service mesh control plane for the client application
+Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
+<3> Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
+<4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate ]
+<5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
+<6> Add the application to the Service Mesh 
+<7> Create the `Gateway`, `VirtualService` and `Route` resources to give access to the application via Service Mesh and over TLS
 
-. *Step 2:* Setup a _Client Side_ Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh (configure app to access remote URL of `Greetings Service`)
+. * *Step 2:* Setup a _Client Side_ Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh (configure app to access remote URL of `Greetings Service`)
 
 	oc new project <ISTIO_CLIENT_NAMESPACE>
 	oc apply -f mcp-2.1.1-registry_only-strict-mtls.yaml -n <ISTIO_CLIENT_NAMESPACE>  (change SMCP name to service-tenant)
