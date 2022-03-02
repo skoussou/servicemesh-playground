@@ -43,7 +43,7 @@ The aim is to perform MUTUAL auth with the service using the (self-signed) certi
 * Create CSR, Certificate for the app (self-signed)
 
 	create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
-	eg. create-app-csr-certs-keys.sh rest-client-greeting.com  greeting-client
+	eg. create-app-csr-certs-keys.sh app-client-openshift.conf greeting-client
 
 === Create OCP secret to store the client `greeting-client-secret` certificate in `istio-system`
 
