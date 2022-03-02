@@ -17,7 +17,7 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 * *Step 1:* Setup a _Service Side_ Service Mesh (command below) and add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh 
 
-* Create _client_ Service Mesh namespace and create a service mesh control plane for the client application
+* <1> Create _client_ Service Mesh namespace and create a service mesh control plane for the client application
 * EXPOSE the service via custom ROUTE with TLS certificate 
 ** Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 ** Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate ]
@@ -26,8 +26,8 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 ** Create the `Gateway`, `VirtualService` and `Route` resources to give access to the application via Service Mesh and over TLS
 
 ----
-oc new project client-tenant <1>
-oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n client-tenant  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-tenant) <1>
+<1> oc new project client-tenant 
+<1> oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n client-tenant  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-tenant)
 cd ../scripts/certs <2>
 # Create secrets <2>
 oc create -n istio-system-client secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <2>
