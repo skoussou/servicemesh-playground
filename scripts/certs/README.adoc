@@ -1,0 +1,55 @@
+= Creating Self-Signed CA, CSR, Certificates for Client and Service side
+:toc:
+
+== Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service
+
+These instructions are for self-signed certificates however PKI and CA based certs can & should be used in real environemtns
+
+=== Create CA Root (Only once for client and service)
+
+* Update/Copy & Modify (based on -self-signed- CA org information) scripts/certs/app-default.conf
+
+	cd scripts/certs
+	vim app-default.conf
+
+* Create CA (self-signed)
+
+	create-ca-root-certs-keys.sh
+
+=== Create Certificate Signing Request, TLS Certificate for hosted service for the app (self-signed)
+
+* Create CSR and  Certificate for the app (self-signed)
+
+	create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
+	eg. create-app-csr-certs-keys.sh app-default.conf greeting-remote
+
+=== Create OCP secret to store the certificate in `istio-system`
+
+	oc create -n istio-system secret generic greeting-remote-secret \
+	--from-file=tls.key=greeting-remote-app.key \
+	--from-file=tls.crt=greeting-remote-app.crt \
+	--from-file=ca.crt=ca-root.crt \
+	-n istio-system
+
+== Create Client Certificate
+
+The aim is to perform MUTUAL auth with the service using the (self-signed) certificate above
+
+* Update/Copy & Modify (based on -self-signed- CA org information) scripts/certs/app-default.conf changing CN, Commonname, DNS.1 to rest-client-greeting.com
+
+	cd scripts/certs
+	cp app-default.conf app-client-openshift.conf
+
+* Create CSR, Certificate for the app (self-signed)
+
+	create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
+	eg. create-app-csr-certs-keys.sh rest-client-greeting.com  greeting-client
+
+=== Create OCP secret to store the client `greeting-client-secret` certificate in `istio-system`
+
+	oc create -n istio-system secret generic greeting-client-secret \
+	--from-file=tls.key=greeting-client-app.key \
+	--from-file=tls.crt=greeting-client-app.crt \
+	--from-file=ca.crt=ca-root.crt \
+	-n istio-system
+
