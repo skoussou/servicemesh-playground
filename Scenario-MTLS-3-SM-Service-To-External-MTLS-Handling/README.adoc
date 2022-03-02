@@ -31,7 +31,6 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <APP namespace> <REMOTE S
 ----
 <1> Create *_client_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the client application
-Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 <3> Create Certs (with same CA as client) for `rest-greeting-remote` service see (link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate ]
 <5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
