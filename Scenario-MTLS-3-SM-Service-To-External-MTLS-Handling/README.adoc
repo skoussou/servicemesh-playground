@@ -35,8 +35,8 @@ Create Certs (with same CA as client) for `rest-greeting-remote` service see (li
 <5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
 <6> Add the application to the Service Mesh 
 <7> Create the `Gateway`, `VirtualService` and `Route` resources to give access to the application via Service Mesh and over TLS
-
-
++
++
 * *Step 2:* Setup a _Client Side_ Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh (configure app to access remote URL of `Greetings Service`)
 
 	oc new project <ISTIO_CLIENT_NAMESPACE>
