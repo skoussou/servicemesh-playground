@@ -19,23 +19,24 @@ b) `Client certificate/key pair` if the external service (other SM ingress gatew
 . *Step 1:* Setup a *_Service Side_* Service Mesh (command below) and add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom ROUTE with TLS certificate as follows:
 +
 ----
-oc new-project istio-system-client <1>
-oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n client-tenant  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-tenant) <2>
+oc new-project istio-system-service <1>
+oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-service  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to service-side-tenant) <2>
 cd ../scripts/certs 
 # Create secrets <3>
-oc create -n istio-system-client secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
-# Create app namespace and deploy app <5>
-./create-membership.sh istio-system-client client-tenant greetings-service <6>
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-./create-greeting-service-1a.sh istio-system-client greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
+oc create -n istio-system-service secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
+echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <SMR Resource Name> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
+./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service istio-system-greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
 ----
-<1> Create *_service_* Service Mesh Control Plane namespace 
+<1> Create *_service side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the service application
 <3> Create Certs (with same CA as client) for `rest-greeting-remote` service (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate] ]
+<7> Create app namespace, deploy `rest-greeting-remote` app, create ISTIO Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
++
+# Create app namespace and deploy app <5>
 <5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
+#./create-membership.sh istio-system-service-side service-side-tenant greetings-service <6>
 <6> Add the application to the Service Mesh 
-<7> Create the `Gateway`, `VirtualService` and `Route` resources to give access to the application via Service Mesh and over TLS
 +
 * *Test:* Simple TLS
 +
@@ -50,18 +51,21 @@ Greetings (OCP-48-Cluster) Stelios
 IMPORTANT: note it will apply to all services or we need SNI since its the same ROUTE??? to be verified)
 +
 ----
-oc new-project istio-system-service <1>
-oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-service  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to service-tenant) <2>
+oc new-project istio-system-client <1>
+oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-client  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-side-tenant) <2>
 cd ../scripts/certs 
 # Create Client secrets <3>
+
+echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <SMR Resource Name> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
+./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client istio-system-client-service greeting.remote.com istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
+
+oc create -n greetings-client-2 secret generic greeting-client-secret --from-file=tls.key=greeting-client-app.key --from-file=tls.crt=greeting-client-app.crt --from-file=ca.crt=ca-root.crt -n istio-system-service <4>
 oc create -n istio-system-service secret generic greeting-client-secret --from-file=tls.key=greeting-client-app.key --from-file=tls.crt=greeting-client-app.crt --from-file=ca.crt=ca-root.crt -n istio-system-service <4>
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <SMR Resource Nam> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
-./create-greeting-client-1a.sh istio-system-service service-tenant greetings-client istio-system-service greeting.remote.com istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
 ----
-<1> Create *_client_* Service Mesh Control Plane namespace 
+<1> Create *_client side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the client application
 <3> Create Certs (with same CA as service) for `rest-client-greeting` service (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-client-certificate[Create Client TLS Certificate for hosted service])
-<4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-ocp-secret-to-store-the-client-greeting-client-secret-certificate-in-istio-system[Create OCP secret to store the client certificate ]
+<4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_  OR PROBABLY in the APP namespace if we use via DestinationRule and Not gateway (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-ocp-secret-to-store-the-client-greeting-client-secret-certificate-in-istio-system[Create OCP secret to store the client certificate ]
 <5> Create app namespace, deploy `rest-client-greeting` app, create ISTIO Configurations to be accessible and access remotely `rest-greeting-remote` <5>
 +
 IMPORTANT: Currently we are using SIMPLE TLS (DestinationRule in create-greeting-client-1a.sh and no certs for MUTUAL are exchanged)
@@ -307,10 +311,156 @@ Unencrypted traffic is not possible by design.
 ABOVE JUST FOR TESTING AS SOON AS OK CHANGE TO MUTUAL
 
 [[anchor-1]]
-=== Create CA, CSR and Service Side Certificates
+=== ARCHIVE
 
-1. Create client certificates
-2. Create client certificates
+2. point to details in the bookinfo-not-mesh service
 
-	../scripts/certs/create-client-certs-keys.sh  <Certificate-Names-Prefix>
-	eg. ../scripts/certs/create-client-certs-keys.sh curl       
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: details-custom
+  namespace: bookinfo
+spec:
+  hosts:
+    - details
+  gateways:
+    - mesh
+  http:
+    - route:
+        - destination:
+            host: details.bookinfo-no-mesh.svc.cluster.local
+            subset: nomesh
+            port:
+              number: 9080
+            weight: 100" |oc apply -f -
+              
+
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: details-nomesh-control
+  namespace: bookinfo
+spec:
+  host: details
+  subsets:
+    - labels:
+        version: nomesh
+      name: nomesh" |oc apply -f -
+      
+      
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-details
+spec:
+  hosts: 
+    - details.bookinfo-no-mesh.svc.cluster.local
+  ports:
+    - name: http
+      number: 9080
+      protocol: HTTP2
+      targetPort: 9080
+  location: MESH_EXTERNAL
+  resolution: DNS
+  exportTo:
+    - istio-system-certs
+    - bookinfo" |oc apply -f -      
+    
+    
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts
+  gateways:
+    - mesh
+  http:
+    - route:
+        - destination:
+            host: discounts.travel-no-mesh.svc.cluster.local
+            port:
+              number: 8000
+            weight: 100" |oc apply -f -
+            
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-discounts
+  namespace: travel-agency  
+spec:
+  hosts: 
+    - discounts.bookinfo-no-mesh.svc.cluster.local
+  ports:
+    - name: http
+      number: 8000
+      protocol: HTTP2
+      targetPort: 8000
+  location: MESH_EXTERNAL
+  resolution: DNS
+  exportTo:
+    - istio-system
+    - travel-agency" |oc apply -f -              
+            
+            
+            
+            
+
+
+
+
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts: discounts.travel-agency.svc.cluster.local
+  subsets:
+  - name: discount-external" |oc apply -f - 
+----
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts.travel-agency.svc.cluster.local
+  gateways:
+    - mesh
+  http:
+    - match:
+        - uri:
+            prefix: /discounts
+      name: external-discounts
+      route:
+        - destination:
+            host: discounts.travel-no-mesh.svc.cluster.local
+            port:
+              number: 8000" |oc apply -f - 
+----
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-discounts
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts.travel-no-mesh.svc.cluster.local
+  addresses: ~
+  ports:
+    - name: http
+      number: 8000
+      protocol: HTTP
+      targetPort: 8000
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints: ~
+  workloadSelector: ~
+  exportTo:
+    - travel-agency
+  subjectAltNames: ~ 
+  
