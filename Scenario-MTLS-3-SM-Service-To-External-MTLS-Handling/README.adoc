@@ -24,8 +24,8 @@ oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-service  (
 cd ../scripts/certs 
 # Create secrets <3>
 oc create -n istio-system-service secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <SMR Resource Name> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service istio-system-greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
+echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
+./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
 ----
 <1> Create *_service side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the service application
@@ -33,16 +33,11 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespac
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate] ]
 <7> Create app namespace, deploy `rest-greeting-remote` app, create ISTIO Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
 +
-# Create app namespace and deploy app <5>
-<5> Create App namespace and deploy in that the application `rest-greeting-remote` (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service])
-#./create-membership.sh istio-system-service-side service-side-tenant greetings-service <6>
-<6> Add the application to the Service Mesh 
-+
 * *Test:* Simple TLS
 +
 ----
-curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-client)/hello/greeting/Stelios --resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-client):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>'
-curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-client)/hello/greeting/Stelios --resolve "$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-client):443:54.171.162.158"
+curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios --resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>'
+watch curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios --resolve "$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:54.171.162.158"
 Greetings (OCP-48-Cluster) Stelios
 ----
 +
