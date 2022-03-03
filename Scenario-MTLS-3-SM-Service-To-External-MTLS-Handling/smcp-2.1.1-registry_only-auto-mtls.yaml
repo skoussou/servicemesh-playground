@@ -2,7 +2,6 @@ apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: tenant-1
-  namespace: istio-system
 spec:
   security:
     dataPlane:
@@ -19,12 +18,12 @@ spec:
   proxy:
     accessLogging:
       file:
-	name: /dev/stdout
+        name: /dev/stdout
     networking:
       trafficControl:
-	inbound: {}
-	outbound:
-	  policy: REGISTRY_ONLY
+        inbound: {}
+        outbound:
+          policy: REGISTRY_ONLY
   policy:
     type: Istiod
   addons:
@@ -32,12 +31,12 @@ spec:
       enabled: true
     jaeger:
       install:
-	storage:
-	  type: Memory
+        storage:
+          type: Memory
     kiali:
       enabled: true
     prometheus:
       enabled: true
   version: v2.1
   telemetry:
-    type: Istiod
+    type: Istiod    
