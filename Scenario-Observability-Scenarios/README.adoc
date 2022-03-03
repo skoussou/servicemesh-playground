@@ -1,5 +1,26 @@
 = Scenarios for Observability Setups
 :toc:
 
+== TRACING
+
+=== (AS-IS STACK) Ways to Configure & Use
+
+image::./images/SM-TRACE-Arch-Options.png[400,800]   
+SM-TRACE-Arch-Options.png
+
+=== (AS-IS STACK) How to Use
+
+=== Enhance the Stack
 
 
+== METRICS
+
+=== (AS-IS STACK) Ways to Configure & Use Metrics
+
+=== How/Where to add Application Metrics
+
+. App Concern
+
+. Architecture Concern
+* Local Metrics
+* OCP Monitoring Stack Metrics (Federation of SM & APP Metrics)
