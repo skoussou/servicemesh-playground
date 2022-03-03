@@ -20,11 +20,12 @@
 * link:./Scenario-MTLS-2-Internal-SM-MTLS/README.adoc[Securing inter-deployment in the ServiceMesh with TLS]
 * link:./Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/README.adoc[Securing ServiceMesh egress traffic to external services with TLS]
 
-== `Service Mesh` DeploymentScenarios
+== `Service Mesh` Deployment Scenarios
 * Scenario-D1-Offline-Deployments.adoc
 
 
 == `Service Mesh` DAY-2 Operation Scenarios
 * link:https://github.com/skoussou/openshift-service-mesh-application-troubleshooting[Troubleshooting Applications in the Service Mesh]
+* *TODO:* link:./Scenario-Observability-Scenarios/README.adoc[Observability Scenarios]
 
 
