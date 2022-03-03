@@ -25,7 +25,7 @@ cd ../scripts/certs
 # Create secrets <3>
 oc create -n istio-system-service secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
 echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <7>
+./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <5>
 ----
 <1> Create *_service side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the service application
@@ -52,7 +52,7 @@ cd ../scripts/certs
 # Create Client secrets <3>
 
 echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <SMR Resource Name> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
-./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client istio-system-client-service greeting.remote.com istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
+./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client greeting.remote.com istio-ingressgateway-istio-system-service.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
 
 oc create -n greetings-client-2 secret generic greeting-client-secret --from-file=tls.key=greeting-client-app.key --from-file=tls.crt=greeting-client-app.crt --from-file=ca.crt=ca-root.crt -n istio-system-service <4>
 oc create -n istio-system-service secret generic greeting-client-secret --from-file=tls.key=greeting-client-app.key --from-file=tls.crt=greeting-client-app.crt --from-file=ca.crt=ca-root.crt -n istio-system-service <4>

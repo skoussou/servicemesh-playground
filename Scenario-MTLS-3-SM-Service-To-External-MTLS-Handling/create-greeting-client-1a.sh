@@ -3,17 +3,17 @@
 SM_CP_NS=$1
 SM_TENANT_NAME=$2
 SM_MR_NS=$3
-SM_MR_RESOURCE_NAME=$4
-REMOTE_SERVICE_ROUTE_NAME=$5 #eg. hello.remote.com
-SM_REMOTE_ROUTE_LOCATION=$6 #eg. in absence of DNS remote istio-ingressgateway route's url
-CERTIFICATE_SECRET_NAME=$7
+#SM_MR_RESOURCE_NAME=$4
+REMOTE_SERVICE_ROUTE_NAME=$4 #eg. hello.remote.com
+SM_REMOTE_ROUTE_LOCATION=$5 #eg. in absence of DNS remote istio-ingressgateway route's url
+CERTIFICATE_SECRET_NAME=$6
 
 
 echo '---------------------------------------------------------------------------'
 echo 'ServiceMesh Control Plane Namespace        : '$SM_CP_NS
 echo 'ServiceMesh Control Plane Tenant Name      : '$SM_TENANT_NAME
 echo 'ServiceMesh Member Namespace               : '$SM_MR_NS
-echo 'ServiceMeshMember Resource Name            : '$SM_MR_RESOURCE_NAME
+#echo 'ServiceMeshMember Resource Name            : '$SM_MR_RESOURCE_NAME
 #echo 'ServiceMesh (Remote) Ingress Gateway Route : '$SM_REMOTE_ROUTE	
 echo 'Remote Service Route                       : '$REMOTE_SERVICE_ROUTE_NAME
 echo 'Remote SMCP Route Name (when NO DNS)       : '$SM_REMOTE_ROUTE_LOCATION
@@ -43,11 +43,16 @@ oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":
             
 #oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"127.0.0.1"},{"hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}]}}}}'  -n  $SM_MR_NS
 #oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"10.1.2.3"},{"hostnames":["hello2.remote.com"]}]}]}}}}'  -n  $SM_MR_NS
-sleep 5
-oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS      
-
+  
+cd ../../Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
+echo
 echo "################# SMR [$SM_MR_RESOURCE_NAME] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
-sh ./create-membership.sh $SM_MR_RESOURCE_NAME $SM_TENANT_NAME $SM_MR_NS
+echo "sh  ./create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
+sh create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
+
+sleep 5
+echo "oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS"
+oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS    
    
 echo "################# Gateway - rest-client-gateway [$SM_MR_NS] #################"
 echo "apiVersion: networking.istio.io/v1alpha3
