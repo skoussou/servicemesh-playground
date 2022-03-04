@@ -33,8 +33,9 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespac
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate] ]
 <5> Create app namespace, deploy `rest-greeting-remote` app, create Service Mesh Traffic Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
 +
-* *Test:* Simple TLS (`Gateway` resource must be set to `tls.mode: SIMPLE`)
+* *Test:* `SIMPLE` TLS (`Gateway` resource must be set to `tls.mode: SIMPLE`)
 +
+[source,options="nowrap]
 ----
 curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios (if route not DNS resolvable--resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>')
 watch curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
@@ -42,7 +43,7 @@ watch curl --cacert ca-root.crt  -X GET https://$(oc get route hello-remote -o j
 Greetings (OCP-48-Cluster) Stelios
 ----
 +
-* *Test:* Simple MUTUAL TLS (`Gateway` resource must be set to `tls.mode: MUTUAL`)
+* *Test:* `MUTUAL` TLS (`Gateway` resource must be set to `tls.mode: MUTUAL`)
 +
 ----
 watch curl -s --cacert ca-root.crt --key curl-client.key --cert curl-client.crt -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
