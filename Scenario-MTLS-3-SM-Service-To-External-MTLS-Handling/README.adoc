@@ -22,25 +22,33 @@ b) `Client certificate/key pair` if the external service (other SM ingress gatew
 oc new-project istio-system-service <1>
 oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-service  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to service-side-tenant) <2>
 cd ../scripts/certs 
-# Create secrets <3>
-oc create -n istio-system-service secret generic greeting-remote-secret --from-file=tls.key=greeting-remote-app.key --from-file=tls.crt=greeting-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
+# Create secret for this host <3>
+oc create -n istio-system-service secret generic hello-remote-secret --from-file=tls.key=hello-remote-app.key --from-file=tls.crt=hello-remote-app.crt --from-file=ca.crt=ca-root.cr
 echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service greeting.remote.com greeting-remote-secret OCP-48-Cluster <5>
+./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com hello-remote-secret OCP-48-Cluster <5>
 ----
 <1> Create *_service side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the service application
-<3> Create Certs (with same CA as client) for `rest-greeting-remote` service (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
+<3> Create Certs (with same CA as client) for `rest-greeting-remote` service using public DNS hostname like `hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com` (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate] ]
-<7> Create app namespace, deploy `rest-greeting-remote` app, create ISTIO Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
+<5> Create app namespace, deploy `rest-greeting-remote` app, create Service Mesh Traffic Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
 +
-* *Test:* Simple TLS
+* *Test:* Simple TLS (`Gateway` resource must be set to `tls.mode: SIMPLE`)
 +
 ----
-curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios --resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>'
-watch curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios --resolve "$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:54.171.162.158"
+curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios (if route not DNS resolvable--resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>')
+watch curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
+watch curl --cacert ca-root.crt  -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
 Greetings (OCP-48-Cluster) Stelios
 ----
 +
+* *Test:* Simple MUTUAL TLS (`Gateway` resource must be set to `tls.mode: MUTUAL`)
++
+----
+watch curl -s --cacert ca-root.crt --key curl-client.key --cert curl-client.crt -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
+Greetings (OCP-48-Cluster) Stelios
+----
+
 . *Step 2:* Setup a *_Client Side_* Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh (configure app to access remote URL of `Greetings Service`)
 +
 IMPORTANT: note it will apply to all services or we need SNI since its the same ROUTE??? to be verified)
@@ -179,6 +187,55 @@ image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 
 === Option 1b: via Egress Gateway
 
+
+echo "################# Gateway - istio-egressgateway [$SM_CP_NS] #################"    
+echo "kind: Gateway
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: istio-egressgateway
+spec:
+  servers:
+    - hosts:
+        - '*'
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+  selector:
+    istio: egressgateway" | oc apply -n $SM_CP_NS -f -    
+
+echo "################# VirtualService - gateway-routing [$SM_CP_NS] #################"    
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: gateway-routing
+spec:
+  hosts:
+    - ${REMOTE_SERVICE_ROUTE}
+  gateways:
+    - mesh
+    - istio-egressgateway
+  http:
+    - match:
+        - gateways:
+            - mesh
+          port: 80
+      route:
+        - destination:
+            host: istio-egressgateway.${SM_CP_NS}.svc.cluster.local
+    - match:
+        - gateways:
+            - istio-egressgateway
+          port: 80
+      route:
+        - destination:
+            host: ${REMOTE_SERVICE_ROUTE}
+            subset: target-subset
+          weight: 100
+  exportTo:
+    - '*'  " | oc apply -n $SM_CP_NS -f -   
+
+
 ==== encrypted
 
 * Better alternative is using link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[Service Mesh Federation]
@@ -200,110 +257,34 @@ Client certificate/key pair if the external service (other SM ingress gateway if
 
 * ServiceEntry, Gateway, VirtualService, DestinationRule to Egress Gateway
 
-
 == Option 2: To an external service on another Federation managed Service Mesh
 
 === Option 2a: directly
 - encrypted
 
-*TBD SHOWN VIA FEDERATION IMPL*
+[TBD SHOWN VIA FEDERATION IMPL]
+====
 (Federation uses a pair of Ingress/Egress gateways dedicated to access to imported services)
+====
 
 * unencrypted
 
-WARNING: Impossible by design 
+WARNING: Unencrypted traffic is not possible by design. 
 
 === Option 2b: via Egress Gateway
 
 - encrypted
 
-*TBD SHOWN VIA FEDERATION IMPL*
-ServiceMeshPeer, ExportedServiceSets, ImportedServiceSets
+[TBD SHOWN VIA FEDERATION IMPL]
+====
+`ServiceMeshPeer`, `ExportedServiceSets`, `ImportedServiceSets`
 Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
+====
 
 - unencrypted
 
+WARNING: Unencrypted traffic is not possible by design.
 
-Unencrypted traffic is not possible by design.
-
-
-
-== Create Certificates
-
-
-=== Create CA, CSR and Service Side Certificates
-
-1. Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service
-
-* These instructions are for self-signed certificates however PKI and CA based certs can & should be used in real environemtns
-
-* Update/Copy & Modify (based on -self-signed- CA org information) `scripts/certs/app-default.conf`
-
-	cd scripts/certs
-	vim app-default.conf
-
-* Create CA (self-signed)
-
-	create-ca-root-certs-keys.sh
-	
-* Create CSR, Certificate for the app (self-signed)
-
-	create-app-csr-certs-keys.sh 	  <APPLICATION-CERTIFICATE-INFO> <Certificate-Names-Prefix>
-	eg. create-app-csr-certs-keys.sh app-default.conf greeting-remote
-
-2. Create secret with certificate in `istio-system`
-
-	oc create -n istio-system secret generic greeting-remote-secret \
-	--from-file=tls.key=greeting-remote-app.key \
-	--from-file=tls.crt=greeting-remote-app.crt \
-	--from-file=ca.crt=ca-root.crt \
-	-n istio-system
-
-4. Create/Update `Route` with passthrough TLS termination and https target port (change `name`, `namespace`,`host` according to your configurations if exposing a different service)
-
-  ** *NOTE:* Route can have one of the following configurations. We select passthrough so we can present a certificate at the `istio-ingressgateway` for the specific service host
-
-  *** *passthrough:* - the TLS handshake will be terminated at the next point (service POD) which is the `istio-ingressgateway` when the `Gateway` Object is set with a `credential` name (see below)
-  *** *Edge:* - present a certificate (default of the `ingresscontroller` - self-signed)
-  *** *ReEncrypt:* will present a certificate set by you on the route itself or the self-signed, and initiate a new TLS origination from the `ingresscontroller` to the destination service / pod (ie. `istio-ingressgateway` for Service Mesh)
-
-	echo "kind: Route
-	apiVersion: route.openshift.io/v1
-	metadata:
-	  name: istio-ingressgateway
-	  namespace: istio-system
-	spec:
-	  to:
-	    kind: Service
-	    name: istio-ingressgateway
-	    weight: 100
-	  port:
-	    targetPort: https
-	  tls:
-	    termination: passthrough
-	  wildcardPolicy: None" | oc apply -n istio-system -f -
-
-5. Create/Update `Gateway` Configuration for `SIMPLE` TLS (change `name`, `credentialName`,`host` according to your configurations if exposing a different service)
-
-	echo "apiVersion: networking.istio.io/v1alpha3
-	kind: Gateway
-	metadata:
-	  name: rest-greeting-remote-gateway
-	spec:
-	  selector:
-	    istio: ingressgateway
-	  servers:
-	  - port:
-	      number: 8443
-	      name: https
-	      protocol: HTTPS
-	    tls:
-	      credentialName: greeting-remote-secret
-	      mode: SIMPLE	      
-	    hosts:
-	    - greeting.remote.com" | oc apply -n greetings-service -f -
-
-ABOVE JUST FOR TESTING AS SOON AS OK CHANGE TO MUTUAL
 
 [[anchor-1]]
 === ARCHIVE

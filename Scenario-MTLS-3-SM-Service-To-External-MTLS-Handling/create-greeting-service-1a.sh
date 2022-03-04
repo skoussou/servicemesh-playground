@@ -3,7 +3,6 @@
 SM_CP_NS=$1
 SM_TENANT_NAME=$2
 SM_MR_NS=$3
-#SM_MR_RESOURCE_NAME=$4
 REMOTE_SERVICE_ROUTE=$4 #eg. hello.remote.com
 CERTIFICATE_SECRET_NAME=$5
 CLUSTER_NAME=$6
@@ -12,8 +11,6 @@ echo '--------------------------------------------------------------------------
 echo 'ServiceMesh Namespace                      : '$SM_CP_NS
 echo 'ServiceMesh Control Plane Tenant Name      : '$SM_TENANT_NAME
 echo 'ServiceMesh Member Namespace               : '$SM_MR_NS
-#echo 'ServiceMeshMember Resource Name            : '$SM_MR_RESOURCE_NAME
-#echo 'ServiceMesh (Remote) Ingress Gateway Route : '$SM_REMOTE_ROUTE	
 echo 'Remote Cluster Name                        : '$CLUSTER_NAME
 echo 'Remote Service Route                       : '$REMOTE_SERVICE_ROUTE
 echo 'Greting Service Route Cert Secret Name     : '$CERTIFICATE_SECRET_NAME
@@ -71,11 +68,11 @@ spec:
   servers:
   - port:
       number: 8443
-      name: https
+      name: https-web
       protocol: HTTPS
     tls:
       credentialName: $CERTIFICATE_SECRET_NAME #eg. greeting-remote-secret
-      mode: SIMPLE
+      mode: MUTUAL
     hosts: 
     - $REMOTE_SERVICE_ROUTE" | oc apply -n $SM_MR_NS -f -  
 
