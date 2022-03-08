@@ -9,7 +9,9 @@ Would like to seek help regarding Service Mesh Control Plane Sizing.
 . Is there a recommended sizing for the control plane components (grafana/ kiali /prometheus)?
 
 Reference
-https://istio.io/latest/docs/ops/deployment/performance-and-scalability/
+
+* https://istio.io/latest/docs/ops/deployment/performance-and-scalability/
+* https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-performance-scalability.html#additional-latency
 
 == Perf Testing & Tuning
 
