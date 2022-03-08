@@ -55,7 +55,7 @@ Greetings (OCP-48-Cluster) Stelios
 +
 ----
 oc new-project istio-system-client <1>
-oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-client  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to client-side-tenant) <2>
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant (SMCP namespace and name)  <2>
 cd ../scripts/certs 
 # Create Client secrets <3>
 oc create -n greetings-client secret generic greeting-client-secret --from-file=greeting-client-app.key --from-file=greeting-client-app.crt --from-file=ca-root.crt <4>
