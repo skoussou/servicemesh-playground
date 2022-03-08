@@ -11,8 +11,8 @@
 == `Service Mesh` Platform Architectures
 * External storage of metrics (ES, Jaeger etc.)
 * link:./Scenario-Arch-1-ServiceMesh-Separations/README.adoc[Service Mesh Topology Architectures]
-* Sizing
-* *TODO:* link:./Scenario-Platform-Sizing/README.adoc[Performance Testing/Tuning]
+* *TODO:* link:./Scenario-Platform-Sizing/README.adoc[Sizing Control Plane & Data Plane[
+* Performance Testing/Tuning
 
 == `Service Mesh` Security
 * Authentication/Authorisation 
