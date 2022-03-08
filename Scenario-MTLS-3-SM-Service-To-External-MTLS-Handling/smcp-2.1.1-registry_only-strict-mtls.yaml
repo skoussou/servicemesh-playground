@@ -1,7 +1,7 @@
 apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
-  name: service-tenant
+  name: <TBD>
 spec:
   security:
     dataPlane:
