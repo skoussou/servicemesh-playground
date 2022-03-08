@@ -78,13 +78,25 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 
 ====
 
+* Final Service Mesh Configurations
+
+image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[Overall Configs Needed on Client Side, 200,400]   
+image::./images/7-A-GW-IN.png[Client Gateway Incoming Requests,200,400]  
+image::./images/7B-IN-VS.png[Client VirtualService Incoming Requests, 200,400]   
+image::./images/7C-OUT-SE.png[ServiceEntry for remote host registration - Outgoing Requests, 200,400]   
+image::./images/7D-OUT-DR.png[DestinationRule for MTLS client handling at Sidecar - Outgoing Requests,200,400]   
+image::./images/7E-OUT-VS.png[VirtualService for http to https routing - Outgoing Requests,200,400]   
+image::./images/7-client-side.png[ServiceMesh - Outgoing Requests,200,400]   
+image::./images/7-service-side.png[ServiceMesh -Incoming Requests,200,400]   
 
 
-* *WILL NOT IMPLEMENT* ServiceEntry and If TLS origination from application:
+==== encrypted (originating from the Application)
 
-Application configuration with:
-CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
-Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+WARNING: *WILL NOT IMPLEMENT* `ServiceEntry` and If TLS origination from application then application configuration with:
+
+* CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+* Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+
 
 ==== un-encrypted
 
