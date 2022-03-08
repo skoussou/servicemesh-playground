@@ -80,7 +80,7 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 
 * Final Service Mesh Configurations
 +
-image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[title="Overall Configs Needed on Client Side",200,400]   
+image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[title="Overall Configs Needed on Client Side",800,400]   
 +
 image::./images/7-A-GW-IN.png[title="Client Gateway Incoming Requests",200,400]  
 +
