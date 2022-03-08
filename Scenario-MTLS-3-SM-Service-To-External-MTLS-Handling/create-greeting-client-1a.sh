@@ -24,25 +24,24 @@ cd ../coded-services/quarkus-rest-client-greeting
 oc new-project $SM_MR_NS
 oc project  $SM_MR_NS
 
-mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
+#mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 
-sleep 15
+#sleep 15
 oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n  $SM_MR_NS
+# #READ first
+# this https://istio.io/latest/docs/reference/config/networking/destination-rule/#ClientTLSSettings (credentialName field is currently applicable only at gateways. Sidecars will continue to use the certificate paths.) and 
+# then this https://zufardhiyaulhaq.com/Istio-mutual-TLS-between-clusters/
+oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolumeMount": "[{"name":"greeting-client-secret", "mountPath":"/etc/certs", "readonly":true}]" }}}}}' -n  $SM_MR_NS
+oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolume": "[{"name":"greeting-client-secret", "secret":{"secretName":"greeting-client-secret"}}]" }}}}}' -n  $SM_MR_NS
 oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://${REMOTE_SERVICE_ROUTE_NAME}"  -n  $SM_MR_NS
 oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://greeting.remote.com"  -n  greetings-client-2
-echo ""
-echo "Patch dc/rest-client-greeting to resolve route hostname [$REMOTE_SERVICE_ROUTE_NAME]"
-echo "----------------------------------------------------------------------------------"
-#echo "oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"127.0.0.1"},{"hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}]}}}}'  -n  $SM_MR_NS"
-#echo "oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.1.2.3","hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}}}}'  -n  $SM_MR_NS"
-#echo "oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.1.2.3","hostnames":["greeting.remote.com"]}]}}}}'  -n greetings-client-2"
 
-#working oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"127.0.0.1","hostnames":["greeting.remote.com"]}]}}}}'  -n greetings-client-2
-echo "oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"127.0.0.1","hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}}}}'  -n $SM_MR_NS"
-oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"127.0.0.1","hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}}}}'  -n $SM_MR_NS
-            
-#oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"127.0.0.1"},{"hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}]}}}}'  -n  $SM_MR_NS
-#oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"containers":[{"name":"rest-client-greeting","hostAliases":[{"ip":"10.1.2.3"},{"hostnames":["hello2.remote.com"]}]}]}}}}'  -n  $SM_MR_NS
+# Due to mutual TLS needs a public DNS hostname is required. Therefore although valid the following is commented out
+#echo ""
+#echo "Patch dc/rest-client-greeting to resolve route hostname [$REMOTE_SERVICE_ROUTE_NAME]"
+#echo "----------------------------------------------------------------------------------"
+#echo "oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.1.2.3","hostnames":["$REMOTE_SERVICE_ROUTE_NAME"]}]}}}}'  -n $SM_MR_NS"
+#oc patch dc/rest-client-greeting -p '{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.1.2.3","hostnames":["'$REMOTE_SERVICE_ROUTE_NAME'"]}]}}}}'  -n $SM_MR_NS
   
 cd ../../Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 echo
@@ -54,6 +53,11 @@ sleep 5
 echo "oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS"
 oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS    
    
+echo 
+echo "#############################################################################"
+echo "#		INCOMING TRAFFIC SM CONFIGS                                       #"
+echo "#############################################################################"
+echo 
 echo "################# Gateway - rest-client-gateway [$SM_MR_NS] #################"
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -89,39 +93,67 @@ spec:
         host: rest-client-greeting
         port:
           number: 8080  " | oc apply -n $SM_MR_NS -f -     
-          
-echo "################# ServiceEntry - rest-greeting-remote-mesh-ext [$SM_CP_NS] #################"    
+
+echo 
+echo "#############################################################################"
+echo "#		OUGOING TRAFFIC SM CONFIGS                                        #"
+echo "#############################################################################"
+echo           
+echo "################# ServiceEntry - rest-greeting-remote-mesh-ext [$SM_MR_NS] #################"    
 echo "kind: ServiceEntry
 apiVersion: networking.istio.io/v1alpha3
 metadata:
   name: rest-greeting-remote-mesh-ext
 spec:
   hosts:
-    - ${REMOTE_SERVICE_ROUTE}
+    - ${REMOTE_SERVICE_ROUTE_NAME}
+  addresses: ~
   ports:
     - name: http
       number: 443
-      protocol: HTTP
+      protocol: HTTP2
   location: MESH_EXTERNAL
   resolution: DNS
-  endpoints:
-    - address: >-
-        ${SM_REMOTE_ROUTE_LOCATION}
-      ports:
-        http: 443
-      weight: 100" | oc apply -n $SM_CP_NS -f -            
+  exportTo:
+    - '*'
+      weight: 100" | oc apply -n $SM_MR_NS -f -        
+      
+# IMPORTANT: SNI needed as tls handkshake is done on SNI on ingresscontroller settings
           
-echo "################# DestinationRule - originate-tls-to-rest-greeting-remote-destination-rule [$SM_CP_NS] #################"    
+echo "################# DestinationRule - originate-tls-to-rest-greeting-remote-destination-rule [$SM_MR_NS] #################"    
 echo "kind: DestinationRule
 apiVersion: networking.istio.io/v1alpha3
 metadata:
   name: originate-tls-to-rest-greeting-remote
 spec:
-  host: ${REMOTE_SERVICE_ROUTE}
+  host: ${REMOTE_SERVICE_ROUTE_NAME}
   trafficPolicy:
     tls:
-      mode: SIMPLE" | oc apply -n $SM_CP_NS -f -           
-          
+      caCertificates: /etc/certs/ca-root.crt
+      clientCertificate: /etc/certs/greeting-client-app.crt
+      privateKey: /etc/certs/greeting-client-app.key    
+      sni: ${REMOTE_SERVICE_ROUTE_NAME}
+      mode: MUTUAL
+  exportTo:
+    - ." | oc apply -n $SM_MR_NS -f -           
+     
+echo "################# DestinationRule - rewrite-port-for-rest-greeting-remote [$SM_CP_NS] #################"              
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rewrite-port-for-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  hosts:
+    - ${REMOTE_SERVICE_ROUTE_NAME}
+  http:
+    - match:
+        - port: 80
+      route:
+        - destination:
+            host: ${REMOTE_SERVICE_ROUTE_NAME}
+            port:
+              number: 443" | oc apply -n $SM_MR_NS -f -           
           
 # BELOW HERE EXAMPLE 1B1          
 #echo "################# Gateway - istio-egressgateway [$SM_CP_NS] #################"    
