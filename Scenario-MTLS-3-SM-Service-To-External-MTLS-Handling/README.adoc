@@ -22,7 +22,7 @@ In this scenario a `ServiceEntry` for the remote service hostname will be requir
 +
 ----
 oc new-project istio-system-service <1>
-oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n istio-system-service  (change SMCP name in smcp-2.1.1-registry_only-strict-mtls.yaml to service-side-tenant) <2>
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-service service-side-tenant (SMCP namespace and name)  <2>
 cd ../scripts/certs 
 # Create secret for this host <3>
 oc create -n istio-system-service secret generic hello-remote-secret --from-file=tls.key=hello-remote-app.key --from-file=tls.crt=hello-remote-app.crt --from-file=ca.crt=ca-root.crt
