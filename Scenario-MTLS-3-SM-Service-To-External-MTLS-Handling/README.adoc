@@ -79,27 +79,15 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 ====
 
 * Final Service Mesh Configurations
-
-image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[title="Overall Configs Needed on Client Side",800,400]   
-
-[.float-group]
---
-[.left]
-image::./images/7-A-GW-IN.png[title="Client Gateway Incoming Requests",200,400,float="left"]  
-[.left]
-image::./images/7B-IN-VS.png[title="Client VirtualService Incoming Requests",200,400,float="left"]   
-[.left]
-image::./images/7C-OUT-SE.png[title="ServiceEntry for remote host registration - Outgoing Requests",200,400,float="left"]   
-[.left]
-image::./images/7D-OUT-DR.png[title="DestinationRule for MTLS client handling at Sidecar - Outgoing Requests",200,400,float="left"]   
-[.left]
-image::./images/7E-OUT-VS.png[title="VirtualService for http to https routing - Outgoing Requests",200,400,float="left"]   
---
-
-
-image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",200,400]   
 +
-image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",200,400]   
+image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[title="Overall Configs Needed on Client Side",400,200]   
+image::./images/7-A-GW-IN.png[title="Client Gateway Incoming Requests",400,200]]  
+image::./images/7B-IN-VS.png[title="Client VirtualService Incoming Requests",400,200]   
+image::./images/7C-OUT-SE.png[title="ServiceEntry for remote host registration - Outgoing Requests",400,200]   
+image::./images/7D-OUT-DR.png[title="DestinationRule for MTLS client handling at Sidecar - Outgoing Requests",400,200]   
+image::./images/7E-OUT-VS.png[title="VirtualService for http to https routing - Outgoing Requests",400,200]   
+image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",400,200]   
+image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",400,200]   
 
 
 ==== encrypted (originating from the Application)
