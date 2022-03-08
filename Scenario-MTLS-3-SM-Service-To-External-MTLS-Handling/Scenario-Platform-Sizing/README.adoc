@@ -1,0 +1,61 @@
+= How to Approach Sizing of the `SMCP` 
+:toc:
+
+Would like to seek help regarding Service Mesh Control Plane Sizing.
+
+== Documentation on Starting with Control Plane Sizing
+
+. Any document / guide regarding the sizing of the service mesh control plane?
+. Is there a recommended sizing for the control plane components (grafana/ kiali /prometheus)?
+
+Reference
+https://istio.io/latest/docs/ops/deployment/performance-and-scalability/
+
+== Perf Testing & Tuning
+
+. Is there a recommended CPU/RAM ratio to the number of microservices in service mesh?
+. Is there a recommended CPU/RAM ratio to the number of requests in service mesh?
+
+=== Control Plane
+*TODO* Explore the causes of CPU/RAM resources from the control plane components
+
+- istiod
+
+[NOTE]
+====
+ need to consider what happens to it when there are 1000s of
+ 
+ * configs to apply
+ * microservices to apply it to
+ * topology of datapalne
+ 
+====
+
+- ingressgateway
+
+- egressgateway
+
+- tracing stack
+
+- metric stack
+
+
+
+=== Data  Plane
+
+
+*TODO* Explore the causes of CPU/RAM resources from the control data components
+
+- istio-proxy 
+
+[NOTE]
+====
+ need to consider what happens to it when there are 1000s of
+ 
+ * requests (what prodocol type, tls/non-tls, size of request)
+ * configs applied (MEM)
+ 
+====
+
+
+=== Performance Testing Guide
