@@ -65,13 +65,14 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespac
 <1> Create *_client side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the client application
 <3> Create Certs (with same CA as service) for `rest-client-greeting` service (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-client-certificate[Create Client TLS Certificate for hosted service])
-<4> Create Secret with Certs in the _Application Namespace_  (as we use it via `DestinationRule` in the sidecar TLS origination and Not gateway) (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-ocp-secret-to-store-the-client-greeting-client-secret-certificate-in-istio-system[Create OCP secret to store the client certificate ]
+<4> Create Secret with Certs in the _Application Namespace_  (as we use it via `DestinationRule` in the sidecar TLS origination and Not gateway) (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-ocp-secret-to-store-the-client-greeting-client-secret-certificate-in-istio-system[Create OCP secret to store the client certificate )]
 <5> Create app namespace, deploy `rest-client-greeting` app, create ISTIO Configurations to be accessible and access remotely `rest-greeting-remote` <5>
 +
 
 [NOTE]
 ====
 Mixup Problems that can occur in the configuration are listed at and in the above we are following the config to avoid Double TLS)
+
 * link:https://istio.io/latest/docs/ops/configuration/traffic-management/tls-configuration/#outbound[Outbound]
 * link:https://istio.io/latest/docs/ops/common-problems/network-issues/#double-tls[Double TLS (TLS origination for a TLS request)]
 ====
