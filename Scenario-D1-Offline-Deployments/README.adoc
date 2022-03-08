@@ -1,0 +1,17 @@
+= Deploying ServiceMesh Operator and Controlplane in an Offline environment
+:toc:
+
+== Troubleshooting Problems
+* link:https://access.redhat.com/solutions/5514331[Service Mesh Jaeger and Prometheus can't start in disconnected environment]
+
+
+
+https://access.redhat.com/solutions/5566581
+
+
+https://docs.openshift.com/container-platform/4.9/operators/admin/olm-restricted-networks.html
+
+
+
+
+
