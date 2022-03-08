@@ -12,8 +12,10 @@
 [NOTE]
 ====
 In this scenario a `ServiceEntry` for the remote service hostname will be required and for _TLS origination from istio-proxy (envoy)_ a `DestinationRule` to `ServiceEntry` host with:
+
 a) `CA Certificate` for verification of the external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
 b) `Client certificate/key pair` if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
+
 ====
 
 . *Step 1:* Setup a *_Service Side_* Service Mesh (command below) and add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom `ROUTE` with TLS certificate as follows:
