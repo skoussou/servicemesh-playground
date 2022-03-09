@@ -10,6 +10,7 @@
 
 == `Service Mesh` Platform Architectures
 * External storage of metrics (ES, Jaeger etc.)
+* *TODO:* [Observability Architectures]
 * link:./Scenario-Arch-1-ServiceMesh-Separations/README.adoc[Service Mesh Topology Architectures]
 * *TODO:* link:./Scenario-Platform-Sizing/README.adoc[Sizing Control Plane & Data Plane]
 * Performance Testing/Tuning

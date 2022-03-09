@@ -1,0 +1,38 @@
+= Service Mesh Observability Stack Architectures
+:toc:
+
+Gather various deployment setups for the observability stack handling different needs
+
+= Basic Setup
+
+Using Jaeger in Service Mesh(Istio)				https://tracing.cloudnative101.dev/docs/ocp-istio-java.html#_understanding_jaeger_service_mesh_kiali
+Distributed Tracing Infrastructure with Jaeger on Kubernetes	https://medium.com/@masroor.hasan/tracing-infrastructure-with-jaeger-on-kubernetes-6800132a677
+
+= Tracing
+
+== Production Setup 
+
+* External Jaeger (agent deployment sidecar/stateful set)
+** Jaeger Client https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md
+
+Distributed Tracing with Envoy Service Mesh & Jaeger	https://hackernoon.com/distributed-tracing-with-envoy-service-mesh-jaeger-c365b6191592
+https://discuss.istio.io/t/distributing-tracing-doesnt-work-when-clients-send-traces-to-node-local-jaeger-agent-ip/9934
+env:
+- name: JAEGER_AGENT_HOST
+  valueFrom:
+    fieldRef:
+      fieldPath: status.hostIP
+
+== OCP Monitoring Stack integration
+
+* Jaeger federation?
+
+
+= Metrics
+
+== Prometheus Federation
+
+https://prometheus.io/docs/prometheus/latest/federation/
+Multilevel Prometheus setup using Remote Read https://sitaram.substack.com/p/multilevel-prometheus-setup-using?utm_source=url&s=r
+
+== OCP Monitoring Stack Integration
