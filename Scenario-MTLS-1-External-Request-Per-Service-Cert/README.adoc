@@ -547,3 +547,15 @@ For istiod itself to also request a certificate from cert-manager. To achieve th
 
 This however fails with the errors 
 
+Resources to continue:
+Understanding TLS Configuration: https://istio.io/latest/docs/ops/configuration/traffic-management/tls-configuration/
+Traffic Management Problems:	https://istio.io/latest/docs/ops/common-problems/network-issues/#gateway-mismatch
+https://istio.io/latest/docs/ops/integrations/certmanager/
+https://cert-manager.io/docs/configuration/selfsigned/
+https://cert-manager.io/docs/usage/
+https://cert-manager.io/docs/configuration/
+https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security
+https://issues.redhat.com/browse/OSSM-568
+
+
+
