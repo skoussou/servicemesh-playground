@@ -1,9 +1,7 @@
 = Turning Off mTLS Authentication completely for a Service
-:toc
+:toc:
 
-== Setup Application
-
-=== Prerequisites
+== Prerequisites
 
 * An OpenShift cluster
 * The following Setups to have an active Service Mesh Control Plane without `mtls` security for the `dataPlane`
@@ -51,7 +49,7 @@ spec:
 
 	sidecar.istio.io/statsInclusionPrefixes: 'tls_inspector,listener,cluster'
 
-=== Disable `mTLS` for all components with mTLS `PERMISSIVE`
+== Disable `mTLS` for all components with mTLS `PERMISSIVE`
 
 * By default the `ServiceMeshControlPlane` sets `mtls` to `PERMISSIVE` mode
 
@@ -170,7 +168,7 @@ oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats
 
 image::./images/no-security-applied.png[title="No MTLS Security",800,400]   
 
-=== Disable `mTLS` for all components with mTLS `STRICT`
+== Disable `mTLS` for all components with mTLS `STRICT`
 
 * Modify the `ServiceMeshControlPlane` resource to force `mtls` to `STRICT` mode
 
@@ -217,7 +215,7 @@ spec:
     
 * The `PeerAuthentication` disables `mtls` for all services in this namespace and now communications are successful and without mTLS security (see xref:anchor-1[Checking the statistics & KIALI])
 
-=== Enable `mTLS` for all components except `details`
+== Enable `mTLS` for all components except `details`
 
 * Apply the following to disable security ONLY for the `details` service
 
