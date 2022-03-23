@@ -295,4 +295,702 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 
 WARNING: Unencrypted traffic is not possible by design.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[[anchor-1]]
+=== ARCHIVE
+
+2. point to details in the bookinfo-not-mesh service
+
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: details-custom
+  namespace: bookinfo
+spec:
+  hosts:
+    - details
+  gateways:
+    - mesh
+  http:
+    - route:
+        - destination:
+            host: details.bookinfo-no-mesh.svc.cluster.local
+            subset: nomesh
+            port:
+              number: 9080
+            weight: 100" |oc apply -f -
+              
+
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: details-nomesh-control
+  namespace: bookinfo
+spec:
+  host: details
+  subsets:
+    - labels:
+        version: nomesh
+      name: nomesh" |oc apply -f -
+      
+      
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-details
+spec:
+  hosts: 
+    - details.bookinfo-no-mesh.svc.cluster.local
+  ports:
+    - name: http
+      number: 9080
+      protocol: HTTP2
+      targetPort: 9080
+  location: MESH_EXTERNAL
+  resolution: DNS
+  exportTo:
+    - istio-system-certs
+    - bookinfo" |oc apply -f -      
+    
+    
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts
+  gateways:
+    - mesh
+  http:
+    - route:
+        - destination:
+            host: discounts.travel-no-mesh.svc.cluster.local
+            port:
+              number: 8000
+            weight: 100" |oc apply -f -
+            
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-discounts
+  namespace: travel-agency  
+spec:
+  hosts: 
+    - discounts.bookinfo-no-mesh.svc.cluster.local
+  ports:
+    - name: http
+      number: 8000
+      protocol: HTTP2
+      targetPort: 8000
+  location: MESH_EXTERNAL
+  resolution: DNS
+  exportTo:
+    - istio-system
+    - travel-agency" |oc apply -f -              
+            
+            
+            
+            
+
+
+
+
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts: discounts.travel-agency.svc.cluster.local
+  subsets:
+  - name: discount-external" |oc apply -f - 
+----
+echo "kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: discounts-custom
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts.travel-agency.svc.cluster.local
+  gateways:
+    - mesh
+  http:
+    - match:
+        - uri:
+            prefix: /discounts
+      name: external-discounts
+      route:
+        - destination:
+            host: discounts.travel-no-mesh.svc.cluster.local
+            port:
+              number: 8000" |oc apply -f - 
+----
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: external-discounts
+  namespace: travel-agency
+spec:
+  hosts:
+    - discounts.travel-no-mesh.svc.cluster.local
+  addresses: ~
+  ports:
+    - name: http
+      number: 8000
+      protocol: HTTP
+      targetPort: 8000
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints: ~
+  workloadSelector: ~
+  exportTo:
+    - travel-agency
+  subjectAltNames: ~ 
   
+  
+  
+  
+  
+  
+  
+  
+  
+Solutions for 1a - Sidecar MUTUAL TLS
+
+
+
+
+
+
+
+kubectl -n client create secret generic cluster-a-client --from-file=cluster-a-client-cert.pem --from-file=cluster-a-client-key.pem --from-file=root-cert.pem
+
+
+sidecar.istio.io/userVolumeMount: '[{"name":"cluster-a-client", "mountPath":"/etc/certs/myclientcert.pem", "readonly":true}]'
+sidecar.istio.io/userVolume: '[{"name":"cluster-a-client", "secret":{"secretName":"cluster-a-client"}}]'
+
+        tls:
+          mode: MUTUAL
+          clientCertificate: /etc/cluster-a-client/cluster-a-client-cert.pem
+          privateKey: /etc/cluster-a-client/cluster-a-client-key.pem
+          caCertificates: /etc/cluster-a-client/root-cert.pem
+
+
+clientCertificate: /etc/certs/myclientcert.pem
+      privateKey: /etc/certs/client_private_key.pem
+      caCertificates: /etc/certs/rootcacerts.pem
+      
+kubectl create secret generic my-cert --from-file=cert1.crt --from-file=cert2.crt
+annotations:                                                                                       
+  sidecar.istio.io/userVolumeMount: '[{"name":"my-cert", "mountPath":"/etc/my-cert", "readonly":true}]'
+  sidecar.istio.io/userVolume: '[{"name":"my-cert", "secret":{"secretName":"my-cert"}}]'
+
+
+oc create -n greetings-client secret generic greeting-client-secret --from-file=greeting-client-app.key --from-file=greeting-client-app.crt --from-file=ca-root.crt
+annotations:                                                                                       
+  sidecar.istio.io/userVolumeMount: '[{"name":"greeting-client-secret", "mountPath":"/etc/certs", "readonly":true}]'
+  sidecar.istio.io/userVolume: '[{"name":"greeting-client-secret", "secret":{"secretName":"greeting-client-secret"}}]'      
+      
+        tls:
+          mode: MUTUAL
+          clientCertificate: /etc/certs/greeting-client-app.crt
+          privateKey: /etc/certs/greeting-client-app.key
+          caCertificates: /etc/certs/ca-root.crt       
+
+oc create -n greetings-client secret generic greeting-client-secret --from-file=key=greeting-client-app.key --from-file=cert=greeting-client-app.crt --from-file=cacert=ca-root.crt <4>
+oc create -n istio-system-service secret generic greeting-client-secret --from-file=tls.key=greeting-client-app.key --from-file=tls.crt=greeting-client-app.crt --from-file=ca.crt=ca-root.crt -n istio-system-service <4>  
+  
+  
+  
+============= WORKING TO POINT TO SE BUT 503 because I had PORT 80 t etc. etc. =============
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-client-greeting
+  namespace: greetings-client
+spec:
+  hosts:
+    - '*'
+  gateways:
+    - rest-client-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /say
+      route:
+        - destination:
+            host: rest-client-greeting
+            port:
+              number: 8080
+
+
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-clientkind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: http
+      number: 80
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 54.171.162.158
+      ports:
+        http: 80
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~
+spec:
+  host: greeting.remote.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+  exportTo:
+    - '*'
+============= CHANGES 1 (Not trying to connect but trying to see if there is ANY point using hostAliases in rest-client-greeting since ServiceEntry should allow this to be resolved??? =============
+
+remove hostAliases completely
+
+RESULT: IT DOES NOT LOOK TO HAVE ANY EFFECT IF REMOVED STILL GOING TO SE
+
+============= CHANGES 2 - Since greeting.remote.com is failing to be sent accross I will modify the SE resource =============
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: http
+      number: 80
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 54.171.162.158
+      ports:
+        http: 80
+  exportTo:
+    - '*'
+
+RESULT: HTTP/1.1 503 Service Unavailable
+
+
+a) 
+
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  ports:
+    - name: http
+      number: 443
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+      ports:
+        http: 443
+  exportTo:
+    - '*'
+
+RESULT: < HTTP/1.1 503 Service Unavailabl
+
+B)
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+      ports:
+        https: 443
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~
+
+
+C)
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: STATIC
+  endpoints:
+    - address: 54.171.162.158
+      ports:
+        https: 443
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~
+
+
+E)
+
+
+spec:
+  hosts:
+    - hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: STATIC
+  endpoints:
+    - address: 54.171.162.158
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~
+
+
+
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  host: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+  trafficPolicy:
+    tls:
+      credentialName: greeting-client-secret
+      mode: MUTUAL
+      sni: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+  exportTo:
+    - '*'
+
+
+F)
+
+echo "apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: rewrite-port-for-rest-greeting-remote
+  namespace: greetings-client  
+spec:
+  hosts:
+  - hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+  http:
+  - match:
+    - port: 80
+    route:
+    - destination:
+        host: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+        port:
+          number: 443
+  exportTo:
+    - '*'"|oc apply -f -
+    
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  host: hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+  trafficPolicy:
+    tls:
+      credentialName: greeting-client-secret
+      mode: MUTUAL
+  exportTo:
+    - '*'"|oc apply -f -
+          
+          
+          
+          
+
+========================================================================
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: STATIC
+  endpoints:
+    - address: >-
+        istio-ingressgateway-istio-system-service.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+      ports:
+        http: 80
+      weight: 100
+  exportTo:
+    - istio-system" |oc apply -f -
+    
+    
+    
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 108.128.79.33
+  exportTo:
+    - istio-system" |oc apply -f -    
+    
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 52.19.250.50
+      ports:
+        https: 443    
+  exportTo:
+    - '*'" |oc apply -f -     
+
+      
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  host: greeting.remote.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+  exportTo:
+    - '*'"|oc apply -f -    
+
+      
+      
+      
+curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client)/say/goodday-to/Stelios      
+      
+-----1 SETUP-------------------------
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  host: greeting.remote.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+------------------------------------
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: https
+      number: 443
+      protocol: HTTP2
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 108.128.79.33
+      ports:
+        https: 443
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~      
+----------------------------------------  
+curl http://localhost:8080/say/goodday-to/Stelios
+022-03-03 17:04:04,621 ERROR [org.jbo.res.res.i18n] (executor-thread-1) RESTEASY002010: Failed to execute: org.jboss.resteasy.client.exception.ResteasyWebApplicationException: Unknown error, status code 502
+	at org.jboss.resteasy.client.exception.WebApplicationExceptionWrapper.wrap(WebApplicationExceptionWrapper.java:107)
+	at org.jboss.resteasy.microprofile.client.DefaultResponseExceptionMapper.toThrowable(DefaultResponseExceptionMapper.java:21)
+	at org.jboss.resteasy.microprofile.client.ExceptionMapping$HandlerException.mapException(ExceptionMapping.java:39)
+	at org.jboss.resteasy.microprofile.client.ProxyInvocationHandler.invoke(ProxyInvocationHandler.java:154)
+	at com.sun.proxy.$Proxy28.getGreeting(Unknown Source)
+	at org.acme.rest.client.GreetingsResource.goodday(GreetingsResource.java:35)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:170)
+	at org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:130)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.internalInvokeOnTarget(ResourceMethodInvoker.java:643)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTargetAfterFilter(ResourceMethodInvoker.java:507)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.lambda$invokeOnTarget$2(ResourceMethodInvoker.java:457)
+	at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:364)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.invokeOnTarget(ResourceMethodInvoker.java:459)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:419)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:393)
+	at org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:68)
+	at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:492)
+	at org.jboss.resteasy.core.SynchronousDispatcher.lambda$invoke$4(SynchronousDispatcher.java:261)
+	at org.jboss.resteasy.core.SynchronousDispatcher.lambda$preprocess$0(SynchronousDispatcher.java:161)
+	at org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext.filter(PreMatchContainerRequestContext.java:364)
+	at org.jboss.resteasy.core.SynchronousDispatcher.preprocess(SynchronousDispatcher.java:164)
+	at org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:247)
+	at io.quarkus.resteasy.runtime.standalone.RequestDispatcher.service(RequestDispatcher.java:73)
+	at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.dispatch(VertxRequestHandler.java:138)
+	at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler.access$000(VertxRequestHandler.java:41)
+	at io.quarkus.resteasy.runtime.standalone.VertxRequestHandler$1.run(VertxRequestHandler.java:93)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2415)
+	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1452)
+	at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+	at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+	at org.jboss.threads.JBossThread.run(JBossThread.java:501)      
+[2022-03-03T17:04:04.537Z] "GET /hello/greeting/Stelios HTTP/1.1" 502 - direct_response - "-" 0 0 0 - "-" "Apache-HttpClient/4.5.13 (Java/11.0.14)" "34a5a5cc-4455-982f-8849-a4958e57199d" "greeting.remote.com" "-" - - 10.1.2.3:80 10.128.2.52:44322 - block_all
+
+
+-----2 SETUP-------------------------
+curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client)/say/goodday-to/Stelios      
+
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: originate-tls-to-rest-greeting-remote
+  namespace: greetings-client
+spec:
+  host: greeting.remote.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+  exportTo:
+    - '*'
+------------------------------------    
+kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client
+spec:
+  hosts:
+    - greeting.remote.com
+  addresses: ~
+  ports:
+    - name: http
+      number: 80
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+  endpoints:
+    - address: 54.171.162.158
+      ports:
+        http: 80
+  workloadSelector: ~
+  exportTo:
+    - '*'
+  subjectAltNames: ~
+----------------------------------------------
+Every 2.0s: curl -s -v -X GET http://istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com/say/goodday-to/Stelios                                                                                                                                  stkousso.fedora: Fri Mar  4 07:27:13 2022
+
+*   Trying 108.128.79.33:80...
+* Connected to istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com (108.128.79.33) port 80 (#0)
+> GET /say/goodday-to/Stelios HTTP/1.1
+> Host: istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com
+> User-Agent: curl/7.71.1
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 503 Service Unavailable
+< content-length: 0
+< allow:
+< content-type: text/plain
+< x-envoy-upstream-service-time: 257
+< date: Fri, 04 Mar 2022 07:27:14 GMT
+< server: istio-envoy
+< set-cookie: aab3b27253ec0b170632ad4df0c1be30=376317fa5e1917ec40e5fcd0276f2be4; path=/; HttpOnly
+<
+* Connection #0 to host istio-ingressgateway-istio-system-client.apps.cluster-10e2.10e2.sandbox1371.opentlc.com left intact
+----------------------------------------------
+    
