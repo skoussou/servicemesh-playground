@@ -167,7 +167,7 @@ oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats
 
 ** KIALI shows a similar behavior (notice no "PADLOCK" on any of the connections and on the right handside *_unknknown Principals_* on the from/to:
 
-image::./images/no-security-applied.png[title="No MTLS Security",800,400]   
+image::./images/no-security-applied.png[title="No MTLS Security",1000,500]   
 
 == Disable `mTLS` for all components with mTLS `STRICT`
 
