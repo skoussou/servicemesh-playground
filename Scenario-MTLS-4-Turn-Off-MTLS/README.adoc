@@ -60,7 +60,7 @@ spec:
 
 * This means whilst you are hitting the URL 
 
-	curl -s "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-certs)/productpage" | grep -o "<title>.*</title>"
+	curl -s "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/productpage" | grep -o "<title>.*</title>"
 
 * TLS handshakes take place and registered in the 
 
@@ -70,7 +70,7 @@ spec:
 	oc rsh -c istio-proxy pod/reviews-v2-86c76b84c5-678gr curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
 	oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
 
-* Apply the following DRs
+* Apply the following `DestinationRule` resources
 
 ---- 
 echo "apiVersion: networking.istio.io/v1beta1
