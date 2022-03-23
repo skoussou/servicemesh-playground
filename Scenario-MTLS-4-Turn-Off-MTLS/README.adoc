@@ -250,8 +250,7 @@ image::./images/all-but-details-with-mtls.png[title="No MTLS for details service
 
 [NOTE]
 ====
-Changing the `ServiceMeshControlPlane` config to `PERMISSIVE` mTLS would not require the above defined `PeerAuthentication` just the `DestinationRule` to `DISABLE` mtls for the clients connecting to `details`. 
-Without it the following error would show up
+Changing the `ServiceMeshControlPlane` config to `PERMISSIVE` mTLS would not require the above defined `PeerAuthentication` just the `DestinationRule` to `DISABLE` mtls for the clients connecting to `details`. Without it the following error would show up
 
 ====    
 
