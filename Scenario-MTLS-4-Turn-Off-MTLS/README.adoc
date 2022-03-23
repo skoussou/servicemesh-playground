@@ -179,7 +179,7 @@ image::./images/no-security-applied.png[title="No MTLS Security",1000,500]
       automtls: true
       mtls: true
       
-oc get peerauthentication -n istio-system-service      
+oc get peerauthentication -n istio-system  
 NAME                            MODE         AGE
 default                         STRICT       5d18h
 ----
@@ -187,8 +187,8 @@ default                         STRICT       5d18h
 * Now any request to the productpage will fail
 
 ----
-$ curl -v "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-service)/productpage" | grep -o "<title>.*</title>"
-> Host: istio-ingressgateway-istio-system-service.apps.cluster-e8e9.e8e9.sandbox866.opentlc.com
+$ curl -v "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/productpage" | grep -o "<title>.*</title>"
+> Host: istio-ingressgateway-istio-system.apps.cluster-e8e9.e8e9.sandbox866.opentlc.com
 > User-Agent: curl/7.71.1
 > Accept: */*
 > 
@@ -247,4 +247,12 @@ spec:
 image::./images/all-but-details-with-mtls.png[title="No MTLS for details service",1000,500]    
 
 
-    
+
+[NOTE]
+====
+Changing the `ServiceMeshControlPlane` config to `PERMISSIVE` mTLS would not require the above defined `PeerAuthentication` just the `DestinationRule` to `DISABLE` mtls for the clients connecting to `details`. 
+Without it the following error would show up
+
+====    
+
+image::./images/error-without-peerauthentication-disable.png[title="Error for STRICT MTLS when no PeerAuthentication DISABLE is defined",1000,500]    
