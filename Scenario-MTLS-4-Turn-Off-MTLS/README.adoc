@@ -9,7 +9,8 @@
 ----
 oc new-project istio-system <1>
 ./scripts/add-operators-subscriptions-sm-2.1.1.sh <2>
-echo "apiVersion: maistra.io/v2
+
+echo "apiVersion: maistra.io/v2 <3>
 kind: ServiceMeshControlPlane
 metadata:
   name: basic
