@@ -169,7 +169,7 @@ oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats
 
 image::./images/no-security-applied.png[title="No MTLS Security",1000,500]   
 
-== Disable `mTLS` for all components with mTLS `STRICT`
+== Enable `mTLS` for all components with mTLS `STRICT`
 
 * Modify the `ServiceMeshControlPlane` resource to force `mtls` to `STRICT` mode
 
@@ -241,10 +241,10 @@ spec:
     mode: DISABLE" |oc apply -n bookinfo -f -
 ----
 
-* Testing should show the following in KIALI whilst you can also xref:anchor-1[check the `istio-proxy` handshake stats]
+* Testing should show the following in KIALI (*padlock* in all connections but `details` and Principal has content of the certs used on the from/to now) whilst you can also xref:anchor-1[check the `istio-proxy` handshake stats]
 
 
-image::./images/all-but-details-with-mtls.png[title="No MTLS for details service",800,400]   
+image::./images/all-but-details-with-mtls.png[title="No MTLS for details service",1000,500]    
 
 
     
