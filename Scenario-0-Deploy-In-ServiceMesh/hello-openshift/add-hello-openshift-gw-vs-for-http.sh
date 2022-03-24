@@ -22,7 +22,7 @@ spec:
       name: hello-openshift
       protocol: HTTP
     hosts:
-    - hello.openshift.com" | oc apply -n $NAMESPACE -f -    
+    - '*'" | oc apply -n $NAMESPACE -f -    
 
 
 
@@ -34,15 +34,14 @@ metadata:
 spec:
   gateways:
   - hello-openshift-gateway
-  - mesh
   hosts:
-  - hello.openshift.com
+  - '*'
   http:
-  - match:
-    - uri:
-	exact: /
-    route:
-    - destination:
-	host: hello-openshift
-	port:
-	  number: 8080" | oc apply -n $NAMESPACE -f -     
+    - match:
+        - uri:
+            exact: /
+      route:
+        - destination:
+            host: hello-openshift
+            port:
+              number: 8080" | oc apply -n $NAMESPACE -f -     
