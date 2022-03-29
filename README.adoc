@@ -24,7 +24,7 @@
 * *NEW* link:./Scenario-MTLS-4-Turn-Off-MTLS/README.adoc[How to exclude a single Service from mTLS handshakes]
 
 == `Service Mesh` Deployment Scenarios
-* *TODO:* link:./Scenario-D1-Offline-Deployments/README.adoc
+* *TODO:* link:./Scenario-D1-Offline-Deployments/README.adoc[Disconnected Environment Deployments]
 
 
 == `Service Mesh` DAY-2 Operation Scenarios

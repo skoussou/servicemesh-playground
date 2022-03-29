@@ -1,26 +1,97 @@
 = Scenarios for Observability Setups
 :toc:
 
+
+Describes different Tracing and Metrics Setups for the Service Mesh
+
 == TRACING
 
-=== (AS-IS STACK) Ways to Configure & Use
+=== (Default STACK) - Non Production Use
 
-image::./images/SM-TRACE-Arch-Options.png[400,800]   
-SM-TRACE-Arch-Options.png
+- setup
+- sizing
+- placement
+- usage
 
-=== (AS-IS STACK) How to Use
+=== (Default STACK) - Production Use
 
-=== Enhance the Stack
+[NOTE]
+====
+There can be more options than those presented
+====
 
 
-== METRICS
+* Resources
+** link:https://docs.openshift.com/container-platform/4.8/service_mesh/v2x/ossm-reference-jaeger.html#jager-deployment-best-practices_jaeger-config-reference[Jaeger Deployment Best Practices]
+** link:https://docs.openshift.com/container-platform/4.8/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Jaeger Production Setup]
+** link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-reference-jaeger.html#ossm-specifying-external-jaeger_jaeger-config-reference[Specifying Jaeger configuration in a Jaeger custom resource]
+** link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core for Workload ENV Properties]
 
-=== (AS-IS STACK) Ways to Configure & Use Metrics
 
-=== How/Where to add Application Metrics
+==== DaemonSet Jaeger Agent
 
-. App Concern
+* setup
+** Jaeger
+*** Consider and apply link:https://www.jaegertracing.io/docs/1.32/operator/#openshift[pre-requisites for Jaeger Agent as DaemonSet on Openshift]
+*** Jaeger Resource
 
-. Architecture Concern
-* Local Metrics
-* OCP Monitoring Stack Metrics (Federation of SM & APP Metrics)
+	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-daemonset.yaml
+
+** Service Mesh SMCP with external Jaeger Deployment
+
+	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1-external-jaeger-resource.yaml
+
+
+** Deploy Application link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[opentracing-hello] with opentracing configuration
+*** `istio-proxy` sidecar default configuration (points *_DIRECT_* to the collector and not the agent)
+
+----
+      meshConfig:
+        defaultConfig:
+          tracing:
+            zipkin:
+              address: 'custom-prod-collector.istio-system.svc:9411'
+----              
+
+* sizing (*TBD*) for production ready
+* placement (*TBD*)
+* usage (*TBD*)
+
+
+
+==== Jaeger agent as a sidecar
+
+[NOTE]
+====
+Jaeger agent as a daemonset is not supported for multitenant installations or OpenShift Dedicated. Jaeger agent as a sidecar is the only supported configuration for these use cases.
+====
+
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true" # <1>
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: acme/myapp:myversion
+----        
+
+=== Custom Stack
+
+- setup (re-direction to other Jaeger agent)
+- sizing
+- placement
+- usage
+
+
