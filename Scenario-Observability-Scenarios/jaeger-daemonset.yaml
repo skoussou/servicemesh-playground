@@ -1,0 +1,31 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: custom-prod-jaeger
+  namespace: istio-system
+spec:
+  agent:
+    strategy: DaemonSet  
+    serviceAccount: jaeger-agent-daemonset
+    options:
+      log-level: debug       
+  strategy: production
+  collector:
+    autoscale: true
+    minReplicas: 2
+    maxReplicas: 3
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      nodeCount: 1
+      resources: 
+        requests:
+          cpu: 200m
+          memory: 2Gi
+        limits:
+          memory: 2Gi
+      redundancyPolicy: ZeroRedundancy   
