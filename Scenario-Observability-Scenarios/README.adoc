@@ -30,32 +30,32 @@ There can be more options than those presented
 
 ==== DaemonSet Jaeger Agent
 
-* setup
-** Jaeger
-*** Consider and apply link:https://www.jaegertracing.io/docs/1.32/operator/#openshift[pre-requisites for Jaeger Agent as DaemonSet on Openshift]
-*** Jaeger Resource
+1. setup
+* Jaeger
+** Consider and apply link:https://www.jaegertracing.io/docs/1.32/operator/#openshift[pre-requisites for Jaeger Agent as DaemonSet on Openshift]
+** Jaeger Resource
 
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-daemonset.yaml
 
-** Service Mesh SMCP with external Jaeger Deployment
+* Service Mesh SMCP with external Jaeger Deployment
 
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1-external-jaeger-resource.yaml
 
 
-** Deploy Application link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[opentracing-hello] with opentracing configuration
-*** `istio-proxy` sidecar default configuration (points *_DIRECT_* to the collector and not the agent)
+* Deploy Application link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[opentracing-hello] with opentracing configuration
+** `istio-proxy` sidecar default configuration (points *_DIRECT_* to the collector and not the agent)
++
 
-----
       meshConfig:
         defaultConfig:
           tracing:
             zipkin:
               address: 'custom-prod-collector.istio-system.svc:9411'
-----              
 
-* sizing (*TBD*) for production ready
-* placement (*TBD*)
-* usage (*TBD*)
+
+2. sizing (*TBD*) for production ready
+3. placement (*TBD*)
+4. usage (*TBD*)
 
 
 
@@ -93,5 +93,7 @@ spec:
 - sizing
 - placement
 - usage
+
+== METRICS
 
 
