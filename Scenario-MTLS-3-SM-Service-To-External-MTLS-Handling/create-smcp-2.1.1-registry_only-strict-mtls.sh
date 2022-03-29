@@ -9,7 +9,7 @@ echo 'ServiceMesh Control Plane Tenant Name      : '$SM_TENANT_NAME
 echo '---------------------------------------------------------------------------'
 
 echo "############# Creating SM Tenant [$SM_TENANT_NAME] in Namespace [$SM_CP_NS ] #############"
-echo"apiVersion: maistra.io/v2
+echo "apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: $SM_TENANT_NAME
@@ -52,7 +52,7 @@ spec:
   telemetry:
     type: Istiod"
     
-echo"apiVersion: maistra.io/v2
+echo "apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: $SM_TENANT_NAME
