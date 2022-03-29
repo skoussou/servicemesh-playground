@@ -30,9 +30,9 @@ oc set env dc/rest-greeting-remote GREETING_LOCATION=$CLUSTER_NAME -n  $SM_MR_NS
 
 cd ../../Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 echo
-echo "################# SMR [$SM_MR_RESOURCE_NAME] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
-echo "sh  ./create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
-sh create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
+echo "################# SMR [$SM_MR_NS] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
+echo "sh  ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
+sh ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
 
 echo
 echo "oc rollout latest dc/rest-greeting-remote  -n  $SM_MR_NS"

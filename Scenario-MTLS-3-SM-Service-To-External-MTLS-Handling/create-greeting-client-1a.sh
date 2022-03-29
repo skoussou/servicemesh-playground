@@ -24,13 +24,14 @@ cd ../coded-services/quarkus-rest-client-greeting
 oc new-project $SM_MR_NS
 oc project  $SM_MR_NS
 
-#mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
+mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 
 #sleep 15
 oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n  $SM_MR_NS
 # #READ first
 # this https://istio.io/latest/docs/reference/config/networking/destination-rule/#ClientTLSSettings (credentialName field is currently applicable only at gateways. Sidecars will continue to use the certificate paths.) and 
 # then this https://zufardhiyaulhaq.com/Istio-mutual-TLS-between-clusters/
+# https://support.f5.com/csp/article/K29450727
 oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolumeMount": "[{"name":"greeting-client-secret", "mountPath":"/etc/certs", "readonly":true}]" }}}}}' -n  $SM_MR_NS
 oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolume": "[{"name":"greeting-client-secret", "secret":{"secretName":"greeting-client-secret"}}]" }}}}}' -n  $SM_MR_NS
 oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://${REMOTE_SERVICE_ROUTE_NAME}"  -n  $SM_MR_NS
@@ -45,9 +46,9 @@ oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://greeting.remo
   
 cd ../../Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 echo
-echo "################# SMR [$SM_MR_RESOURCE_NAME] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
-echo "sh  ./create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
-sh create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
+echo "################# SMR [$SM_MR_NS] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
+echo "sh  ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
+sh ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
 
 sleep 5
 echo "oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS"
