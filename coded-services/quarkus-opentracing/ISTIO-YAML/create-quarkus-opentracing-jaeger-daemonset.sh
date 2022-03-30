@@ -31,7 +31,7 @@ oc patch dc/hello-traced-quarkus-service --type=json --patch '
     "path": "/spec/template/spec/containers/0/env",
     "value": [
         {
-            "name": "hello-traced-quarkus-service",
+            "name": "JAEGER_AGENT_HOST",
             "valueFrom": {
                 "fieldRef": {
                     "apiVersion": "v1",
