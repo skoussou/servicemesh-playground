@@ -6,18 +6,18 @@ Describes different Tracing and Metrics Setups for the Service Mesh
 
 == TRACING
 
-=== (Default STACK) - Non Production Use
+=== (Default STACK) - Non Production Setup
 
 - setup
 - sizing
 - placement
 - usage
 
-=== (Default STACK) - Production Use
+=== (Default STACK) - Production Setup
 
 [NOTE]
 ====
-There can be more options than those presented
+There can be more configurations than those presented.
 ====
 
 
@@ -29,6 +29,12 @@ There can be more options than those presented
 
 
 ==== DaemonSet Jaeger Agent
+
+[NOTE]
+====
+- Jaeger agent as a daemonset is not supported for multitenant installations or OpenShift Dedicated. Jaeger agent as a sidecar is the only supported configuration for these use cases.
+- Warning: There can only ever be a single DaemonSet in a cluster node therefore if Service Mesh multi-tenancy is required this cannot be the option selesected as only 1 DaemonSet will be available.
+====
 
 1. setup
 * Jaeger
@@ -88,12 +94,5 @@ spec:
 ----        
 
 === Custom Stack
-
-- setup (re-direction to other Jaeger agent)
-- sizing
-- placement
-- usage
-
-== METRICS
 
 
