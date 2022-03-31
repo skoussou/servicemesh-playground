@@ -170,7 +170,7 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 ** Go to Jaeger UI and look for traces on operation hello-traced-quarkus-service.<YOURNAMESPACE>.svc.cluster.loca;/chain
 
 	http://$(oc get route custom-prod-jaeger -o jsonpath='{.spec.host}' -n istio-system)
-
++
 2. sizing (*TBD*) for production ready
 3. placement (*TBD*)
 4. sampling configuration
