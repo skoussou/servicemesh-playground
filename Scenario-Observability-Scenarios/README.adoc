@@ -157,7 +157,8 @@ oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/ma
 
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1.1-external-jaeger-production-resource.yaml  -n istio-system-tracing
 
-* Deploy Application with `Deployment` from quay.io
+* Deploy Application with `Deployment` resource from quay.io 
+** Create and push image to quay.io (account is required) link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#create-container-image-and-push-to-quayio[following the instructions here]
 +
 ----
 oc new-project test-jaeger-deployment-tracing
@@ -186,4 +187,12 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 
 == METRICS
 
+=== (Default STACK) Ways to Configure & Use Metrics
 
+=== How/Where to add Application Metrics
+
+* Application Concerns
+* 
+* Architecture Concern
+** Local Metrics
+** OCP Monitoring Stack Metrics (Federation of SM & APP Metrics)
