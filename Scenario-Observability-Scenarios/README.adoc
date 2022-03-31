@@ -164,7 +164,7 @@ oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/ma
 oc new-project test-jaeger-deployment-tracing
 oc project  test-jaeger-deployment-tracing
 ../../scripts/create-membership.sh <SMCP_NAMESPACE> <SM_TENANT_NAME> <APPLICATION_NAMESPACE> (eg. create-membership.sh istio-system-tracing istio-production test-jaeger-deployment-tracing)
-oc apply https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/ISTIO-YAML/opentracing-with-jaeger-agent-sidecar-deployment.yaml -n test-jaeger-deployment-tracing
+oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/ISTIO-YAML/opentracing-with-jaeger-agent-sidecar-deployment.yaml -n test-jaeger-deployment-tracing
 curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tracing)/chain
 ----
 +
