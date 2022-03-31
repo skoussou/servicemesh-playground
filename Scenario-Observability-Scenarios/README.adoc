@@ -133,7 +133,7 @@ The above currently is *FAILING* due to the following
 
 **** The Jaeger collector does not have an istio-proxy sidecar since it is not managed by SMCP but it is in the same namespace 
 
-image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads in Istio Namespace",400,800]   
+image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads in Istio Namespace",600,200]   
 
 
 
