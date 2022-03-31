@@ -33,7 +33,7 @@ There can be more configurations than those presented.
 [NOTE]
 ====
 - Jaeger agent as a `DaemonSet` is not supported for multitenant installations or OpenShift Dedicated. Jaeger agent as a sidecar is the only supported configuration for these use cases.
-- *Warning:* There can only ever be a single `DaemonSet` in a cluster node therefore if Service Mesh multi-tenancy is required this cannot be the option selesected as only 1 DaemonSet will be available.
+- *Warning:* There can only ever be a single `DaemonSet` in a cluster node therefore if Service Mesh multi-tenancy is required this cannot be the option selected as only 1 `DaemonSet` will be available.
 ====
 
 1. Setup
