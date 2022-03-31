@@ -134,9 +134,7 @@ The above currently is *FAILING* due to the following
 **** The Jaeger collector does not have an istio-proxy sidecar since it is not managed by SMCP but it is in the same namespace 
 +
 image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads in Istio Namespace",1200,100]   
-
-
-
++
 3. placement (*TBD*)
 4. sampling configuration
 5. usage (*TBD*)
@@ -158,7 +156,7 @@ oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/ma
 
 * Deploy Application with `Deployment` from quay.io
 
----
+----
 oc new-project test-jaeger-deployment-tracing
 oc project  test-jaeger-deployment-tracing
 ../../scripts/create-membership.sh <SMCP_NAMESPACE> <SM_TENANT_NAME> <APPLICATION_NAMESPACE> (eg. create-membership.sh istio-system-tracing istio-production test-jaeger-deployment-tracing)
@@ -170,7 +168,7 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 ** Go to Jaeger UI and look for traces on operation hello-traced-quarkus-service.<YOURNAMESPACE>.svc.cluster.loca;/chain
 
 	http://$(oc get route custom-prod-jaeger -o jsonpath='{.spec.host}' -n istio-system)
-+
+
 2. sizing (*TBD*) for production ready
 3. placement (*TBD*)
 4. sampling configuration
