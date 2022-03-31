@@ -187,12 +187,4 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 
 == METRICS
 
-=== (Default STACK) Ways to Configure & Use Metrics
 
-=== How/Where to add Application Metrics
-
-* Application Concerns
-* 
-* Architecture Concern
-** Local Metrics
-** OCP Monitoring Stack Metrics (Federation of SM & APP Metrics)
