@@ -164,7 +164,7 @@ oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/ma
 oc new-project test-jaeger-deployment-tracing
 oc project  test-jaeger-deployment-tracing
 ../../scripts/create-membership.sh <SMCP_NAMESPACE> <SM_TENANT_NAME> <APPLICATION_NAMESPACE> (eg. create-membership.sh istio-system-tracing istio-production test-jaeger-deployment-tracing)
-oc apply https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/ISTIO-YAML/opentracing-with-jaeger-agent-sidecar-deployment.yaml
+oc apply https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/ISTIO-YAML/opentracing-with-jaeger-agent-sidecar-deployment.yaml -n test-jaeger-deployment-tracing
 curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tracing)/chain
 ----
 +
@@ -187,3 +187,12 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 
 == METRICS
 
+=== (Default STACK) Ways to Configure & Use Metrics
+
+=== How/Where to add Application Metrics
+
+* Application Concerns
+* 
+* Architecture Concern
+** Local Metrics
+** OCP Monitoring Stack Metrics (Federation of SM & APP Metrics)
