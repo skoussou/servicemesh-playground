@@ -92,7 +92,7 @@ spec:
 
 echo       
 echo "################# TESTING [http://${SM_REMOTE_ROUTE}/chain]  #################"                    
-echo "curl -v http://${SM_REMOTE_ROUTE}/chain"
+echo "watch curl -v http://${SM_REMOTE_ROUTE}/chain"
 sleep 10
-curl -v http://${SM_REMOTE_ROUTE}/chain
+watch curl -v http://${SM_REMOTE_ROUTE}/chain
 

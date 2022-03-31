@@ -1,0 +1,34 @@
+apiVersion: maistra.io/v2
+kind: ServiceMeshControlPlane
+metadata:
+  name: istio-production
+  namespace: istio-system-tracing
+spec:
+  addons:
+    grafana:
+      enabled: true
+    jaeger:
+      install:
+        ingress:
+          enabled: true
+        storage:
+          type: Elasticsearch
+      name: jaeger-production
+    kiali:
+      enabled: true
+    prometheus:
+      enabled: true
+  policy:
+    type: Istiod
+  profiles:
+    - default
+  proxy:
+    accessLogging:
+      file:
+        name: /dev/stdout
+  telemetry:
+    type: Istiod
+  tracing:
+    sampling: 10000
+    type: Jaeger
+  version: v2.1
