@@ -132,8 +132,8 @@ The above currently is *FAILING* due to the following
 	[2022-03-30T16:06:41.315Z] "POST /jaeger.api_v2.CollectorService/PostSpans HTTP/2" 200 UC upstream_reset_before_response_started{connection_termination} - "-" 1376 0 2 - "-" "grpc-go/1.43.0" "1d1209d2-a141-9331-89f2-77d65ac8c36b" "jaeger-production-collector-headless.istio-system-tracing:14250" "10.128.2.28:14250" outbound|14250||jaeger-production-collector-headless.istio-system-tracing.svc.cluster.local 10.131.0.57:51460 10.128.2.28:14250 10.131.0.57:37194 - default
 
 **** The Jaeger collector does not have an istio-proxy sidecar since it is not managed by SMCP but it is in the same namespace 
-
-image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads in Istio Namespace",800,100]   
++
+image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads in Istio Namespace",800,200]   
 
 
 
