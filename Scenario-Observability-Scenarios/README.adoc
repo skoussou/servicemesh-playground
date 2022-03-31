@@ -38,7 +38,7 @@ There can be more configurations than those presented.
 
 1. Setup
 * Jaeger
-** Consider and apply link:https://www.jaegertracing.io/docs/1.32/operator/#openshift[pre-requisites for Jaeger Agent as DaemonSet on Openshift]
+** Consider and apply link:https://www.jaegertracing.io/docs/1.32/operator/#openshift[pre-requisites for Jaeger Agent as DaemonSet on Openshift] (`DaemonSet` setup will not work without these in OpenShift)
 ** Jaeger Resource
 
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-daemonset.yaml
