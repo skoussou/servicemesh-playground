@@ -160,10 +160,19 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 	./create-quarkus-opentracing-jaeger-daemonset.sh <SM_NAMESPACE <SM Tenant Name> <APPLICATION_NAMESPACE> <INGRESS GATEWAY ROUTE>
 	eg. ./create-quarkus-opentracing-jaeger-daemonset.sh istio-system basic test-hello istio-ingressgateway-istio-system.apps.cluster-6g6f4.6g6f4.sandbox960.opentlc.com
 
-=== Opentracing with Jaeger DaemonSet Sidcar
+=== Opentracing with Jaeger DaemonSet Sidecar
 	
 	cd coded-services/quarkus-opentracing/ISTIO-YAML
 	./create-quarkus-opentracing-jaeger-sidecar.sh <SM_NAMESPACE <SM Tenant Name> <APPLICATION_NAMESPACE> <INGRESS GATEWAY ROUTE>	
-	eg. ./create-quarkus-opentracing-jaeger-sidecar.sh istio-system basic test-hello istio-ingressgateway-istio-system.apps.cluster-6g6f4.6g6f4.sandbox960.opentlc.com	
+	eg. ./create-quarkus-opentracing-jaeger-sidecar.sh istio-system basic test-hello istio-ingressgateway-istio-system.apps.cluster-6g6f4.6g6f4.sandbox960.opentlc.com
+	
+=== Create Container Image and push to quay.io
+
+	cd coded-services/quarkus-opentracing/
+	./create-quarkus-opentracing-docker-image.sh <quay.io username>
+
+
+
+
 
 	
