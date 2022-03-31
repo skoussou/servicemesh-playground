@@ -79,17 +79,19 @@ The Jaeger Operator does not inject automatically the `jaeger-agent` sidecar to 
 1. Setup
 * Jaeger
 ** Create `istio-system-tracing` namespace and deploy `Jaeger Resource`
++
 ----
 oc new-project istio-system-tracing
 oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-production-elastic.yaml -n istio-system-tracing	
 ----
-
++
 * Service Mesh SMCP with external Jaeger Deployment
-
++
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1.1-external-jaeger-production-resource.yaml  -n istio-system-tracing
-
++
 * Deploy Application link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[opentracing-hello] with opentracing configuration
 ** Add manually `jaeger-agent` to the `DeploymentConfig`
++
 ----
         - name: jaeger-agent
           image: 'registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.30.0-2'
@@ -113,9 +115,9 @@ oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/ma
               containerPort: 14271
               protocol: TCP
 ----              
++
 ** `istio-proxy` sidecar default configuration (points *_DIRECT_* to the collector and not the agent)
-
-
++
 [NOTE]
 ====
 The above currently is *FAILING* due to the following
@@ -145,18 +147,18 @@ image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads i
 1. Setup
 * Jaeger
 ** Create `istio-system-tracing` namespace and deploy `Jaeger Resource`
-
++
 ----
 oc new-project istio-system-tracing
 oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-production-elastic.yaml -n istio-system-tracing	
 ----
-
++
 * Service Mesh SMCP with external Jaeger Deployment
 
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1.1-external-jaeger-production-resource.yaml  -n istio-system-tracing
 
 * Deploy Application with `Deployment` from quay.io
-
++
 ----
 oc new-project test-jaeger-deployment-tracing
 oc project  test-jaeger-deployment-tracing
@@ -164,12 +166,11 @@ oc project  test-jaeger-deployment-tracing
 oc apply https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/ISTIO-YAML/opentracing-with-jaeger-agent-sidecar-deployment.yaml
 curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-tracing)/chain
 ----
-
-
++
 ** Go to Jaeger UI and look for traces on operation hello-traced-quarkus-service.<YOURNAMESPACE>.svc.cluster.loca;/chain
-
++
 	http://$(oc get route custom-prod-jaeger -o jsonpath='{.spec.host}' -n istio-system)
-
++
 2. sizing (*TBD*) for production ready
 3. placement (*TBD*)
 4. sampling configuration
