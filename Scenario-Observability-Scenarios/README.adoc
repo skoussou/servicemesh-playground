@@ -145,6 +145,7 @@ image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads i
 1. Setup
 * Jaeger
 ** Create `istio-system-tracing` namespace and deploy `Jaeger Resource`
+
 ----
 oc new-project istio-system-tracing
 oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/jaeger-production-elastic.yaml -n istio-system-tracing	
