@@ -25,7 +25,7 @@
 
 == `Envoy` Modifications & Capabilities
 
-* link:./Envoy/istio-proxy-configs[Configure] 'istio-proxy' 
+* link:./Envoy/istio-proxy-configs[Configure] `istio-proxy` 
 
 == `Service Mesh` Deployment Scenarios
 * *TODO:* link:./Scenario-D1-Offline-Deployments/README.adoc[Disconnected Environment Deployments]
