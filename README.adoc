@@ -23,6 +23,10 @@
 * *NEW* link:./Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/README.adoc[Securing ServiceMesh egress traffic to external services with TLS]
 * *NEW* link:./Scenario-MTLS-4-Turn-Off-MTLS/README.adoc[How to exclude a single Service from mTLS handshakes]
 
+== `Envoy` Modifications & Capabilities
+
+* link:./Envoy/istio-proxy-configs[Configure] 'istio-proxy' 
+
 == `Service Mesh` Deployment Scenarios
 * *TODO:* link:./Scenario-D1-Offline-Deployments/README.adoc[Disconnected Environment Deployments]
 

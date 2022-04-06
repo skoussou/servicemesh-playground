@@ -1,0 +1,38 @@
+= How to Configure the `istio-proxy`
+:toc:
+
+# Configure via annotation link:https://istio.io/latest/docs/reference/config/annotations/[proxy.istio.io/config] in a `Deployment`
+
+* link:https://istio.io/latest/docs/reference/config/annotations/[proxy.istio.io/config] Overrides for the proxy configuration for this specific proxy. Available options can be found at https://istio.io/docs/reference/config/istio.mesh.v1alpha1/#ProxyConfig
+
+----
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: ""
+        proxy.istio.io/config: |
+          tracing: <1>
+            zipkin: <2>
+              address: zipkin.istio-system:9411 <3>
+            sampling: 10 <4>
+            custom_tags:
+              http.header.portal:
+                header:
+                  name: portal
+              http.header.device:
+                header:
+                  name: device
+              http.header.user:
+                header:
+                  name: user
+              http.header.travel:
+                header:
+                  name: travel
+----
+
+<1> Modify `istio-proxy` tracing configuration (see: link:https://istio.io/latest/docs/reference/config/istio.mesh.v1alpha1/#Tracing[Tracing] for configuration options
+<2> Utilize `zipkin` client
+<3> link:https://istio.io/latest/docs/reference/config/istio.mesh.v1alpha1/#Tracing-Zipkin[Address configuration]
+<4> Tracing Samples (10%)
+
+# Configure via `ServiceMeshControlPlane`
