@@ -1,7 +1,9 @@
 = How to Configure the `istio-proxy`
 :toc:
 
-# Configure via annotation link:https://istio.io/latest/docs/reference/config/annotations/[proxy.istio.io/config] in a `Deployment`
+= Configure via annotations
+
+== link:https://istio.io/latest/docs/reference/config/annotations/[proxy.istio.io/config] in a `Deployment`
 
 * link:https://istio.io/latest/docs/reference/config/annotations/[proxy.istio.io/config] Overrides for the proxy configuration for this specific proxy. Available options can be found at https://istio.io/docs/reference/config/istio.mesh.v1alpha1/#ProxyConfig
 
@@ -34,5 +36,22 @@
 <2> Utilize `zipkin` client
 <3> link:https://istio.io/latest/docs/reference/config/istio.mesh.v1alpha1/#Tracing-Zipkin[Address configuration]
 <4> Tracing Samples (10%)
+
+== Annotations for Envoy Resource CPU/Limits
+
+See link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html-single/service_mesh#ossm-migrating-differences-annotation_ossm-upgrade[Annotation Changes in 2.x upgrade]
+
+*   `sidecar.istio.io/proxyCPULimit` (replacing `sidecar.maistra.io/proxyCPULimit`) 
+*   `sidecar.istio.io/proxyMemoryLimit` (replacing ``sidecar.maistra.io/proxyMemoryLimit`)
+
+== Annotations on address/ports
+
+See link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html-single/service_mesh#ossm-migrating-differences-annotation_ossm-upgrade[Annotation Changes in 2.x upgrade]
+
+*   `sidecar.istio.io/discoveryAddress` (*_is no longer supported_*) 
+* Default 'discovery address' has moved from `pilot.<control_plane_namespace>.svc:15010` (or port `15011`, if `mtls` is enabled) to `istiod-<smcp_name>.<control_plane_namespace>.svc:15012`.
+* The 'health status port' is no longer configurable and is hard-coded to `15021`. (ie. custom status port, for example, `status.sidecar.istio.io/port`, you must remove the override before moving the workload to a v2.0 control plane. Readiness checks can still be disabled by setting the status port to 0.)
+
+
 
 # Configure via `ServiceMeshControlPlane`
