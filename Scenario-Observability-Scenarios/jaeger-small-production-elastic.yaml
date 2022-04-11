@@ -1,15 +1,10 @@
 apiVersion: jaegertracing.io/v1
 kind: Jaeger
 metadata:
-  name: jaeger-production
+  name: jaeger-small-production
   namespace: istio-system-tracing
 spec:
   strategy: production
-  sampling:
-    options:
-      default_strategy:
-        type: probabilistic
-        param: 0.5  
   storage:
     type: elasticsearch
     esIndexCleaner:
@@ -17,13 +12,13 @@ spec:
       numberOfDays: 7                               // number of days to wait before deleting a record
       schedule: "55 23 * * *"                       // cron expression for it to run    
     elasticsearch:
-      nodeCount: 3
+      nodeCount: 1
       storage: 
-        size: 5Gi
+        size: 1Gi
       resources:
         requests:
           cpu: 200m
           memory: 1Gi
         limits:
           memory: 1Gi
-      redundancyPolicy: SingleRedundancy  
+      redundancyPolicy: ZeroRedundancy  
