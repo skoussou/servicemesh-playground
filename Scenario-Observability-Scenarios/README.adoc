@@ -100,7 +100,7 @@ First follow the xref:anchor-1[Prerequisites]
 * Jaeger
 ** Before creating the `Jaeger` Resource 
 *** a) Depending on available resources and intentions select (update if necessary) between link:./jaeger-small-production-elastic.yaml[jaeger-small-production-elastic.yaml] or link:./jaeger-production-elastic.yaml[jaeger-production-elastic.yaml] 
-*** b) With that decision update the `Jaeger` Resource name in the `SMCP` link:./smcp-2.1.1-external-jaeger-production-resource.yaml[smcp-2.1.1-external-jaeger-production-resource.yaml] with the correct one
+*** b) After that decision, update the `Jaeger` Resource name in the `SMCP` link:./smcp-2.1.1-external-jaeger-production-resource.yaml[smcp-2.1.1-external-jaeger-production-resource.yaml] with the correct one
 *** c) Select from the available `Jaeger` image Tags the one the operator currently uses and define it (as link:https://docs.openshift.com/container-platform/4.10/distr_tracing/distr_tracing_install/distr-tracing-deploying-jaeger.html#distr-tracing-sidecar-manual_deploying-distr-tracing-platform[adviced in documentation]) in the link:../coded-services/quarkus-opentracing/ISTIO-YAML/create-quarkus-opentracing-jaeger-sidecar.sh[create-quarkus-opentracing-jaeger-sidecar.sh] before deploying the application below
 +
 ----
