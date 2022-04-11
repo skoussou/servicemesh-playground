@@ -5,6 +5,16 @@
 Describes different Tracing and Metrics Setups for the Service Mesh
 
 == TRACING
+[[anchor-1]]
+* Prerequisites 
+
+1. Setup Service Mesh Control Plane namespace
+2. Install Required Operators
+
+----
+oc  new-project istio-production
+../scripts/add-operators-subscriptions-sm.sh
+----
 
 === (Default STACK) - Non Production Setup
 
@@ -18,7 +28,10 @@ Describes different Tracing and Metrics Setups for the Service Mesh
 [NOTE]
 ====
 There can be more configurations than those presented.
+
+First follow the xref:anchor-1[Prerequisites] 
 ====
+
 
 
 * Resources
@@ -34,6 +47,7 @@ There can be more configurations than those presented.
 ====
 - Jaeger agent as a `DaemonSet` is not supported for multitenant installations or OpenShift Dedicated. Jaeger agent as a sidecar is the only supported configuration for these use cases.
 - *Warning:* There can only ever be a single `DaemonSet` in a cluster node therefore if Service Mesh multi-tenancy is required this cannot be the option selected as only 1 `DaemonSet` will be available.
+- *Important:* First follow the xref:anchor-1[Prerequisites] 
 ====
 
 1. Setup
@@ -48,7 +62,7 @@ There can be more configurations than those presented.
 	oc apply -f https://raw.githubusercontent.com/skoussou/servicemesh-playground/main/Scenario-Observability-Scenarios/smcp-2.1.1-external-jaeger-daemonset-resource.yaml
 
 
-* Deploy link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[`Opentracing with Jaeger Agent Sidecar`] Application for opentracing reporting
+* Deploy link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#opentracing-with-jaeger-agent-sidecar[`Opentracing with Jaeger Agent Sidecar`] Application for traces reporting
 ** `istio-proxy` sidecar default configuration (points *_DIRECT_* to the collector and not the agent)
 +
 
@@ -73,7 +87,8 @@ There can be more configurations than those presented.
 
 [NOTE]
 ====
-The Jaeger Operator does not inject automatically the `jaeger-agent` sidecar to a resource other than `Deployment` (read: link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html-single/distributed_tracing#jaeger-sidecar-manual_jaeger-deploying[Manually injecting sidecars]) so this is added manually
+- The Jaeger Operator does not inject automatically the `jaeger-agent` sidecar to a resource other than `Deployment` (read: link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.9/html-single/distributed_tracing#jaeger-sidecar-manual_jaeger-deploying[Manually injecting sidecars]) so this is added manually
+- *Important:* First follow the xref:anchor-1[Prerequisites] 
 ====
 
 1. Setup
@@ -143,6 +158,11 @@ image::./images/istio-jaeger-production.png[title="Jaeger Production Workloads i
 
 
 ==== Setup C : Jaeger agent as a sidecar to a `Deployment`
+
+[NOTE]
+====
+- *Important:* First follow the xref:anchor-1[Prerequisites] 
+====
 
 1. Setup
 * Jaeger
