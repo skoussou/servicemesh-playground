@@ -2,7 +2,6 @@ apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: istio-production
-  namespace: istio-system-tracing
 spec:
   addons:
     grafana:

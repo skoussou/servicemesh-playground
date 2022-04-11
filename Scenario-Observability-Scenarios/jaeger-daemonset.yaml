@@ -2,7 +2,6 @@ apiVersion: jaegertracing.io/v1
 kind: Jaeger
 metadata:
   name: custom-prod-jaeger
-  namespace: istio-system
 spec:
   agent:
     strategy: DaemonSet  
