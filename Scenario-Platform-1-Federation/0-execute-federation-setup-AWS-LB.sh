@@ -34,7 +34,8 @@ sleep 4
 echo "---------------------- Step 1-a - Creation of Federated Cluster 1 SMCP Namespace [$FED_1_SMCP_NAMESPACE], SMCP Resource  [$FED_1_SMCP_NAME], SMMR Resources  ----------------------"
 sleep 7
 echo
-echo "LOGIN CLUSTER 1 [EAST]: oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER"
+#echo "LOGIN CLUSTER 1 [EAST]: oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER"
+echo "LOGIN CLUSTER 1 [EAST]: oc login --server=$OCP_1_LOGIN_SERVER"
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
 echo
 echo "
@@ -197,7 +198,8 @@ echo
 echo "---------------------- Step 1-c - Creation of Federated Cluster 2 SMCP Namespace [$FED_2_SMCP_NAMESPACE], SMCP Resource  [$FED_2_SMCP_NAME], SMMR Resources ----------------------"
 sleep 7
 echo
-echo "LOGIN CLUSTER 2 [WEST]: oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER"
+#echo "LOGIN CLUSTER 2 [WEST]: oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER"
+echo "LOGIN CLUSTER 2 [WEST]: oc login --server=$OCP_2_LOGIN_SERVER"
 oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
 echo
 echo "
@@ -653,12 +655,12 @@ echo
 echo
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
 echo
-KIALI_1="http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n $FED_1_SMCP_NAMESPACE)"
+KIALI_1="http://$(oc get route kiali -o jsonpath='{.spec.host}' -n $FED_1_SMCP_NAMESPACE)"
 echo "CLUSTER 1 [EAST]: KIALI ROUTE $KIALI_1" 
 echo
 oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
 echo
-KIALI_2="http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n $FED_2_SMCP_NAMESPACE)"
+KIALI_2="http://$(oc get route kiali -o jsonpath='{.spec.host}' -n $FED_2_SMCP_NAMESPACE)"
 echo "CLUSTER 2 [WEST]: KIALI ROUTE $KIALI_2" 
         
         
