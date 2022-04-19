@@ -4,7 +4,9 @@
 Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[docimentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
 
 .A walkthrough of the automation activities
+ifndef::env-github[]
 video::USrTSixYd80[youtube,list=PLZjCciga0z5w6PiJKl2P8UJKdG0cEXKcz]
+endif::[]
 
 == Pre-requisites 
 
