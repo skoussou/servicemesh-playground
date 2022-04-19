@@ -9,6 +9,7 @@ Service Mesh federation functionality and configurations are described in detail
 ** local link:https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/1.34/html/getting_started_guide[CodeReady Containers (CRC]) clusters or
 ** OpenShift Clusters (4.6+)
 2. `oc` binary installed in the local path
+3. `bash` capable command prompt
 
 == AWS Setup
 
