@@ -1,7 +1,7 @@
 = Federation Demo Automation
 :toc:
 
-This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh]
+Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[docimentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
 
 == Pre-requisites 
 
@@ -10,7 +10,7 @@ This is an automation for the demo link:https://github.com/kiali/demos/tree/mast
 ** OpenShift Clusters (4.6+)
 2. `oc` binary installed in the local path
 
-== Setup
+== AWS Setup
 
 * Edit link:.0-setup-ocp-login-vars.sh[0-setup-ocp-login-vars.sh] to add URL and login token for the 2 clusters
 
@@ -33,3 +33,5 @@ This is an automation for the demo link:https://github.com/kiali/demos/tree/mast
 *** verify peering is setup
 ** Deploy the applications on both clusters
 ** Check federation is working
+
+	0-execute-federation-setup-AWS-LB.sh
