@@ -22,7 +22,7 @@ endif::[]
 
 == AWS Setup
 
-* Edit link:.0-setup-ocp-login-vars.sh[0-setup-ocp-login-vars.sh] to add URL and login token for the 2 clusters
+* Edit link:./0-setup-ocp-login-vars.sh[0-setup-ocp-login-vars.sh] to add URL and login token for the 2 clusters
 
 	export OCP_1_LOGIN_TOKEN=<TOKEN CLUSTER 1>
 	export OCP_1_LOGIN_SERVER=<API URL CLUSTER
