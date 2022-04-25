@@ -34,9 +34,9 @@ endif::[]
 
 == Demo Example
 
-image::./images/east-west-sides.png[title="Travel Demo Federated Components across East and West Mesh)",800,400]
+image::./images/east-west-sides.png[title="Travel Demo Federated Components across East and West Mesh",800,400]
 
-== AWS - AWS Setup
+== AWS - AWS Federation Setup
 	
 * Run the setup script which will
 ** Create the *control plane* namespaces in *West* and *East* cluster
@@ -51,7 +51,7 @@ image::./images/east-west-sides.png[title="Travel Demo Federated Components acro
 
 	0-execute-federation-setup-AWS-LB.sh
 	
-== AWS - GCP Setup	
+== AWS - GCP Federation Setup	
 
 The script for this setup is perfrorming exactly the same activities as for the _AWS - AWS Setup_ 
 
