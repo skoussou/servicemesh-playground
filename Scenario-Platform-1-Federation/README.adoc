@@ -1,7 +1,7 @@
 = Federation Demo Automation
 :toc:
 
-Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[docimentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
+Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[docUmentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
 
 ifdef::env-github[]
 image:https://img.youtube.com/vi/USrTSixYd80/maxresdefault.jpg[link=https://youtu.be/USrTSixYd80]
@@ -19,8 +19,7 @@ endif::[]
 ** OpenShift Clusters (4.6+)
 2. `oc` binary installed in the local path
 3. `bash` capable command prompt
-
-== AWS Setup
+4. Prepare the Scripts and Operators
 
 * Edit link:./0-setup-ocp-login-vars.sh[0-setup-ocp-login-vars.sh] to add URL and login token for the 2 clusters
 
@@ -32,6 +31,12 @@ endif::[]
 * Login to each cluster and apply the necessary operators subscriptions
 
 	oc apply -f 0-operator-subscription.yaml
+
+== Demo Example
+
+image::./images/east-west-sides.png[title="Travel Demo Federated Components across East and West Mesh)",800,400]
+
+== AWS - AWS Setup
 	
 * Run the setup script which will
 ** Create the *control plane* namespaces in *West* and *East* cluster
@@ -43,5 +48,11 @@ endif::[]
 *** verify peering is setup
 ** Deploy the applications on both clusters
 ** Check federation is working
+
+	0-execute-federation-setup-AWS-LB.sh
+	
+== AWS - GCP Setup	
+
+The script for this setup is perfrorming exactly the same activities as for the _AWS - AWS Setup_ 
 
 	0-execute-federation-setup-AWS-LB.sh
