@@ -1,7 +1,7 @@
 = Federation Demo Automation
 :toc:
 
-Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[docUmentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
+Service Mesh federation functionality and configurations are described in detail in the link:https://docs.openshift.com/container-platform/4.9/service_mesh/v2x/ossm-federation.html[documentation]. This is an automation for the demo link:https://github.com/kiali/demos/tree/master/federated-travels[Federated Travels with OpenShift Service Mesh] in order to test and compare quickly a setup.
 
 ifdef::env-github[]
 image:https://img.youtube.com/vi/USrTSixYd80/maxresdefault.jpg[link=https://youtu.be/USrTSixYd80]
