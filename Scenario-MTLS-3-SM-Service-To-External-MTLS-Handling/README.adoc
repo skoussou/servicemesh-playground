@@ -63,8 +63,9 @@ oc new-project istio-system-client <1>
 ./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant (SMCP namespace and name)  <2>
 cd ../scripts/certs 
 # Create Client secrets <3>
+oc new-project greetings-client
 oc create -n greetings-client secret generic greeting-client-secret --from-file=greeting-client-app.key --from-file=greeting-client-app.crt --from-file=ca-root.crt <4>
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <SMR Resource Name> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
+echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
 ./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client greeting.remote.com istio-ingressgateway-istio-system-service.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
 ----
 <1> Create *_client side_* Service Mesh Control Plane namespace 
