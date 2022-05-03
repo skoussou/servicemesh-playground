@@ -7,7 +7,7 @@ These instructions are for self-signed certificates however PKI and CA based cer
 
 === Create CA Root (Only once for client and service)
 
-* Update/Copy & Modify (based on -self-signed- CA org information) scripts/certs/app-default.conf
+* Update/Copy & Modify (based on -self-signed- CA org information like `CN`, `commonName`, `DNS.1` etc.) `scripts/certs/app-default.conf` 
 
 	cd scripts/certs
 	vim app-default.conf
@@ -35,7 +35,7 @@ These instructions are for self-signed certificates however PKI and CA based cer
 
 The aim is to perform MUTUAL auth with the service using the (self-signed) certificate above
 
-* Update/Copy & Modify (based on -self-signed- CA org information) scripts/certs/app-default.conf changing CN, Commonname, DNS.1 to rest-client-greeting.com
+* Update/Copy & Modify (based on -self-signed- CA org information) `scripts/certs/app-default.conf` to `scripts/certs/app-client-openshift.conf` changing `CN`, `commonName`, `DNS.1` to eg. `rest-client-greeting.com`
 
 	cd scripts/certs
 	cp app-default.conf app-client-openshift.conf
