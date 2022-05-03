@@ -24,6 +24,7 @@ image::./images/option-1a-mtls-3-in-mesh-svc-to-external-via-sidecar-with-mtls.p
 . *Step 1:* Setup a *_Service Side_* Service Mesh (command below), add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom `ROUTE` with TLS certificate as follows:
 +
 ----
+cd Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 oc new-project istio-system-service <1>
 ./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-service service-side-tenant (SMCP namespace and name)  <2>
 cd ../scripts/certs 
@@ -71,7 +72,7 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespac
 <4> Create Secret with Certs in the _Application Namespace_  (as we use it via `DestinationRule` in the sidecar TLS origination and Not gateway) (see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-ocp-secret-to-store-the-client-greeting-client-secret-certificate-in-istio-system[Create OCP secret to store the client certificate )]
 <5> Create app namespace, deploy `rest-client-greeting` app, create ISTIO Configurations to be accessible and access remotely `rest-greeting-remote` <5>
 +
-* *Test:* client http request --> sidecar via DR to --> mTLS --> route istio-system-service (passthrough) --> gateway TLS --> VS --> greeting-remote
+* *Test:* client http request -> client sidecar via DR to -> mTLS -> ocp route istio-system-service (passthrough) -> gateway TLS -> VS (greeting-remote) -> greeting-remote
 
 	curl -v -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client)/say/goodday-to/Stelios
 
