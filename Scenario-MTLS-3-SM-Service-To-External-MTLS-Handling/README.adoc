@@ -20,6 +20,7 @@ In this scenario a `ServiceEntry` for the remote service hostname will be requir
 
 image::./images/option-1a-mtls-3-in-mesh-svc-to-external-via-sidecar-with-mtls.png[400,800]  
 
+*Pre-requisites:* OSSM Operators in place (`scripts/add-operators-subscriptions-sm.sh`)
 
 . *Step 1:* Setup a *_Service Side_* Service Mesh (command below), add link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Service] (namespace: `greetings-service`) in the mesh and EXPOSE the service via custom `ROUTE` with TLS certificate as follows:
 +
