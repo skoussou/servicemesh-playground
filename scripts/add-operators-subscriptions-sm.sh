@@ -4,7 +4,7 @@ echo "oc create ns openshift-operators-redhat"
 oc create ns openshift-operators-redhat
 sleep 4
 echo "################# Adding Operator elasticsearch-operator #################"   
-echo '
+echo "
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -15,8 +15,7 @@ spec:
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
-  sourceNamespace: openshift-marketplace
-' | oc apply -f -  
+  sourceNamespace: openshift-marketplace" | oc apply -f -  
 
 echo 'apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -28,7 +27,7 @@ spec:
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
-  sourceNamespace: openshift-marketplace" | oc apply -f -  
+  sourceNamespace: openshift-marketplace | oc apply -f -  '
 
 echo 'sleeping 20s'
 sleep 20
@@ -92,7 +91,7 @@ spec:
   source: redhat-operators
   sourceNamespace: openshift-marketplace" | oc apply -f -   
 
-echo 'sleeping 20s'
+#echo 'sleeping 20s'
 sleep 20
 
 
