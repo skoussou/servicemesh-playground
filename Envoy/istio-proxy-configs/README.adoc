@@ -52,6 +52,15 @@ See link:https://access.redhat.com/documentation/en-us/openshift_container_platf
 * Default 'discovery address' has moved from `pilot.<control_plane_namespace>.svc:15010` (or port `15011`, if `mtls` is enabled) to `istiod-<smcp_name>.<control_plane_namespace>.svc:15012`.
 * The 'health status port' is no longer configurable and is hard-coded to `15021`. (ie. custom status port, for example, `status.sidecar.istio.io/port`, you must remove the override before moving the workload to a v2.0 control plane. Readiness checks can still be disabled by setting the status port to 0.)
 
+== Annotations around Health Probes
+
+* `sidecar.istio.io/rewriteAppHTTPProbers: "true"|"false"`: For the httpGet probes, set your deployments/deploymentConfigs with annotation sidecar.istio.io/rewriteAppHTTPProbers: "true" or a dedicated port for the probe that is not capture by the envoy will be needed. As if it is not set, then istio-proxy will identify this as traffic reaching the upstream host and will break the connections. When that annotation is present, then the probes are going to be rewritten and handled by the envoy and therefore the issue disappears and probes will work (see: link:https://access.redhat.com/solutions/6736921[After encrypting (mTLS ) a ServiceMesh control plane applications Liveness health check does not work ])
+* Istio link:https://istio.io/latest/docs/ops/configuration/mesh/app-health-check/[Health Checking of Istio Services] suggests the opposite though
+
+== Annotation to allow non-mesh Route Access to services
+
+* `maistra.io/expose-route: "true"`: It is possible to use the OCP route from a non-mesh service on OCP Service Mesh. To do that, it is necessary to label the deployment with maistra.io/expose-route: "true" (see: link:https://access.redhat.com/solutions/6707431[Is it possible to use the OpenShift Container Platform routes from non-mesh services in a service mesh enlisted namespace? ]
+
 
 
 # Configure via `ServiceMeshControlPlane`
