@@ -76,7 +76,7 @@ echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespac
 +
 * *Test:* client http request -> client sidecar via DR to -> mTLS -> ocp route istio-system-service (passthrough) -> gateway TLS -> VS (greeting-remote) -> greeting-remote
 
-	curl -v -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client)/say/goodday-to/Stelios
+	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client)/say/goodday-to/Stelios
 
 [NOTE]
 ====

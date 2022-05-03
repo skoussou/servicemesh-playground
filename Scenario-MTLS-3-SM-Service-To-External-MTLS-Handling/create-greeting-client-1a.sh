@@ -32,12 +32,13 @@ oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotatio
 # this https://istio.io/latest/docs/reference/config/networking/destination-rule/#ClientTLSSettings (credentialName field is currently applicable only at gateways. Sidecars will continue to use the certificate paths.) and 
 # then this https://zufardhiyaulhaq.com/Istio-mutual-TLS-between-clusters/
 # https://support.f5.com/csp/article/K29450727
-oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolumeMount": "[{"name":"greeting-client-secret", "mountPath":"/etc/certs", "readonly":true}]" }}}}}' -n  $SM_MR_NS
-oc patch dc/rest-greeting-remote -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolume": "[{"name":"greeting-client-secret", "secret":{"secretName":"greeting-client-secret"}}]" }}}}}' -n  $SM_MR_NS
-oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://${REMOTE_SERVICE_ROUTE_NAME}"  -n  $SM_MR_NS
-oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://greeting.remote.com"  -n  greetings-client-2
+oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolumeMount": "[{\"name\": \"greeting-client-secret\", \"mountPath\": \"/etc/certs\", \"readonly\": true}]" }}}}}' -n  $SM_MR_NS
+oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/userVolume": "[{\"name\":\"greeting-client-secret\", \"secret\":{\"secretName\":\"greeting-client-secret\"}}]" }}}}}' -n  $SM_MR_NS 
+#POD MUST SEND TO NON HTTPS SO DR BELOW WILL CHANGE TO HTTPS
+oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="http://${REMOTE_SERVICE_ROUTE_NAME}"  -n  $SM_MR_NS
+#oc set env dc/rest-client-greeting GREETINGS_SVC_LOCATION="https://greeting.remote.com"  -n  greetings-client-2
 
-# Due to mutual TLS needs a public DNS hostname is required. Therefore although valid the following is commented out
+# Due to mutual TLS needs a public DNS hostname is required for the certificate. Therefore although valid the following is commented out
 #echo ""
 #echo "Patch dc/rest-client-greeting to resolve route hostname [$REMOTE_SERVICE_ROUTE_NAME]"
 #echo "----------------------------------------------------------------------------------"
@@ -50,7 +51,7 @@ echo "################# SMR [$SM_MR_NS] added in SMCP [ns:$SM_CP_NS name: $SM_TE
 echo "sh  ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
 sh ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS
 
-sleep 5
+sleep 15
 echo "oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS"
 oc rollout latest dc/rest-client-greeting  -n  $SM_MR_NS    
    
@@ -116,8 +117,7 @@ spec:
   location: MESH_EXTERNAL
   resolution: DNS
   exportTo:
-    - '*'
-      weight: 100" | oc apply -n $SM_MR_NS -f -        
+  - '*'" | oc apply -n $SM_MR_NS -f -        
       
 # IMPORTANT: SNI needed as tls handkshake is done on SNI on ingresscontroller settings
           
@@ -136,7 +136,7 @@ spec:
       sni: ${REMOTE_SERVICE_ROUTE_NAME}
       mode: MUTUAL
   exportTo:
-    - ." | oc apply -n $SM_MR_NS -f -           
+  - ." | oc apply -n $SM_MR_NS -f -           
      
 echo "################# DestinationRule - rewrite-port-for-rest-greeting-remote [$SM_CP_NS] #################"              
 echo "kind: VirtualService
