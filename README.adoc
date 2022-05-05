@@ -21,8 +21,8 @@
 * link:./Scenario-RBAC-1-SA-On-Workloads-Resources-Restrictions/README.adoc[RBAC Scenarios]
 * link:./Scenario-MTLS-1-External-Request-Per-Service-Cert/README.adoc[Securing Ingress Traffic to Deployments in the ServiceMesh with TLS]
 * link:./Scenario-MTLS-2-Internal-SM-MTLS/README.adoc[Securing inter-deployment in the ServiceMesh with TLS]
-* *NEW* link:./Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/README.adoc[Securing ServiceMesh egress traffic to external services with TLS]
-* *NEW* link:./Scenario-MTLS-4-Turn-Off-MTLS/README.adoc[How to exclude a single Service from mTLS handshakes]
+* *WIP* link:./Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/README.adoc[Securing ServiceMesh egress traffic to external services with TLS]
+* link:./Scenario-MTLS-4-Turn-Off-MTLS/README.adoc[How to exclude a single Service from mTLS handshakes]
 
 == `Envoy` Modifications & Capabilities
 
