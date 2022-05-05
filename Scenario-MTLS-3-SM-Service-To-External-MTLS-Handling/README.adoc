@@ -263,8 +263,6 @@ echo ` ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP
 WARNING: *Impossible by Design* (Federation uses a pair of Ingress/Egress gateways dedicated to access to imported services)
 ====
 
-See link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-Platform-1-Federation[Federation Demo Automation]
-
 
 * unencrypted
 
