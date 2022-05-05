@@ -24,32 +24,32 @@ echo
 
 . 0-setup-ocp-login-vars.sh
 echo
-echo '###########################################################################'
-echo '#                                                                         #'
-echo '#   STAGE 1 - Namespaces, SMCP, SMMR, Dataplane Namespaces                #'
-echo '#                                                                         #'
-echo '###########################################################################'
+echo '########################################################################################################################'
+echo '#                                                                                                                      #'
+echo '#   STAGE 1 - Setup Namespaces, ServiceMeshControlPlane (SMCP), ServiceMeshMemberRole (SMMR), Dataplane Namespaces     #'
+echo '#                                                                                                                      #'
+echo '########################################################################################################################'
 echo
 sleep 4
-echo "---------------------- Step 1-a - Creation of Federated Cluster 1 SMCP Namespace [$FED_1_SMCP_NAMESPACE], SMCP Resource  [$FED_1_SMCP_NAME], SMMR Resources  ----------------------"
+echo "---------------------- Step 1-a - Creation of EAST-MESH SMCP Namespace [$FED_1_SMCP_NAMESPACE], SMCP Resource  [$FED_1_SMCP_NAME], SMMR Resources  ----------------------"
 sleep 7
 echo
-#echo "LOGIN CLUSTER 1 [EAST]: oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER"
+echo
 echo "LOGIN CLUSTER 1 [EAST]: oc login --server=$OCP_1_LOGIN_SERVER"
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
 echo
-echo "
-kind: Project
-apiVersion: project.openshift.io/v1
-metadata:
-  name: ${FED_1_SMCP_NAMESPACE} |oc apply -f -"
+#echo "
+#kind: Project
+#apiVersion: project.openshift.io/v1
+#metadata:
+#  name: ${FED_1_SMCP_NAMESPACE} |oc apply -f -"
   
 echo "
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
   name: ${FED_1_SMCP_NAMESPACE}" |oc apply -f -  
-sleep 5
+sleep 3
 echo 
 echo "
 apiVersion: maistra.io/v2
@@ -86,8 +86,6 @@ spec:
         service:
           type: LoadBalancer
           metadata:
-            annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb            
             labels:
               federation.maistra.io/proxy: ingress-west-mesh
           ports:
@@ -147,7 +145,7 @@ spec:
     trust:
       domain: $FED_1_SMCP_NAME.local" |oc apply -f -      
       
-sleep 5
+sleep 6
 echo 
 echo "
 apiVersion: maistra.io/v1
@@ -180,7 +178,7 @@ echo "oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smcp/$FED_1_SMCP_NA
 sleep 15
 echo
 echo
-echo '---------------------- Step 1-b - Creation of Federated Cluster 1 - Dataplane namespaces  ----------------------'
+echo '---------------------- Step 1-b - Creation of EAST-MESH - Dataplane namespaces  ----------------------'
 sleep 4
 echo 'oc create namespace east-travel-agency'
 oc create namespace east-travel-agency
@@ -195,24 +193,23 @@ echo "oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smmr/default --time
 #oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smmr/default --timeout 300s
 echo
 echo
-echo "---------------------- Step 1-c - Creation of Federated Cluster 2 SMCP Namespace [$FED_2_SMCP_NAMESPACE], SMCP Resource  [$FED_2_SMCP_NAME], SMMR Resources ----------------------"
+echo "---------------------- Step 1-c - Creation of WEST-MESH SMCP Namespace [$FED_2_SMCP_NAMESPACE], SMCP Resource  [$FED_2_SMCP_NAME], SMMR Resources ----------------------"
 sleep 7
 echo
-#echo "LOGIN CLUSTER 2 [WEST]: oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER"
 echo "LOGIN CLUSTER 2 [WEST]: oc login --server=$OCP_2_LOGIN_SERVER"
 oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
 echo
-echo "
-kind: Project
-apiVersion: project.openshift.io/v1
-metadata:
-  name: ${FED_2_SMCP_NAMESPACE} |oc apply -f -"
+#echo "
+#kind: Project
+#apiVersion: project.openshift.io/v1
+#metadata:
+#  name: ${FED_2_SMCP_NAMESPACE} |oc apply -f -"
 echo "
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
   name: ${FED_2_SMCP_NAMESPACE}" |oc apply -f -  
-sleep 5
+sleep 3
 echo 
 echo "
 apiVersion: maistra.io/v2
@@ -334,10 +331,10 @@ echo
 echo
 echo "oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smcp/$FED_2_SMCP_NAME --timeout 300s"
 oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smcp/$FED_2_SMCP_NAME --timeout 300s
-sleep 15
+sleep 10
 echo
 echo
-echo '---------------------- Step 1-d - Creation of Federated Cluster 2 - Dataplane namespaces  ----------------------'
+echo '---------------------- Step 1-d - Creation of WEST-MESH - Dataplane namespaces  ----------------------'
 sleep 7
 echo 'oc create namespace west-travel-agency'
 oc create namespace west-travel-agency
@@ -345,7 +342,7 @@ sleep 2
 
 echo "oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smmr/default --timeout 300s"
 oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smmr/default --timeout 300s
-sleep 20
+sleep 10
 echo
 echo
 echo '###########################################################################'
@@ -362,12 +359,13 @@ echo
 echo "LOGIN CLUSTER 1 [EAST]: "
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
 echo
-
+echo
 echo '============='
 echo 'EAST CLUSTER'
 echo '============='
 echo "a. GET CERT FROM REMOTE-EAST MESH:					oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_1_SMCP_NAMESPACE > remote-east-mesh-cert.pem"
 oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_1_SMCP_NAMESPACE > remote-east-mesh-cert.pem
+echo
 echo
 sleep 5
 echo "LOGIN CLUSTER 2 [WEST]: "
@@ -375,8 +373,10 @@ oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
 echo '============='
 echo 'WEST CLUSTER'
 echo '============='
+echo
 echo "b. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:		oc create configmap east-ca-root-cert --from-file=root-cert.pem=remote-east-mesh-cert.pem -n $FED_2_SMCP_NAMESPACE"
 oc create configmap east-ca-root-cert --from-file=root-cert.pem=remote-east-mesh-cert.pem -n $FED_2_SMCP_NAMESPACE
+echo
 echo
 sleep 5
 echo "c. GET CERT FROM REMOTE-WEST MESH:					oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_2_SMCP_NAMESPACE > remote-west-mesh-cert.pem"
@@ -385,14 +385,17 @@ echo
 sleep 5
 echo "LOGIN CLUSTER 1 [EAST]: "
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+echo
 echo 
 echo '============='
 echo 'EAST CLUSTER'
 echo '============='
+echo
 echo "d. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:		oc create configmap west-ca-root-cert --from-file=root-cert.pem=remote-west-mesh-cert.pem -n $FED_1_SMCP_NAMESPACE"
 oc create configmap west-ca-root-cert --from-file=root-cert.pem=remote-west-mesh-cert.pem -n $FED_1_SMCP_NAMESPACE
 echo
-sleep 15
+echo
+sleep 10
 echo
 echo '---------------------- Step 3 - Retrieve AWS/GCP LB Addresses to setup ServiceMeshPeering  ----------------------'
 sleep 7
@@ -401,7 +404,7 @@ echo "LOGIN CLUSTER 1 [EAST]: "
 oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
 echo
 echo
-echo 'Getting LB ip address of ingress-west-mesh on EAST SIDE to be used on WEST side ServiceMeshPeeer'
+echo 'Getting LB ip address of ingress-west-mesh on EAST side to be used on WEST side ServiceMeshPeeer'
 GCP_LB_SM_1=$(oc get svc ingress-west-mesh -o jsonpath='{.status.loadBalancer.ingress[0].ip}' -n $FED_1_SMCP_NAMESPACE)
 echo "[EAST OCP GCP LB] $GCP_LB_SM_1"
 sleep 7
@@ -496,7 +499,7 @@ spec:
       importAsLocal: false
       namespace: travel-agency
       name: discounts" |oc apply -f -      
-sleep 15
+sleep 12
 echo
 echo
 echo '---------------------- Step 4b - Setup Service Mesh Peering & Service Exports (WEST -> EAST)  ----------------------'
@@ -584,7 +587,7 @@ spec:
       alias:
         namespace: travel-agency
         name: discounts" |oc apply -f -        
-sleep 10
+sleep 7
 echo
 echo
 echo '---------------------- Step 4c - Verify Service Mesh Peering Connection (EAST -> WEST)  ----------------------'
@@ -596,7 +599,7 @@ echo
 echo 'Check if status \"connected: true\" 305 times with 1 sec delay as 5 mins peering synced'
 echo "oc get servicemeshpeer $FED_2_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].watch.connected}' -n $FED_1_SMCP_NAMESPACE"
 oc get servicemeshpeer $FED_2_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].watch.connected}{"\n"}' -n $FED_1_SMCP_NAMESPACE
-sleep 12
+sleep 5
 echo
 echo
 echo '---------------------- Step 4d - Verify Service Mesh Peering Connection (WEST -> EAST)  ----------------------'
@@ -609,7 +612,7 @@ echo 'Check if status \"connected: true\" 305 times with 1 sec delay as 5 mins p
 echo "oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.inactive[0].remotes[0].connected}' -n $FED_2_SMCP_NAMESPACE"
 oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.inactive[0].remotes[0].connected}{"\n"}' -n $FED_2_SMCP_NAMESPACE
 echo
-sleep 20
+sleep 5
 echo
 echo '###########################################################################'
 echo '#                                                                         #'
