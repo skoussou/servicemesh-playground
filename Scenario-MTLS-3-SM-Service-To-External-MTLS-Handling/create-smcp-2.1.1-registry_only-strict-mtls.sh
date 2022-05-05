@@ -95,5 +95,6 @@ spec:
   telemetry:
     type: Istiod"| oc apply -n $SM_CP_NS -f -
 
-
+echo "oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smcp/$FED_1_SMCP_NAME --timeout 300s"
+#oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smcp/$FED_1_SMCP_NAME --timeout 300s
 
