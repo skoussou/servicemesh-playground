@@ -1,5 +1,5 @@
 = Securing Edge traffic to external Services with mTLS
-:toc:
+#:toc:
 
 This repository showcases the possible configuration options for traffic to external turning mTLS `*ON*/*OFF*`
 
@@ -8,19 +8,30 @@ This repository showcases the possible configuration options for traffic to exte
 |===
 |# |Scenario |Notes
 
-| 1 | Traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)| TBD
+| 1 | Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)| *Ready*
 
-| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>| TBD
+| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>| *Ready*
 
-|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via Sidecar) with *PERMISSIVE* internal traffic>>| TBD
+|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via Sidecar) with *PERMISSIVE* internal traffic>>| *Ready*
 
-|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic directly (via Sidecar) with *STRICT* internal traffic>>| TBD
+|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic directly (via Sidecar) with *STRICT* internal traffic>>| *Ready*
 
-| 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway container`)>>| TBD
+| 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway container`)>>| *Ready*
 
-|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway container`)>>| TBD
+|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway container`)>>| *TBD*
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
+
+| 2   | Secure Traffic to an external service on another federated Service Mesh|  *Ready"
+
+| 2a   | <<option2adirectenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design*
+
+|      | <<option2adirectunenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
+
+| 2b   | <<option2begressenctrypted, *Encrypted* federated Traffic directly from egress gateway>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
+
+|      | <<option2begressunenctrypted, *Encrypted* federated Traffic directly from egress gateway>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
+
 |===
 
 
@@ -113,26 +124,24 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 
 ====
 
-* Final Service Mesh Configurations
-+
-image::./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[title="Overall Configs Needed on Client Side",1000,300]     
-image::./images/7-A-GW-IN.png[title="Client Gateway Incoming Requests",1000,300]   
-image::./images/7B-IN-VS.png[title="Client VirtualService Incoming Requests",1000,300]      
-image::./images/7C-OUT-SE.png[title="ServiceEntry for remote host registration - Outgoing Requests",1000,300]      
-image::./images/7D-OUT-DR.png[title="DestinationRule for MTLS client handling at Sidecar - Outgoing Requests",1000,300]      
-image::./images/7E-OUT-VS.png[title="VirtualService for http to https routing - Outgoing Requests",1000,300]   
-+
-image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",1000,300]   
-+
-image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,400]   
-
+* The final Service Mesh Configurations can be viewed at the service side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-service-1a.sh[`create-greeting-service-1a.sh`] and client side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1a.sh[create-greeting-client-1a.sh`]scripts and the following KIALI Istio Config screenshots
+* link:./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[Overall Configs Needed on Client Side]     
+* link:./images/7-A-GW-IN.png[Cient Gateway Incoming Requests]   
+* link:./images/7B-IN-VS.png[Client VirtualService Incoming Requests]      
+* link:./images/7C-OUT-SE.png[ServiceEntry for remote host registration - Outgoing Requests]      
+* link:./images/7D-OUT-DR.png[DestinationRule for MTLS client handling at Sidecar - Outgoing Requests]      
+* link:./images/7E-OUT-VS.png[VirtualService for http to https routing - Outgoing Requests]   
+* link:./images/7-client-side.png[title="ServiceMesh - Outgoing Requests]   
+* link:./images/7-service-side.png[title="ServiceMesh -Incoming Requests]   
 
 ==== un-encrypted
 
 ===== Variation 1: In a Service Mesh with security `PERMISSIVE`
 [[option1aunencryptedpermissive]]
+[NOTE]
+====
 *Scenario:* In a Service Mesh where mTLS security is `PERMISSIVE` between workloads, first connect to an External Service without mTLS and without the need to register the service then proceed to restrict external access to external services via `REGISTRY_ONLY` setting.
-
+====
 First perform the <<PreRequisites,PreRequisites>>
 
 * *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-service`) 
@@ -196,7 +205,7 @@ image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]
 ===== Variation 2: In a Service Mesh with security `STRICT`
 [[option1aunencryptedstrict]]
 
-[SCENARIO]
+[NOTE]
 ====
 *Scenario:* In a Service Mesh where mTLS security is `STRICT` between workloads, connect to an External Service with `ServiceEntry` definition and apply a `DestinationRule` to EXCLUDE the external `rest-greeting-remote` service from the policy.
 ====
@@ -244,7 +253,7 @@ image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 
 [NOTE]
 ====
-In this scenario a `ServiceEntry` (`rest-greeting-remote-mesh-ext`) for the remote service hostname will be required. For _TLS origination_ from `istio-egressgateway` a `VirtualService` (`route-mesh-gw-to-egress-gw`) and `DestinationRule` (``egress-originate-tls-to-rest-greeting-remote) will route to _Egress_ `Gateway` (with `ISTIO_MUTUAL`), then `VirtualService`(`oute-egress-gw-to-ext`), `DestinationRule` (`originate-mtls-for-greeting-remote`) and `Gateway` (`istio-egressgateway`) for that hostname will supply the certificates for `MUTUAL` tls and route tto the registered destination. The resources can be found in the script link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1b-encrypted.sh[create-greeting-client-1b-encrypted.sh]. Certificates for the contacted host: 
+In this scenario a `ServiceEntry` (`rest-greeting-remote-mesh-ext`) for the remote service hostname will be required. For _TLS origination_ from `istio-egressgateway` a `VirtualService` (`route-mesh-gw-to-egress-gw`) and `DestinationRule` (``egress-originate-tls-to-rest-greeting-remote) will route to _Egress_ `Gateway` (with `ISTIO_MUTUAL`), then `VirtualService`(`oute-egress-gw-to-ext`), `DestinationRule` (`originate-mtls-for-greeting-remote`) and `Gateway` (`istio-egressgateway`) for that hostname will supply the certificates for `MUTUAL` tls and route tto the registered destination. The final resources can be found in the script link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1b-encrypted.sh[create-greeting-client-1b-encrypted.sh]. Certificates for the contacted host: 
 
 * `CA Certificate` for verification of the external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
 * `Client certificate/key pair` if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
@@ -288,22 +297,25 @@ WARNING: *WILL NOT IMPLEMENT* `ServiceEntry` and If TLS origination from applica
 * CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
 * Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
 
-== Option 2: To an external service on another Federation managed Service Mesh
+== Option 2: Secure Traffic to an external service on another federated Service Mesh
 
 === Option 2a: directly
+
+[[option2adirectenctrypted]]
 - encrypted
 
 ====
 WARNING: *Impossible by Design* (Federation uses a pair of Ingress/Egress gateways dedicated to access to imported services)
 ====
 
-
+[[option2adirectunenctrypted]]
 * unencrypted
 
 WARNING: *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
 
 === Option 2b: via Egress Gateway
 
+[[option2begressenctrypted]]
 - encrypted
 
 [NOTE]
@@ -315,7 +327,7 @@ Use encrypted TCP for intermesh traffic between Ingress/Gateways pairs.
 See link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-Platform-1-Federation[Federation Demo Automation]
 
 - unencrypted
-
+[[option2begressunenctrypted]]
 WARNING: Unencrypted traffic is not possible by design.
 
 
