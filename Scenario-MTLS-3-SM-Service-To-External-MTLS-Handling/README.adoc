@@ -13,9 +13,9 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1a | <<option1aencrypted, *Encrypted* External Traffic via `sidecar` container>>|  *Ready*
 
-|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic via `sidecar` container with *PERMISSIVE* internal traffic>>| *Ready*
+|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic via `sidecar` container (`mTLS` internal traffic *PERMISSIVE* )>>| *Ready*
 
-|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic via `sidecar` container with *STRICT* internal traffic>>| *Ready*
+|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic via `sidecar` container (`mTLS` internal traffic *STRICT*)>>| *Ready*
 
 | 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway` container>>| *Ready*
 
