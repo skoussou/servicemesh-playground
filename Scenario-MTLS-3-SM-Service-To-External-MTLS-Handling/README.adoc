@@ -99,9 +99,9 @@ image::./images/7C-OUT-SE.png[title="ServiceEntry for remote host registration -
 image::./images/7D-OUT-DR.png[title="DestinationRule for MTLS client handling at Sidecar - Outgoing Requests",400,200]   
 image::./images/7E-OUT-VS.png[title="VirtualService for http to https routing - Outgoing Requests",400,200]   
 +
-image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",400,800]   
+image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",1000,400]   
 +
-image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",400,800]   
+image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,400]   
 
 
 
