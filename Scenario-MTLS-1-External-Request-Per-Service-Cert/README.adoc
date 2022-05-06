@@ -461,6 +461,7 @@ WARNING: This is failing
 
 * Update/Create `ServiceMeshControlPlane` Resource with `security` section to create/rotate certs to Exposing workloads to the outside world
 
+----
 echo "apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
@@ -504,18 +505,20 @@ spec:
       custom:
         address: cert-manager.istio-system-certs.svc:443
   version: v2.1" | oc apply -n istio-system-certs -f - 
+----
 
-* Define
+* Define custom cert authority (To try: https://github.com/cert-manager/istio-csr)
 
-To try: https://github.com/cert-manager/istio-csr
-
+----
 	certificateAuthority:
 	  type: Custom
 	  custom:
 	    address: cert-manager-istio-csr.istio-system-certs.svc:443
+----
 
-* ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that Customer <-> Gateway is correctly configured using mTLS and automatically created&rotated certificates.
+* ServiceMesh then automatically requests a certificate for "our-service.example.com" from certmanager and assigns it to the gateway. This means, that _Customer to/from Gateway_ is correctly configured using mTLS and automatically created&rotated certificates.
 
+----
 	apiVersion: networking.istio.io/v1alpha3
 	kind: Gateway
 	...
@@ -532,30 +535,30 @@ To try: https://github.com/cert-manager/istio-csr
 	    credentialName: yawl-crt-secret
 	  hosts:
 	    "our-service.example.com"
+----
     
 * in mesh certs
 
-However, istiod still uses a self-signed certificated for the communication from gateway – virtual-service.	    
-However, istiod still uses a self-signed certificated for the communication from gateway<->virtual-service (thus goal #2 is not reached). 
-For istiod itself to also request a certificate from cert-manager. To achieve this, we tried setting certProvider in controlPlane to Custom:
+* However, istiod still uses a self-signed certificated for the communication from gateway to virtual-service (thus goal #2 is not reached). 
+* For istiod itself to also request a certificate from cert-manager. To achieve this, we tried setting certProvider in controlPlane to Custom:
 
+----
 	spec:
 	  security:
 	    controlPlane:
 	      mtls: true
 	      certProvider: Custom
+----
 
-This however fails with the errors 
-
-Resources to continue:
-Understanding TLS Configuration: https://istio.io/latest/docs/ops/configuration/traffic-management/tls-configuration/
-Traffic Management Problems:	https://istio.io/latest/docs/ops/common-problems/network-issues/#gateway-mismatch
-https://istio.io/latest/docs/ops/integrations/certmanager/
-https://cert-manager.io/docs/configuration/selfsigned/
-https://cert-manager.io/docs/usage/
-https://cert-manager.io/docs/configuration/
-https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security
-https://issues.redhat.com/browse/OSSM-568
+** This however fails with the errors Resources to continue:
+* Understanding TLS Configuration: https://istio.io/latest/docs/ops/configuration/traffic-management/tls-configuration/
+* Traffic Management Problems:	https://istio.io/latest/docs/ops/common-problems/network-issues/#gateway-mismatch
+* https://istio.io/latest/docs/ops/integrations/certmanager/
+* https://cert-manager.io/docs/configuration/selfsigned/
+* https://cert-manager.io/docs/usage/
+* https://cert-manager.io/docs/configuration/
+* https://docs.openshift.com/container-platform/4.6/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security
+* https://issues.redhat.com/browse/OSSM-568
 
 
 
