@@ -9,7 +9,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 |===
 |# |Scenario |Notes
 
-| 1 | *Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)* |
+| 1 | *Secure traffic to another external service (could be another Service Mesh not managed with OSSM Federation)* |
 
 | 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>|  *Ready*
 
@@ -23,7 +23,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
-| 2 | *Secure Traffic to an external service on another federated Service Mesh* |
+| 2 | *Secure Traffic to an external service on another federated Service Mesh (OSSM)* |
 
 | 2a   | <<option2adirectenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design*
 
@@ -125,7 +125,7 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 
 ====
 
-* The final Service Mesh Configurations can be viewed at the service side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-service-1a.sh[`create-greeting-service-1a.sh`] and client side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1a.sh[create-greeting-client-1a.sh`]scripts and the following KIALI Istio Config screenshots
+* The final Service Mesh Configurations can be viewed at the service side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-service-1a.sh[`create-greeting-service-1a.sh`] and client side link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1a.sh[`create-greeting-client-1a.sh`]scripts and the following KIALI Istio Config screenshots
 * link:./images/7-ISTIO-CONFIG-MTLS-SIDECAR.png[Overall Configs Needed on Client Side]     
 * link:./images/7-A-GW-IN.png[Cient Gateway Incoming Requests]   
 * link:./images/7B-IN-VS.png[Client VirtualService Incoming Requests]      
