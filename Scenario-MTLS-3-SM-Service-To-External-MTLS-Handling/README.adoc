@@ -139,13 +139,12 @@ First perform the <<PreRequisites,PreRequisites>>
 *** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
 *** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 ** `ServiceMeshMemberRoll` include `greetings-client` namespace
-+
-The script below will perform all of the above
+
 ----    
 echo ` ./create-greeting-client-1a-unencrypted-permissive.sh <SMCP Namspace> <Client APP namespace> <Rmote Service APP namespace> <REMOTE Service hostname>`
 ./create-greeting-client-1a-unencrypted-permissive.sh istio-system-1a1 greetings-client-1a1 greetings-service-1a1 rest-greeting-remote.greetings-service-1a1.svc.cluster.local:8080
 ----
-+
+
 ** Test it 
 +
 ----
