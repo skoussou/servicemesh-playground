@@ -8,9 +8,9 @@ This repository showcases the possible OSSM and Istio configuration options for 
 |===
 |# |Scenario |Notes
 
-| 1 | *Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)*
+| 1 | *Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)*|
 
-| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>| 
+| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>| *Ready*
 
 |    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via Sidecar) with *PERMISSIVE* internal traffic>>| *Ready*
 
