@@ -1,7 +1,7 @@
 = Securing Edge traffic to external Services with mTLS
 #:toc:
 
-This repository showcases the possible configuration options for traffic to external turning mTLS `*ON*/*OFF*`
+This repository showcases the possible OSSM and Istio configuration options for traffic to external services turning mTLS `*ON*/*OFF*`
 
 
 .Handling Certs in OSSM for outgoing traffic
