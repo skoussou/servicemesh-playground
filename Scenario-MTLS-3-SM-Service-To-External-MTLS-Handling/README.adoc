@@ -4,13 +4,12 @@
 This repository showcases the possible OSSM and Istio configuration options for traffic to external services turning mTLS `*ON*/*OFF*`
 
 
-.Handling Certs in OSSM for outgoing traffic
 [cols="1,6,3"]
+.Handling Certs in OSSM for outgoing traffic
 |===
 |# |Scenario |Notes
 
-| 1 
-1+| *Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)* 
+| 1 | *Secure traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)* |
 
 | 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>|  *Ready*
 
@@ -24,8 +23,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
-| 2 
-1+| *Secure Traffic to an external service on another federated Service Mesh* 
+| 2 | *Secure Traffic to an external service on another federated Service Mesh* |
 
 | 2a   | <<option2adirectenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design*
 
