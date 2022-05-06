@@ -1,5 +1,28 @@
-= Securing traffic to external Services with mTLS
+= OSSM mTLS options for traffic at the edge to external services
 :toc:
+
+This repository showcases the possible configuration options for traffic to external turning mTLS `*ON*/*OFF*`
+
+
+.Handling Certs in OSSM for outgoing traffic
+|===
+|# |Scenario |Notes
+
+| 1 | Traffic to another external service (could be another ServiceMesh not managed with OSSM Federation)| TBD
+
+| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>| TBD
+
+|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via Sidecar) with *PERMISSIVE* internal traffic>>| TBD
+
+|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic directly (via Sidecar) with *STRICT* internal traffic>>| TBD
+
+| 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway container`)>>| TBD
+
+|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway container`)>>| TBD
+
+| 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
+|===
+
 
 == PreRequisites
 
@@ -8,7 +31,7 @@
 == Option 1: Secure Traffic to another external service (could be another ServiceMesh not managed by Service Mesh Federation)
 
 === Option 1a: directly (via `Sidecar`)
-
+[[option1aencrypted]]
 ==== encrypted
 
 [NOTE]
@@ -104,19 +127,10 @@ image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",1000,4
 image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,400]   
 
 
-
-==== encrypted (originating from the Application)
-
-WARNING: *WILL NOT IMPLEMENT* `ServiceEntry` and If TLS origination from application then application configuration with:
-
-* CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
-* Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
-
-
 ==== un-encrypted
 
 ===== Variation 1: In a Service Mesh with security `PERMISSIVE`
-
+[[option1aunencryptedpermissive]]
 Connect to External Service with `ServiceEntry` resource definition
 
 First perform the <<PreRequisites,PreRequisites>>
@@ -173,7 +187,7 @@ image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]   
 
 ===== Variation 2: In a Service Mesh with security `STRICT`
-
+[[option1aunencryptedstrict]]
 First perform the <<PreRequisites,PreRequisites>>
 
 In a Service Mesh where mTLS security is `STRICT` between workloads, connect to External Service with `ServiceEntry` definition and `DestinationRule` to EXCLUDE `details` from the rule
@@ -216,7 +230,7 @@ image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 === Option 1b: via `Istio Egress Gateway`
 
 ==== encrypted
-
+[[option1bencrypted]]
 
 [NOTE]
 ====
@@ -253,8 +267,16 @@ echo ` ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-egressgw-mtls-client)/say/goodday-to/Stelios
  
 ==== unencrypted
-
+[[option1bUNencrypted]]
 * ServiceEntry, Gateway, VirtualService, DestinationRule to Egress Gateway
+
+== Option 1c: encrypted (originating from the Application)
+
+[[option1aencryptedfromapp]]
+WARNING: *WILL NOT IMPLEMENT* `ServiceEntry` and If TLS origination from application then application configuration with:
+
+* CA Certificate for external service server side certificate (other SM ingress gateway if external service is in a non Federation managed SM)
+* Client certificate/key pair if the external service (other SM ingress gateway if external service is in a non Federation managed SM) requires client authentication (mTLS). Cert/key pair must be signed by the client CA configured on the external service (other SM ingress gateway if external service is in a non Federation managed SM)
 
 == Option 2: To an external service on another Federation managed Service Mesh
 
