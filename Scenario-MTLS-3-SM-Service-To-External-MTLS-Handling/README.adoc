@@ -11,17 +11,17 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1 | *Secure traffic to another external service (could be another Service Mesh not managed with OSSM Federation)* |
 
-| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar container`)>>|  *Ready*
+| 1a | <<option1aencrypted, *Encrypted* External Traffic directly (via `sidecar` container)>>|  *Ready*
 
-|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via Sidecar) with *PERMISSIVE* internal traffic>>| *Ready*
+|    | <<option1aunencryptedpermissive, *Variation 1: Un-Encrypted* External Traffic directly (via `sidecar` container) with *PERMISSIVE* internal traffic>>| *Ready*
 
-|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic directly (via Sidecar) with *STRICT* internal traffic>>| *Ready*
+|    | <<option1aunencryptedstrict, *Variation 2: Un-Encrypted* External Traffic directly (via `sidecar` container) with *STRICT* internal traffic>>| *Ready*
 
-| 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway container`)>>| *Ready*
+| 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway` container)>>| *Ready*
 
-|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway container`)>>| *TBD*
+|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway` container)>>| *TBD*
 
-| 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
+| 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the `App` container>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
 | 2 | *Secure Traffic to an external service on another federated Service Mesh (OSSM)* |
 
