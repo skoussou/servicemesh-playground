@@ -22,13 +22,13 @@ This repository showcases the possible configuration options for traffic to exte
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
-| 2   | Secure Traffic to an external service on another federated Service Mesh|  *Ready"
+| 2   | Secure Traffic to an external service on another federated Service Mesh|  *Ready*
 
 | 2a   | <<option2adirectenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design*
 
 |      | <<option2adirectunenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
 
-| 2b   | <<option2begressenctrypted, *Encrypted* federated Traffic directly from egress gateway>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
+| 2b   | <<option2begressenctrypted, *Encrypted* federated Traffic directly from egress gateway>>|  *Ready*
 
 |      | <<option2begressunenctrypted, *Encrypted* federated Traffic directly from egress gateway>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
 
