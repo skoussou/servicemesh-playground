@@ -1,4 +1,4 @@
-= OSSM mTLS options for traffic at the edge to external services
+= Securing Edge traffic to external Services with mTLS
 :toc:
 
 This repository showcases the possible configuration options for traffic to external turning mTLS `*ON*/*OFF*`
@@ -131,23 +131,26 @@ image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,4
 
 ===== Variation 1: In a Service Mesh with security `PERMISSIVE`
 [[option1aunencryptedpermissive]]
-Connect to External Service with `ServiceEntry` resource definition
 
 First perform the <<PreRequisites,PreRequisites>>
 
-* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-service`)
-
-	oc apply -f smcp-2.1.1-allow_any-auto-mtls.yaml -n <ISTIO_NAMESPACE>
-
+* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-service`) 
 ** `ServiceMeshControlPlane` setup
 *** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
 *** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 ** `ServiceMeshMemberRoll` include `greetings-client` namespace
+
+The script below will perform all of the above
+----    
+echo ` ./create-greeting-client-1a-unencrypted-permissive.sh <SMCP Namspace> <Client APP namespace> <Rmote Service APP namespace> <REMOTE Service hostname>`
+./create-greeting-client-1a-unencrypted-permissive.sh istio-system-1a1 greetings-client-1a1 greetings-service-1a1 rest-greeting-remote.greetings-service-1a1.svc.cluster.local:8080
+----
+
 ** Test it 
 
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
 
-** And watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
+** Watch from the KIALI UI the requests flowing from `rest-greeting-client` to _external service_ established via `PassthroughCluster` 
 +
 image::./images/1-allow-any-passthroughcluster.png[400,800]  
 
@@ -160,12 +163,13 @@ image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.
 **  mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
 
 	oc apply -f smcp-2.1.1-registry_only-auto-mtls.yaml -n <ISTIO_NAMESPACE>
+
     
 ** The result is requests to start being directed to `BlackHoleCluster`
 +
 image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 
-** Create `ServiceEntry` to register external details
+** Create `ServiceEntry` to register external details to Connect to External Service with `ServiceEntry` resource definition
       
 	echo "kind: ServiceEntry
 	apiVersion: networking.istio.io/v1alpha3
