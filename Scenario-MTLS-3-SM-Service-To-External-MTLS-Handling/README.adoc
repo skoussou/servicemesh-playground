@@ -225,7 +225,7 @@ In this scenario a `ServiceEntry` (`rest-greeting-remote-mesh-ext`) for the remo
 
 ====
 
-image::./images/option-1b-mtls-3-in-mesh-svc-to-external-via-egress-gateway-with-mtls.png[400,800]  
+image::./images/option-1b-mtls-3-in-mesh-svc-to-external-via-egress-gateway-with-mtls.png[400,1000]  
 
 First perform the <<PreRequisites,PreRequisites>> and <<serviceside,rest-gressting-remote service side>> must have been deployed in a separate Mesh as per link instructions.
 
