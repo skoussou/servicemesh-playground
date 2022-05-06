@@ -314,7 +314,9 @@ WARNING: *Impossible by Design* (Federation uses a pair of Ingress/Egress gatewa
 [[option2adirectunenctrypted]]
 * unencrypted
 
+====
 WARNING: *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
+====
 
 === Option 2b: via Egress Gateway
 
@@ -331,8 +333,9 @@ See link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-P
 
 - unencrypted
 [[option2begressunenctrypted]]
+====
 WARNING: Unencrypted traffic is not possible by design.
-
+====
 
 
 
