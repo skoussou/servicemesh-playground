@@ -195,7 +195,11 @@ image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]
 
 ===== Variation 2: In a Service Mesh with security `STRICT`
 [[option1aunencryptedstrict]]
+
+[SCENARIO]
+====
 *Scenario:* In a Service Mesh where mTLS security is `STRICT` between workloads, connect to an External Service with `ServiceEntry` definition and apply a `DestinationRule` to EXCLUDE the external `rest-greeting-remote` service from the policy.
+====
 
 First perform the <<PreRequisites,PreRequisites>> and go through <<option1aunencryptedpermissive,Variation 1: In a Service Mesh with security `PERMISSIVE`>>. The previous step and then applying the YAML below will have the following effect:
 
