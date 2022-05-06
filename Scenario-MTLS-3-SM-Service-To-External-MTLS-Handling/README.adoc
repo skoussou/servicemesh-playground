@@ -22,7 +22,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the Application>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
-| 2   | *Secure Traffic to an external service on another federated Service Mesh*
+| 2   | *Secure Traffic to an external service on another federated Service Mesh* |
 
 | 2a   | <<option2adirectenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design*
 
