@@ -133,8 +133,8 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 * link:./images/7C-OUT-SE.png[ServiceEntry for remote host registration - Outgoing Requests]      
 * link:./images/7D-OUT-DR.png[DestinationRule for MTLS client handling at Sidecar - Outgoing Requests]      
 * link:./images/7E-OUT-VS.png[VirtualService for http to https routing - Outgoing Requests]   
-* link:./images/7-client-side.png[title="ServiceMesh - Outgoing Requests]   
-* link:./images/7-service-side.png[title="ServiceMesh -Incoming Requests]   
+* link:./images/7-client-side.png[ServiceMesh - Outgoing Requests]   
+* link:./images/7-service-side.png[ServiceMesh -Incoming Requests]   
 
 ==== un-encrypted
 
