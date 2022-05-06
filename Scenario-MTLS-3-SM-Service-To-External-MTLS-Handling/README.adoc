@@ -122,7 +122,7 @@ image::./images/7C-OUT-SE.png[title="ServiceEntry for remote host registration -
 image::./images/7D-OUT-DR.png[title="DestinationRule for MTLS client handling at Sidecar - Outgoing Requests",1000,300]      
 image::./images/7E-OUT-VS.png[title="VirtualService for http to https routing - Outgoing Requests",1000,300]   
 +
-image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",1000,400]   
+image::./images/7-client-side.png[title="ServiceMesh - Outgoing Requests",1000,300]   
 +
 image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,400]   
 
@@ -131,6 +131,7 @@ image::./images/7-service-side.png[title="ServiceMesh -Incoming Requests",1000,4
 
 ===== Variation 1: In a Service Mesh with security `PERMISSIVE`
 [[option1aunencryptedpermissive]]
+*Scenario:* In a Service Mesh where mTLS security is `PERMISSIVE` between workloads, first connect to an External Service without mTLS and without the need to register the service then proceed to restrict external access to external services via `REGISTRY_ONLY` setting.
 
 First perform the <<PreRequisites,PreRequisites>>
 
@@ -170,21 +171,23 @@ image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.
 image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 
 ** Create `ServiceEntry` to register external destination and allow connection to the external service
-      
-	echo "kind: ServiceEntry
-	apiVersion: networking.istio.io/v1alpha3
-	metadata:
-	  name: rest-greeting-remote-mesh-ext
-	spec:
-	  hosts: 
-	    - rest-greeting-remote.greetings-service.svc.cluster.local
-	  ports:
-	    - name: http-8080
-	      number: 8080
-	      protocol: HTTP
-	      targetPort: 8080
-	  location: MESH_EXTERNAL
-	  resolution: DNS" |oc apply -n greetings-client -f -  
++
+----      
+echo "kind: ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: rest-greeting-remote-mesh-ext
+spec:
+  hosts: 
+    - rest-greeting-remote.greetings-service.svc.cluster.local
+  ports:
+    - name: http-8080
+      number: 8080
+      protocol: HTTP
+      targetPort: 8080
+  location: MESH_EXTERNAL
+  resolution: DNS" |oc apply -n greetings-client -f -  
+----
 
 ** The requests will now start going through to external service via the `ServiceEntry` `rest-greeting-remote-mesh-ext`
 +
@@ -192,9 +195,9 @@ image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]
 
 ===== Variation 2: In a Service Mesh with security `STRICT`
 [[option1aunencryptedstrict]]
-First perform the <<PreRequisites,PreRequisites>>
+*Scenario:* In a Service Mesh where mTLS security is `STRICT` between workloads, connect to an External Service with `ServiceEntry` definition and apply a `DestinationRule` to EXCLUDE the external `rest-greeting-remote` service from the policy.
 
-In a Service Mesh where mTLS security is `STRICT` between workloads, connect to External Service with `ServiceEntry` definition and `DestinationRule` to EXCLUDE `details` from the rule
+First perform the <<PreRequisites,PreRequisites>> and go through <<option1aunencryptedpermissive,Variation 1: In a Service Mesh with security `PERMISSIVE`>>. The previous step and then applying the YAML below will have the following effect:
 
 	oc apply -f smcp-2.1.1-registry_only-strict-mtls.yaml -n <ISTIO_NAMESPACE>
 
@@ -204,27 +207,26 @@ In a Service Mesh where mTLS security is `STRICT` between workloads, connect to 
 * `ServiceMeshMemberRoll` include `greetings-client` namespace
 * Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
 
-	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios` 
-
+	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios 
 
 * The result is requests  to external `rest-greeting-remote-mesh-ext` are starting to fail
 +
 image::./images/5-STRICT-mTLS-Fails-External.png[400,800]
 
         
-* Create `DestinationRule` to `DISABLE` mTLS for the external service communication
-      
-	echo "apiVersion: "networking.istio.io/v1alpha3"
-	kind: "DestinationRule"
-	metadata:
-	  name: "disable-mtls-rest-greeting-remote-ext"
-	  namespace: "greetings-client"
-	spec:
-	  host: rest-greeting-remote.greetings-service.svc.cluster.local
-	  trafficPolicy:
-	    tls:
-	      mode: DISABLE" |oc apply -n greetings-client -f - 
-
+* Create a `DestinationRule` to `DISABLE` mTLS policy for the external service communication
++      
+----      
+echo "apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: "disable-mtls-rest-greeting-remote-ext"
+spec:
+  host: rest-greeting-remote.greetings-service.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE" |oc apply -n greetings-client -f - 
+----
 
 * The requests will now start again to flow through to external `rest-greeting-remote-mesh-ext`
 +        
