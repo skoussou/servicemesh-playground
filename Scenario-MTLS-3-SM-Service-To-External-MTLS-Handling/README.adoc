@@ -42,8 +42,9 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 == Option 1: Secure Traffic to another external service (could be another ServiceMesh not managed by Service Mesh Federation)
 
-=== Option 1a: directly (via `Sidecar`)
 [[option1aencrypted]]
+=== Option 1a: via `Sidecar`
+
 ==== encrypted
 
 [NOTE]
@@ -137,8 +138,9 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 
 ==== un-encrypted
 
-===== Variation 1: In a Service Mesh with security `PERMISSIVE`
 [[option1aunencryptedpermissive]]
+===== Variation 1: In a Service Mesh with dataplane `mTLS` security `PERMISSIVE`
+
 [NOTE]
 ====
 *Scenario:* In a Service Mesh where mTLS security is `PERMISSIVE` between workloads, first connect to an External Service without mTLS and without the need to register the service then proceed to restrict external access to external services via `REGISTRY_ONLY` setting.
@@ -203,8 +205,8 @@ spec:
 +
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]   
 
-===== Variation 2: In a Service Mesh with security `STRICT`
 [[option1aunencryptedstrict]]
+===== Variation 2: In a Service Mesh with dataplane `mTLS` security `STRICT`
 
 [NOTE]
 ====
