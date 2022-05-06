@@ -248,11 +248,11 @@ spec:
 +        
 image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 
-
+[[option1bencrypted]]
 === Option 1b: via `Istio Egress Gateway`
 
 ==== encrypted
-[[option1bencrypted]]
+
 
 [NOTE]
 ====
