@@ -21,13 +21,25 @@ echo 'ServiceMesh Control Plane Namespace (Client)    : '$SM_CP_NS_2
 echo 'ServiceMesh Control Plane Tenant Name (Client)  : '$SM_TENANT_NAME_2
 echo 'ServiceMesh Member Namespace (Client)           : '$SM_MR_NS_2
 echo '---------------------------------------------------------------------------'
-
-cd ../coded-services/quarkus-rest-greeting-remote
+echo 
+echo 
+echo 
+echo 
+echo "######################################################################################################"   
+echo "#                                                                                                    "
+echo "#  SMCP [$SM_CP_NS]  Service Side Status                                                             "
+oc get smcp -n $SM_CP_NS
+oc wait --for condition=Ready -n $SM_CP_NS smcp/$SM_TENANT_NAME --timeout 300s
+echo "#                                                                                                    "
+echo "#  SMCP [$SM_CP_NS_2]  Client Side Status                                                            "
+oc get smcp -n $SM_CP_NS_2
+oc wait --for condition=Ready -n $SM_CP_NS_2 smcp/$SM_TENANT_NAME_2 --timeout 300s
+echo "#                                                                                                    "
+echo "######################################################################################################" 
+echo
+  
 oc new-project $SM_MR_NS
-oc project  $SM_MR_NS
 
- 
-cd ../../Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 echo
 echo "################# SMR [$SM_MR_NS] added in SMCP [ns:$SM_CP_NS name: $SM_TENANT_NAME] #################"   
 echo "sh  ../scripts/create-membership.sh $SM_CP_NS $SM_TENANT_NAME $SM_MR_NS"
@@ -204,15 +216,16 @@ spec:
     name: istio-ingressgateway
     weight: 100
   port:
-    targetPort: http
+    targetPort: http2
   wildcardPolicy: None" | oc apply -n $SM_CP_NS -f -   
   
-echo "################# Gateway - rest-greeting-remote-gateway [$SM_MR_NS] #################"     
+echo "################# Gateway - rest-greeting-remote-gateway [$SM_CP_NS] #################"     
 echo
 echo "apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: rest-greeting-remote-gateway
+  namespace: $SM_CP_NS  
 spec:
   selector:
     istio: ingressgateway # use istio default gateway service
@@ -228,6 +241,7 @@ echo "apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: rest-greeting-remote-gateway
+  namespace: $SM_CP_NS
 spec:
   selector:
     istio: ingressgateway # use istio default gateway service
@@ -237,7 +251,7 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - $REMOTE_SERVICE_ROUTE" | oc apply -n $SM_MR_NS -f -  
+    - $REMOTE_SERVICE_ROUTE" | oc apply -f -  
    
 
 echo "################# VirtualService - rest-greeting-remote [$SM_MR_NS] #################"     
@@ -251,7 +265,7 @@ spec:
   hosts:
   - ${REMOTE_SERVICE_ROUTE} 
   gateways:
-  - rest-greeting-remote-gateway
+  - $SM_CP_NS/rest-greeting-remote-gateway
   - mesh
   http:
   - match:

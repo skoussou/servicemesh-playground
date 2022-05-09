@@ -18,7 +18,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 | 1b | <<option1bencrypted, *Encrypted* External Traffic via `egress gateway` container>>| *Ready*
 
-|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway` container>>| *TBD*
+|    | <<option1bUNencrypted, *Un-Encrypted* External Traffic via `egress gateway` container>>| *Ready*
 
 | 1c   | <<option1aencryptedfromapp, *Encrypted* External Traffic directly from the `App` container>>|  *WILL NOT IMPLEMENT* as it is not OSSM based
 
@@ -295,11 +295,12 @@ echo ` ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP
 In this scenario a `ServiceEntry` (`rest-greeting-remote-mesh-ext`) for the remote service hostname will be required to allow from the client mesh connection to the remote mesh service. There is No mTLS but for the call to be directed via `istio-egressgateway` a `VirtualService` (`route-mesh-gw-to-egress-gw`) and `DestinationRule` (`egress-originate-to-rest-greeting-remote`) will route to _Egress_ `Gateway` (with `ISTIO_MUTUAL`), then `VirtualService`(`route-egress-gw-to-ext`), and `Gateway` (`istio-egressgateway`) for that hostname will route tto the registered destination. The final resources can be found in the script link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-service-1b-egress-unencrypted.sh[`create-greeting-client-service-1b-egress-unencrypted.sh`]. 
 ====
 
+image::./images/option-1b-mtls-3-in-mesh-svc-to-external-via-egress-gateway-NO-mtls.png[400,1000]  
 ----
 cd Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 oc new-project istio-system-client (1)
 # Note: Provide SMCP namespace and SMCP resource name below
-./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant (SMCP namespace and name) (2)
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant (2)
 
 oc new-project istio-system-service (3)
 # Note: Provide SMCP namespace and SMCP resource name below
