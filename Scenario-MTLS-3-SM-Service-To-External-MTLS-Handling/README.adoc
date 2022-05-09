@@ -289,7 +289,6 @@ echo ` ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP
  
 ==== unencrypted
 [[option1bUNencrypted]]
-* ServiceEntry, Gateway, VirtualService, DestinationRule to Egress Gateway
 
 [NOTE]
 ====
