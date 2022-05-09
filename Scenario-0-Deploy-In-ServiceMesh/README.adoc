@@ -75,6 +75,13 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 	oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n greetings-client
 
   *** Define local/external service location of `rest-greeting-remote` service
+  
+* Build into an image and push to quay.io
+
+        cd coded-services/quarkus-rest-client-greeting	
+	podman build -f src/main/docker/Dockerfile.jvm -t quay.io/skoussou/rest-client-greeting:1.0.0 .
+	podman push quay.io/skoussou/rest-client-greeting:1.0.0
+
 
 .Remote Service Location Setting on `greetings-client`  deployment
 ====
@@ -125,6 +132,12 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 * Call `rest-greeting-remote` via Service Mesh	
 
         curl -X GET http://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n <istio-system-control-plane>)/hello/Stelios
+
+* Build into an image and push to quay.io
+
+        cd coded-services/quarkus-rest-greeting-remote	
+	podman build -f src/main/docker/Dockerfile.jvm -t quay.io/skoussou/rest-greeting-remote:1.0.0 .
+	podman push quay.io/skoussou/rest-greeting-remote:1.0.0
 
 == bookinfo 
 
