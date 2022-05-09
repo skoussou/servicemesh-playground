@@ -264,9 +264,9 @@ spec:
 
 sleep 15
 echo   
-echo "################# Testing against Host [$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-egressgw-mtls-client)]  #################"        
+echo "################# Testing against Host [$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n $SM_CP_NS)]  #################"        
 echo 
-watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-egressgw-mtls-client)/say/goodday-to/Stelios
+watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n $SM_CP_NS)/say/goodday-to/Stelios
 
 
 
