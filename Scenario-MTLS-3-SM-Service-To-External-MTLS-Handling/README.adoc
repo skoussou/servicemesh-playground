@@ -28,7 +28,7 @@ This repository showcases the possible OSSM and Istio configuration options for 
 
 |      | <<option2adirectunenctrypted, *Encrypted* federated Traffic directly from the Application>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
 
-| 2b   | <<option2begressenctrypted, *Encrypted* federated Traffic via `egress gateway`y>>|  *Ready*
+| 2b   | <<option2begressenctrypted, *Encrypted* federated Traffic via `egress gateway`>>|  *Ready*
 
 |      | <<option2begressunenctrypted, *Encrypted* federated Traffic via `egress gateway`>>|  *Impossible by Design* (Unencrypted traffic is not possible in Federation by design.)
 
