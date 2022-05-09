@@ -24,7 +24,7 @@ cd ../coded-services/quarkus-rest-client-greeting
 oc new-project $SM_MR_NS
 oc project  $SM_MR_NS
 
-#mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
+mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 
 #sleep 15
 oc patch dc/rest-client-greeting -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n  $SM_MR_NS
