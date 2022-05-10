@@ -71,11 +71,16 @@ spec:
 
 * TLS handshakes take place and registered in the 
 
-	oc rsh -c istio-proxy pod/productpage-v1-556db7cbb5-jks4c curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
-	oc rsh -c istio-proxy pod/details-v1-68cbd47bc5-gcq8l curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
-	oc rsh -c istio-proxy pod/details-v1-68cbd47bc5-gcq8l curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
-	oc rsh -c istio-proxy pod/reviews-v2-86c76b84c5-678gr curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
-	oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats |grep handshake	<-- HANDSHAKES TAKE PLACE
+----	
+./test-ssl-handshakes.sh productpage-v1-556db7cbb5-x5n55	<-- HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh details-v1-68cbd47bc5-xwf2x		<-- HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v1-75755d569f-z6jwf		<-- HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v2-86c76b84c5-xzq56		<-- HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v3-56cbff6b99-cfwj4		<-- HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh ratings-v1-5f867c4bb7-7fdv8		<-- HANDSHAKES TAKE PLACE
+----
+	
+	
 
 * Apply the following `DestinationRule` resources
 
@@ -164,12 +169,13 @@ spec:
 * Testing again the application we see no handshakes
 ** Checking the statistics captured now by `istio-proxy`     [[anchor-1]]    
 
-----
-oc rsh -c istio-proxy pod/productpage-v1-556db7cbb5-jks4c curl localhost:15000/stats |grep handshake	<-- NO HANDSHAKES TAKE PLACE
-oc rsh -c istio-proxy pod/details-v1-68cbd47bc5-gcq8l curl localhost:15000/stats |grep handshake	<-- NO HANDSHAKES TAKE PLACE
-oc rsh -c istio-proxy pod/details-v1-68cbd47bc5-gcq8l curl localhost:15000/stats |grep handshake	<-- NO HANDSHAKES TAKE PLACE
-oc rsh -c istio-proxy pod/reviews-v2-86c76b84c5-678gr curl localhost:15000/stats |grep handshake	<-- NO HANDSHAKES TAKE PLACE
-oc rsh -c istio-proxy pod/reviews-v3-56cbff6b99-xn6qz curl localhost:15000/stats |grep handshake	<-- NO HANDSHAKES TAKE PLACE
+----	
+./test-ssl-handshakes.sh productpage-v1-556db7cbb5-x5n55	<-- NO HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh details-v1-68cbd47bc5-xwf2x		<-- NO HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v1-75755d569f-z6jwf		<-- NO HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v2-86c76b84c5-xzq56		<-- NO HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh reviews-v3-56cbff6b99-cfwj4		<-- NO HANDSHAKES TAKE PLACE
+./test-ssl-handshakes.sh ratings-v1-5f867c4bb7-7fdv8		<-- NO HANDSHAKES TAKE PLACE
 ----
 
 ** KIALI shows a similar behavior (notice no "PADLOCK" on any of the connections and on the right handside *_unknknown Principals_* on the from/to:
