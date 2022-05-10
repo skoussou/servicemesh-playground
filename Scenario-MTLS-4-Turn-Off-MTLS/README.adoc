@@ -8,16 +8,18 @@
 
 ----
 oc new-project istio-system <1>
-./scripts/add-operators-subscriptions-sm-2.1.1.sh <2>
+./scripts/add-operators-subscriptions-sm.sh <2>
 
 echo "apiVersion: maistra.io/v2 <3>
 kind: ServiceMeshControlPlane
 metadata:
   name: basic
   namespace: istio-system
-  resourceVersion: '1540235'
-  uid: 5aa39e74-bc89-4352-bc73-1acd281de448
 spec:
+  security:
+    dataPlane:
+      automtls: false
+      mtls: false      
   addons:
     grafana:
       enabled: true
@@ -48,7 +50,12 @@ spec:
 * Setup the application link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#bookinfo[bookinfo]
 * Add to each of the `Deployment` under `bookinfo` namespace the following annotation in order to register statistics by `istio-proxy` on TLS handshakes
 
-	sidecar.istio.io/statsInclusionPrefixes: 'tls_inspector,listener,cluster'
+	oc patch deployment productpage-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
+	oc patch deployment details-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
+	oc patch deployment ratings-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
+	oc patch deployment reviews-v1 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
+	oc patch deployment reviews-v2 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
+	oc patch deployment reviews-v3 -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/statsInclusionPrefixes": "tls_inspector,listener,cluster"}}}}}' -n  bookinfo
 
 == Disable `mTLS` for all components with mTLS `PERMISSIVE`
 
