@@ -37,13 +37,13 @@ spec:
           policy: ALLOW_ANY 
 ----          
 
-image::./images/spec.proxy.networking.trafficControl.policy.allow_any.png[400,800]  
+image::./images/spec.proxy.networking.trafficControl.policy.allow_any.png[400,1000]  
 
 * Change to `REGISTRY_ONLY`  (failures will start to occur on the client side)
 
 	watch curl -i  http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system-client-allow-any)/say/goodday-to/Stelios
 
-image::./images/spec.proxy.networking.trafficControl.policy.registry_only.png[400,800]  
+image::./images/spec.proxy.networking.trafficControl.policy.registry_only.png[400,1000]  
 
 * Apply the `ServiceEntry`  (failures will start to occur on the client side)
 
@@ -64,7 +64,7 @@ spec:
   resolution: DNS" |oc apply -f -
 ----
 
-image::./images/spec.proxy.networking.trafficControl.policy.registry_only.with_serviceentry.png[400,800]  
+image::./images/spec.proxy.networking.trafficControl.policy.registry_only.with_serviceentry.png[400,1000]  
 
 == Demo `Incoming` Mesh Access (non-mTLS)
 
@@ -75,7 +75,7 @@ First execute the above as it is required also for this demo)
 
 * With the above demo working as expected execute link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/test-greeting-client-non-mesh.sh[`test-greeting-client-non-mesh.sh`] to setup access from an external (to the mesh) service but in the same cluster 
 
-image::./images/incoming-non-mesh-non-mtls.png[400,800]  
+image::./images/incoming-non-mesh-non-mtls.png[400,1000]]  
 
 
 
