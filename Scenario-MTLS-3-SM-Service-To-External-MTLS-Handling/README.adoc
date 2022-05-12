@@ -65,20 +65,21 @@ First perform the <<PreRequisites,PreRequisites>>
 ----
 cd Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling
 oc new-project istio-system-service <1>
-./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-service service-side-tenant (SMCP namespace and name)  <2>
+# Note: Provide SMCP namespace and SMCP resource name below
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-service service-side-tenant <2>
 cd ../scripts/certs 
 # Create secret for this host <3>
 oc create -n istio-system-service secret generic hello-remote-secret --from-file=tls.key=hello-remote-app.key --from-file=tls.crt=hello-remote-app.crt --from-file=ca.crt=ca-root.crt
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
-./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com hello-remote-secret OCP-48-Cluster <5>
+# App/Istio config script ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Name>  <Greeting Cluster Specific Message> `
+./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com hello-remote-secret OCP-48-Cluster <5>
 ----
 <1> Create *_service side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the service greeting application
-<3> Create Certs (with same CA as client) for `rest-greeting-remote` service using public DNS hostname like `hr-stio-sstm-svc.apps.cluster-10e2.10e2.sandbox1371.opentlc.com` (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
+<3> Create Certs (with same CA as client) for `rest-greeting-remote` service using public DNS hostname like `hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com` (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-a-ca-root-certificate-signing-request-tls-certificate-for-hosted-service[Create a CA Root, Certificate Signing Request, TLS Certificate for hosted service])
 <4> Create Secret with Certs in the _Service Mesh Control Plane Namespace_ (see: link:https://github.com/skoussou/servicemesh-playground/blob/main/scripts/certs/README.adoc#create-ocp-secret-to-store-the-certificate-in-istio-system[Create OCP secret to store the certificate] ]
 <5> Create app namespace, deploy `rest-greeting-remote` app, create Service Mesh Traffic Configurations (`Gateway`, `VirtualService` and `Route` resources) to make the application accessible via Service Mesh and over TLS
 +
-* *Test:* `SIMPLE` TLS (`Gateway` resource must be set to `tls.mode: SIMPLE`)
+* *Test:* `SIMPLE` TLS (`Gateway` resource `rest-greeting-remote-gateway` must be manually set to `tls.mode: SIMPLE` for this test)
 +
 ----
 curl -k -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios (if route not DNS resolvable--resolve '$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service):443:<IP OF istio-ingressgateway ROUTE eg.54.171.162.158>')
@@ -87,7 +88,7 @@ watch curl --cacert ca-root.crt  -X GET https://$(oc get route hello-remote -o j
 Greetings (OCP-48-Cluster) Stelios
 ----
 +
-* *Test:* `MUTUAL` TLS (`Gateway` resource must be set to `tls.mode: MUTUAL` and client created with the same CA see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-client-certificate[Create Client TLS Certificate for hosted service])
+* *Test:* `MUTUAL` TLS (`Gateway` resource must be reverted to `tls.mode: MUTUAL` and client created with the same CA see: link:https://github.com/skoussou/servicemesh-playground/tree/main/scripts/certs#create-client-certificate[Create Client TLS Certificate for hosted service])
 +
 ----
 watch curl -s --cacert ca-root.crt --key curl-client.key --cert curl-client.crt -X GET https://$(oc get route hello-remote -o jsonpath='{.spec.host}' -n istio-system-service)/hello/greeting/Stelios
@@ -98,13 +99,14 @@ Greetings (OCP-48-Cluster) Stelios
 +
 ----
 oc new-project istio-system-client <1>
-./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant (SMCP namespace and name)  <2>
+# Note: Provide SMCP namespace and SMCP resource name below
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-client client-side-tenant <2>
 cd ../scripts/certs 
 # Create Client secrets <3>
 oc new-project greetings-client
 oc create -n greetings-client secret generic greeting-client-secret --from-file=greeting-client-app.key --from-file=greeting-client-app.crt --from-file=ca-root.crt <4>
-echo ` ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
-./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client greeting.remote.com istio-ingressgateway-istio-system-service.apps.cluster-10e2.10e2.sandbox1371.opentlc.com greeting-client-secret  <5>
+# App/Istio config script ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
+./create-greeting-client-1a.sh istio-system-client client-side-tenant greetings-client hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com istio-ingressgateway-istio-system-service.apps.cluster-c655r.c655r.sandbox1530.opentlc.com greeting-client-secret<5>
 ----
 <1> Create *_client side_* Service Mesh Control Plane namespace 
 <2> Create a service mesh control plane for the client application
@@ -146,14 +148,14 @@ Mixup Problems that can occur in the configuration are listed below and in the a
 ====
 First perform the <<PreRequisites,PreRequisites>>
 
-* *Step 1:* Setup a Service Mesh (command below) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-service`) 
+* *Step 1:* Setup a Service Mesh (*see command below**) and add  link:https://github.com/skoussou/servicemesh-playground/tree/main/Scenario-0-Deploy-In-ServiceMesh#greetings-client-service[Greetings Client Service] (namespace: `greetings-client-1a1`) within the mesh whilst leaving `Greetings Service` outside (namespace: `greetings-client-1a1`) 
 ** `ServiceMeshControlPlane` setup
 *** `proxy.networking.trafficControl.outbound.policy: ALLOW_ANY`
 *** mesh security for mtls is permissive (`spec.security.dataPlane.automtls: true` or `spec.security.dataPlane.mtls: false`)
-** `ServiceMeshMemberRoll` include `greetings-client` namespace
+** `ServiceMeshMemberRoll` include `greetings-client-1a1` namespace
 +
 ----    
-echo ` ./create-greeting-client-1a-unencrypted-permissive.sh <SMCP Namspace> <Client APP namespace> <Rmote Service APP namespace> <REMOTE Service hostname>`
+# App/Istio config script ` ./create-greeting-client-1a-unencrypted-permissive.sh <SMCP Namspace> <Client APP namespace> <Rmote Service APP namespace> <REMOTE Service hostname>`
 ./create-greeting-client-1a-unencrypted-permissive.sh istio-system-1a1 greetings-client-1a1 greetings-service-1a1 rest-greeting-remote.greetings-service-1a1.svc.cluster.local:8080
 ----
 
@@ -177,7 +179,7 @@ image::./images/2-prometheus-passthroughcluster-greeting-remote-service-metrics.
 
 	oc apply -f smcp-2.1.1-registry_only-auto-mtls.yaml -n <ISTIO_NAMESPACE>
 
-** The result is requests start being directed to a `BlackHoleCluster` and fail Istio does not have in its registry the destination and only registered (`REGISTRY_ONLY`) external destinations are allowed.
+** The result is the requests start being directed to a `BlackHoleCluster` (it may take a minute or two for KIALI to show this) and fail as Istio does not have in its registry the destination and only registered (`REGISTRY_ONLY`) external destinations are allowed.
 +
 image::./images/3-REGISTRY_ONLY_Blackhole_Blocking.png[400,800]
 
@@ -188,19 +190,20 @@ echo "kind: ServiceEntry
 apiVersion: networking.istio.io/v1alpha3
 metadata:
   name: rest-greeting-remote-mesh-ext
+  namespace: greetings-client-1a1  
 spec:
   hosts: 
-    - rest-greeting-remote.greetings-service.svc.cluster.local
+    - rest-greeting-remote.greetings-service-1a1.svc.cluster.local
   ports:
     - name: http-8080
       number: 8080
       protocol: HTTP
       targetPort: 8080
   location: MESH_EXTERNAL
-  resolution: DNS" |oc apply -n greetings-client -f -  
+  resolution: DNS" |oc apply  -f -  
 ----
 
-** The requests will now start going through to external service via the `ServiceEntry` `rest-greeting-remote-mesh-ext`
+** The requests will now start going through to the external service via the `ServiceEntry` `rest-greeting-remote-mesh-ext` (it may take a minute or two for KIALI to show this)
 +
 image::./images/4-apply-SE-REGISTRY_ONLY.png[400,800]   
 
@@ -219,31 +222,32 @@ First perform the <<PreRequisites,PreRequisites>> and go through <<option1aunenc
 * `ServiceMeshControlPlane` setup
 ** `proxy.networking.trafficControl.outbound.policy: REGISTRY_ONLY`
 ** mesh security for mtls is strict (`spec.security.dataPlane.mtls: true`)
-* `ServiceMeshMemberRoll` include `greetings-client` namespace
-* Test it and watch from the KIALI UI the requests flowing from rest-greeting-client to _external service_ established via `PassthroughCluster` 
+* `ServiceMeshMemberRoll` include `greetings-client-1a1` namespace
+* Test it and watch from the KIALI UI the result
 
 	watch curl -X GET http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n istio-system)/say/goodday-to/Stelios 
 
-* The result is requests  to external `rest-greeting-remote-mesh-ext` are starting to fail
+* The result is requests  to external `rest-greeting-remote-mesh-ext` are starting to fail (it may take a minute or two for KIALI to show this)
 +
 image::./images/5-STRICT-mTLS-Fails-External.png[400,800]
 
         
-* Create a `DestinationRule` to `DISABLE` mTLS policy for the external service communication
+* Create a `DestinationRule` to `DISABLE` mTLS policy for the traffic to the external service host `rest-greeting-remote.greetings-service-1a1.svc.cluster.local`
 +      
 ----      
-echo "apiVersion: "networking.istio.io/v1alpha3"
-kind: "DestinationRule"
+echo "kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
 metadata:
-  name: "disable-mtls-rest-greeting-remote-ext"
+  name: disable-mtls-rest-greeting-remote-ext
+  namespace: greetings-client-1a1    
 spec:
-  host: rest-greeting-remote.greetings-service.svc.cluster.local
+  host: rest-greeting-remote.greetings-service-1a1.svc.cluster.local
   trafficPolicy:
     tls:
-      mode: DISABLE" |oc apply -n greetings-client -f - 
+      mode: DISABLE" |oc apply -f - 
 ----
 
-* The requests will now start again to flow through to external `rest-greeting-remote-mesh-ext`
+* The requests will now start again to flow through to external `rest-greeting-remote-mesh-ext`  (it may take a minute or two for KIALI to show this)
 +        
 image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 
@@ -268,13 +272,15 @@ First perform the <<PreRequisites,PreRequisites>> and <<serviceside,rest-gressti
 
 ----
 oc new-project istio-system-egressgw-mtls-client <1>
-./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-egressgw-mtls-client client-side-tenant (SMCP namespace and name)  <2>
+# Note: Provide SMCP namespace and SMCP resource name below
+./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-egressgw-mtls-client client-side-tenant  <2>
 cd ../scripts/certs 
 # Create Client secrets <3>
 oc new-project greetings-egressgw-mtls-client
 oc create -n istio-system-egressgw-mtls-client secret generic greeting-client-secret --from-file=key=greeting-client-app.key --from-file=cert=greeting-client-app.crt --from-file=cacert=ca-root.crt
 echo ` ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Name> `
-./create-greeting-client-1b-encrypted.sh istio-system-egressgw-mtls-client client-side-tenant greetings-egressgw-mtls-client hr-stio-svc.apps.cluster-hw6sz.hw6sz.sandbox1583.opentlc.com  greeting-client-secretet  <5>
+./create-greeting-client-1b-encrypted.sh istio-system-egressgw-mtls-client client-side-tenant greetings-egressgw-mtls-client hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com  greeting-client-secret  <5>
+
 ---- 
 <1> Create *_client side_* Service Mesh Control Plane namespace 
 <2> Create a mesh control plane for the client application
