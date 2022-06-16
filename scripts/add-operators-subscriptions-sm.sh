@@ -11,19 +11,18 @@ metadata:
   name: elasticsearch-operator
   namespace: openshift-operators-redhat
 spec:
-  channel: stable-5.3
+  channel: stable
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace" | oc apply -f -  
-
 echo 'apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: elasticsearch-operator
   namespace: openshift-operators-redhat
 spec:
-  channel: stable-5.3
+  channel: stable
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
