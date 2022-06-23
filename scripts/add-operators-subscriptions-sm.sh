@@ -31,8 +31,6 @@ spec:
 echo 'sleeping 20s'
 sleep 20
 
-operators.coreos.com/jaeger-product.openshift-operators
-
 echo "################# Adding Operator jaeger-product #################"   
 echo "
 apiVersion: operators.coreos.com/v1alpha1
