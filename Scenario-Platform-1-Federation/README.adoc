@@ -55,4 +55,4 @@ image::./images/east-west-sides.png[title="Travel Demo Federated Components acro
 
 The script for this setup is perfrorming exactly the same activities as for the _AWS - AWS Setup_ 
 
-	0-execute-federation-setup-AWS-LB.sh
+	0-execute-federation-setup-AWS-GCP-LB.sh
