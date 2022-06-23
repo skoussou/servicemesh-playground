@@ -11,7 +11,7 @@ metadata:
   name: elasticsearch-operator
   namespace: openshift-operators-redhat
 spec:
-  channel: stable
+  channel: stable-5.4
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
@@ -22,7 +22,7 @@ metadata:
   name: elasticsearch-operator
   namespace: openshift-operators-redhat
 spec:
-  channel: stable
+  channel: stable-5.4
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators
