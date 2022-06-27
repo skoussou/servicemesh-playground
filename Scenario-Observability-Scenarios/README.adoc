@@ -254,3 +254,82 @@ curl -v http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n
 === (Default STACK) Ways to Configure & Use Metrics
 
 
+* link:https://access.redhat.com/solutions/6913001[Scrape Prometheus application metrics from ServiceMesh configured with mTLS]
+
+----
+Deployment spec:
+template:
+metadata:
+   annotations:
+      prometheus.io/path: /metrics
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+----      
+
+* link:https://access.redhat.com/solutions/5418711[Scrape application metric in ServiceMesh without mtls through External Prometheus]
+
+----
+Create the below Network Policy into the ServiceMesh Member namespace.
+
+Raw
+$ cat << EOF| oc create -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-openshift-monitoring
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          network.openshift.io/policy-group: monitoring
+  podSelector: {}
+  policyTypes:
+  - Ingress
+EOF
+----
+
+=== (User Defined Projects STACK) Ways to Configure & Use Metrics
+
+
+
+* link:https://access.redhat.com/solutions/6913001[Scrape Prometheus application metrics from ServiceMesh configured with mTLS]
+
+----
+Deployment spec:
+template:
+metadata:
+   annotations:
+      prometheus.io/path: /metrics
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+----      
+
+* link:https://access.redhat.com/solutions/5418711[Scrape application metric in ServiceMesh without mtls through External Prometheus]
+
+----
+Create the below Network Policy into the ServiceMesh Member namespace.
+
+Raw
+$ cat << EOF| oc create -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-openshift-monitoring
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          network.openshift.io/policy-group: monitoring
+  podSelector: {}
+  policyTypes:
+  - Ingress
+EOF
+----
+
+=== (User Defined Projects STACK) Ways to Configure & Use Metrics
+
+
+
+
