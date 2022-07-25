@@ -17,7 +17,10 @@ spec:
     spec:
       containers:
       - name: hello-traced-quarkus-service
-        image: quay.io/skoussou/quarkus-opentracing:v1.0.0
+        image: quay.io/skoussou/quarkus-opentracing:v1.1.0
+        env:
+          - name: hello-service-url
+            value: 'http://deployment-hello-traced-quarkus-service:8080'
         ports:
         - containerPort: 8080
           protocol: TCP

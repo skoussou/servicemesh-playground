@@ -184,7 +184,7 @@ Deployments see https://kiali.io/documentation/latest/tutorial/#03-traffic-shift
 === Create Container Image and push to quay.io
 
 	cd coded-services/quarkus-opentracing/
-	./create-quarkus-opentracing-docker-image.sh <quay.io username>
+	./create-quarkus-opentracing-docker-image.sh <quay.io username> <image version id> 
 
 
 
