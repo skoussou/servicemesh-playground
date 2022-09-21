@@ -286,7 +286,7 @@ cd ../scripts/certs
 # Create Client secrets <3>
 oc new-project greetings-egressgw-mtls-client
 oc create -n istio-system-egressgw-mtls-client secret generic greeting-client-secret --from-file=key=greeting-client-app.key --from-file=cert=greeting-client-app.crt --from-file=cacert=ca-root.crt <4>
-# ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Secret Name>
+# App/Istio config script ./create-greeting-client-1b-encrypted.sh <SMCP Namspace> <SMCP Name> <APP namespace> <REMOTE Service Route HostName> <REMOTE Service Mesh istio-ingressgateway route URL (no DNS for route hostname> <Route Certificate Secret Name>
 ./create-greeting-client-1b-encrypted.sh istio-system-egressgw-mtls-client client-side-tenant greetings-egressgw-mtls-client hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com  greeting-client-secret  <5>
 
 ---- 
