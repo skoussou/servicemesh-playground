@@ -69,7 +69,7 @@ oc new-project istio-system-service <1>
 ./create-smcp-2.1.1-registry_only-strict-mtls.sh istio-system-service service-side-tenant <2>
 cd ../scripts/certs 
 # Create secret for this host <3>
-oc create -n istio-system-service secret generic hello-remote-secret --from-file=tls.key=hello-remote-app.key --from-file=tls.crt=hello-remote-app.crt --from-file=ca.crt=ca-root.crt <4?
+oc create -n istio-system-service secret generic hello-remote-secret --from-file=tls.key=hello-remote-app.key --from-file=tls.crt=hello-remote-app.crt --from-file=ca.crt=ca-root.crt <4>
 # App/Istio config script ./create-greeting-service-1a.sh <SMCP Namspace> <SMCP NAME> <APP namespace> <REMOTE Service Route HostName> <Route Certificate Secret Name>  <Greeting Cluster Specific Message> `
 ./create-greeting-service-1a.sh istio-system-service service-side-tenant greetings-service hr-stio-sstm-svc.apps.cluster-c655r.c655r.sandbox1530.opentlc.com hello-remote-secret OCP-48-Cluster <5>
 ----
