@@ -260,13 +260,13 @@ image::./images/6-STRICT-mTLS-DISABLE-FOR-External.png[400,1000]
 [NOTE]
 ====
 * In this scenario how this works:
-** `ServiceEntry` (`rest-greeting-remote-mesh-ext`) register the remote service hostname into the mesh `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
+** `ServiceEntry` (`rest-greeting-remote-mesh-ext`) registers the remote service hostname into the mesh `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
 ** Application initiates request to `http://hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
 ** `VirtualService` (`route-mesh-gw-to-egress-gw`) redirects that request to `istio-egressgateway.<istio-system>.svc.cluster.local, using a subset (`greeting-remote`).
 ** `DestinationRule` (`egress-originate-tls-to-rest-greeting-remote`) defines subset `greeting-remote` for `istio-egressgateway.<istio-system>.svc.cluster.local` to use `ISTIO_MUTUAL` _and_ to set `sni=hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
-* `Gateway` (`istio-egressgateway`) listens for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` using `ISTIO_MUTUAL`. Protocol matches the protocol for the `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
-* `Gateway` pod handles request for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` and sends it to `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
-* `DestinationRule` (`originate-mtls-for-greeting-remote`) for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` is configured to use `MUTUAL` and user defined client cert
+** `Gateway` (`istio-egressgateway`) listens for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` using `ISTIO_MUTUAL`. Protocol matches the protocol for the `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
+** `Gateway` pod handles request for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` and sends it to `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>`
+** `DestinationRule` (`originate-mtls-for-greeting-remote`) for `hr-stio-svc.apps.<CLUSTER-NAME>.<DOMAIN-NAME>` is configured to use `MUTUAL` and user defined client cert
 
 The final resources can be found in the script link:https://github.com/skoussou/servicemesh-playground/blob/main/Scenario-MTLS-3-SM-Service-To-External-MTLS-Handling/create-greeting-client-1b-encrypted.sh[`create-greeting-client-1b-encrypted.sh`]. Certificates for the contacted host: 
 
