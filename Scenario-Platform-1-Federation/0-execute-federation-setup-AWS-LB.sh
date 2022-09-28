@@ -610,8 +610,8 @@ echo "LOGIN CLUSTER 2 [WEST]: "
 oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
 echo
 echo 'Check if status \"connected: true\" 305 times with 1 sec delay as 5 mins peering synced'
-echo "oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.inactive[0].remotes[0].connected}' -n $FED_2_SMCP_NAMESPACE"
-oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.inactive[0].remotes[0].connected}{"\n"}' -n $FED_2_SMCP_NAMESPACE
+echo "oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].remotes[0].connected}' -n $FED_2_SMCP_NAMESPACE"
+oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].remotes[0].connected}{"\n"}' -n $FED_2_SMCP_NAMESPACE
 echo
 sleep 20
 echo
