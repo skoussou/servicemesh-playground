@@ -30,7 +30,7 @@ endif::[]
 
 * Login to each cluster and apply the necessary operators subscriptions
 
-	oc apply -f 0-operator-subscription.yaml
+        ./add-operators-subscriptions-sm.sh
 
 == Demo Example
 
