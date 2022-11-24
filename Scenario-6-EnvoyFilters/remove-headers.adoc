@@ -1,0 +1,95 @@
+= EnvoyFilter to Remove a Header
+
+How can we remove `x-envoy-decorator-operation`?
+
+* With `VirtualService`
+
+----
+apiversion: networking.istio.io/v1beta1
+kind: VirtualService
+...
+spec:
+  ...
+  http:
+    - headers:
+        response:
+          remove:
+            - x-envoy-upstream-service-time
+      route:
+        - destination:
+            host: httpbin
+            subset: v1
+          weight: 100
+----
+
+* With lua based `EnvoyFilter`
+
+----
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: response-headers-filter
+  namespace: istio-system
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.http_connection_manager"
+            subFilter:
+              name: "envoy.router"
+    patch:
+      operation: ADD
+      value:
+        name: envoy.lua
+        config:
+          inlineCode: |
+            function envoy_on_response(response_handle)
+              response_handle:headers():remove("x-envoy-upstream-service-time")
+              response_handle:headers():remove("x-envoy-overloaded")
+              response_handle:headers():remove("x-powered-by")
+            end
+----
+
+* With non-lua based `EnvoyFilter`
+
+----
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: response-headers-filter
+spec:
+  workloadSelector:
+    labels:
+      app: myapp
+  configPatches:
+  - applyTo: NETWORK_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: MERGE
+      value:
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+          server_header_transformation: PASS_THROUGH
+  - applyTo: HTTP_ROUTE
+    match:
+      context: SIDECAR_INBOUND
+    patch:
+      operation: MERGE
+      value:
+        decorator:
+          propagate: false # removes the decorator header
+        response_headers_to_remove:
+        - x-envoy-upstream-service-time
+        - x-powered-by
+        - server
+----
+

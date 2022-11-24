@@ -1,0 +1,8 @@
+= Purpose
+
+`EnvoyFilter` implementations
+
+== Application Driven Capabilities on the `Service Mesh`
+* link:.remove-headers.adoc[Envoy Filter to Remove a Header]
+
+

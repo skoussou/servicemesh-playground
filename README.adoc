@@ -7,6 +7,7 @@
 * link:./Scenario-2-Split-Istio-Configs-By-Namespace/README.adoc[Configuration/Visibility Split Per Namespace]
 * link:./Scenario-3-Apply-WASM-Extension/README.adoc[Apply WASM Extension]
 * link:./Scenario-4-Cross-Cluster-Traffic-Management/README.adoc[Traffic Management - Cross-Cluster (non-Federated) Mesh Services]
+* link:./Scenario-6-EnvoyFilters/README.adoc[Envoy Filter Implementation Examples]
 
 == `Service Mesh` Platform Architectures
 * External storage of metrics (ES, Jaeger etc.)
