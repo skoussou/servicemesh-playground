@@ -6,6 +6,28 @@ FED_1_SMCP_NAME=east-mesh
 FED_2_SMCP_NAMESPACE=remote-west-mesh-system
 FED_2_SMCP_NAME=west-mesh
 
+oc_login() {
+    local server="$1"
+    local token="$2"
+    local output
+    output=$(oc login --token="${token}" --server="${server}" 2>&1)
+    if [[ $? -ne 0 ]]; then
+        if [[ $output == *x509* ]]; then
+            echo "Warning: 'kube-apiserver-lb-signer' certificate is not trusted. Using '--insecure-skip-tls-verify=true'"
+            output=$(oc login --token="${token}" --server="${server}" --insecure-skip-tls-verify=true 2>&1)
+            if [[ $? -ne 0 ]]; then
+                echo "Error: Failed to login to the cluster with token '$token' and server '$server'"
+                echo "oc login output: $output"
+                exit 1
+            fi
+        else
+            echo "Error: Failed to login to the cluster with token '$token' and server '$server'"
+            echo "oc login output: $output"
+            exit 1
+        fi
+    fi
+}
+
 echo
 echo
 echo
@@ -36,7 +58,7 @@ sleep 7
 echo
 #echo "LOGIN CLUSTER 1 [EAST]: oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER"
 echo "LOGIN CLUSTER 1 [EAST]: oc login --server=$OCP_1_LOGIN_SERVER"
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo "
 kind: Project
@@ -48,9 +70,9 @@ echo "
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
-  name: ${FED_1_SMCP_NAMESPACE}" |oc apply -f -  
+  name: ${FED_1_SMCP_NAMESPACE}" |oc apply -f -
 sleep 5
-echo 
+echo
 echo "
 apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
@@ -87,14 +109,14 @@ spec:
           type: LoadBalancer
           metadata:
             annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb            
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
             labels:
               federation.maistra.io/proxy: ingress-west-mesh
           ports:
           - port: 15443
             name: tls
           - port: 8188
-            name: https-discovery     
+            name: https-discovery
   security:
     trust:
       domain: $FED_1_SMCP_NAME.local |oc apply -f -"
@@ -135,20 +157,20 @@ spec:
           type: LoadBalancer
           metadata:
             annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb            
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
             labels:
               federation.maistra.io/proxy: ingress-west-mesh
           ports:
           - port: 15443
             name: tls
           - port: 8188
-            name: https-discovery     
+            name: https-discovery
   security:
     trust:
-      domain: $FED_1_SMCP_NAME.local" |oc apply -f -      
+      domain: $FED_1_SMCP_NAME.local" |oc apply -f -
       
 sleep 5
-echo 
+echo
 echo "
 apiVersion: maistra.io/v1
 kind: ServiceMeshMemberRoll
@@ -159,7 +181,7 @@ spec:
   members:
   - east-travel-agency
   - east-travel-portal
-  - east-travel-control |oc apply -f -"  
+  - east-travel-control |oc apply -f -"
   
 echo "
 apiVersion: maistra.io/v1
@@ -171,9 +193,9 @@ spec:
   members:
   - east-travel-agency
   - east-travel-portal
-  - east-travel-control" |oc apply -f -     
+  - east-travel-control" |oc apply -f -
 
-echo 
+echo
 echo
 echo "oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smcp/$FED_1_SMCP_NAME --timeout 300s"
 #oc wait --for condition=Ready -n $FED_1_SMCP_NAMESPACE smcp/$FED_1_SMCP_NAME --timeout 300s
@@ -200,7 +222,7 @@ sleep 7
 echo
 #echo "LOGIN CLUSTER 2 [WEST]: oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER"
 echo "LOGIN CLUSTER 2 [WEST]: oc login --server=$OCP_2_LOGIN_SERVER"
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 echo "
 kind: Project
@@ -211,15 +233,15 @@ echo "
 kind: Project
 apiVersion: project.openshift.io/v1
 metadata:
-  name: ${FED_2_SMCP_NAMESPACE}" |oc apply -f -  
+  name: ${FED_2_SMCP_NAMESPACE}" |oc apply -f -
 sleep 5
-echo 
+echo
 echo "
 apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: $FED_2_SMCP_NAME
-  namespace: ${FED_2_SMCP_NAMESPACE} 
+  namespace: ${FED_2_SMCP_NAMESPACE}
 spec:
   version: v2.1
   runtime:
@@ -250,14 +272,14 @@ spec:
           type: LoadBalancer
           metadata:
             annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb            
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
             labels:
               federation.maistra.io/proxy: ingress-east-mesh
           ports:
           - port: 15443
             name: tls
           - port: 8188
-            name: https-discovery     
+            name: https-discovery
   security:
     trust:
       domain: $FED_2_SMCP_NAME.local |oc apply -f -"
@@ -266,7 +288,7 @@ apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: $FED_2_SMCP_NAME
-  namespace: ${FED_2_SMCP_NAMESPACE} 
+  namespace: ${FED_2_SMCP_NAMESPACE}
 spec:
   version: v2.1
   runtime:
@@ -297,40 +319,40 @@ spec:
           type: LoadBalancer
           metadata:
             annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: nlb            
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
             labels:
               federation.maistra.io/proxy: ingress-east-mesh
           ports:
           - port: 15443
             name: tls
           - port: 8188
-            name: https-discovery     
+            name: https-discovery
   security:
     trust:
-      domain: $FED_2_SMCP_NAME.local" |oc apply -f -      
+      domain: $FED_2_SMCP_NAME.local" |oc apply -f -
 echo
 sleep 7
-echo 
+echo
 echo "
 apiVersion: maistra.io/v1
 kind: ServiceMeshMemberRoll
 metadata:
   name: default
-  namespace: ${FED_2_SMCP_NAMESPACE} 
+  namespace: ${FED_2_SMCP_NAMESPACE}
 spec:
   members:
-  - west-travel-agency  |oc apply -f -"    
+  - west-travel-agency  |oc apply -f -"
 echo "
 apiVersion: maistra.io/v1
 kind: ServiceMeshMemberRoll
 metadata:
   name: default
-  namespace: ${FED_2_SMCP_NAMESPACE} 
+  namespace: ${FED_2_SMCP_NAMESPACE}
 spec:
   members:
-  - west-travel-agency"  |oc apply -f -      
+  - west-travel-agency"  |oc apply -f -
   
-echo 
+echo
 echo
 echo "oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smcp/$FED_2_SMCP_NAME --timeout 300s"
 oc wait --for condition=Ready -n $FED_2_SMCP_NAMESPACE smcp/$FED_2_SMCP_NAME --timeout 300s
@@ -360,37 +382,37 @@ echo '---------------------- Step 2 - Share root certs to validate each other cl
 sleep 7
 echo
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo "TODO"
 
 echo '============='
 echo 'EAST CLUSTER'
 echo '============='
-echo "a. GET CERT FROM REMOTE-EAST MESH:					oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_1_SMCP_NAMESPACE > remote-east-mesh-cert.pem"
+echo "a. GET CERT FROM REMOTE-EAST MESH:                    oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_1_SMCP_NAMESPACE > remote-east-mesh-cert.pem"
 oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_1_SMCP_NAMESPACE > remote-east-mesh-cert.pem
 echo
 sleep 5
 echo "LOGIN CLUSTER 2 [WEST]: "
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo '============='
 echo 'WEST CLUSTER'
 echo '============='
-echo "b. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:		oc create configmap east-ca-root-cert --from-file=root-cert.pem=remote-east-mesh-cert.pem -n $FED_2_SMCP_NAMESPACE"
+echo "b. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:        oc create configmap east-ca-root-cert --from-file=root-cert.pem=remote-east-mesh-cert.pem -n $FED_2_SMCP_NAMESPACE"
 oc create configmap east-ca-root-cert --from-file=root-cert.pem=remote-east-mesh-cert.pem -n $FED_2_SMCP_NAMESPACE
 echo
 sleep 5
-echo "c. GET CERT FROM REMOTE-WEST MESH:					oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_2_SMCP_NAMESPACE > remote-west-mesh-cert.pem"
+echo "c. GET CERT FROM REMOTE-WEST MESH:                    oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_2_SMCP_NAMESPACE > remote-west-mesh-cert.pem"
 oc get configmap istio-ca-root-cert -o jsonpath='{.data.root-cert\.pem}' -n $FED_2_SMCP_NAMESPACE > remote-west-mesh-cert.pem
 echo
 sleep 5
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
-echo 
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
+echo
 echo '============='
 echo 'EAST CLUSTER'
 echo '============='
-echo "d. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:		oc create configmap west-ca-root-cert --from-file=root-cert.pem=remote-west-mesh-cert.pem -n $FED_1_SMCP_NAMESPACE"
+echo "d. CREATE IN WEST CLUSTER with REMOTE-EAST MESH CERT configmap:        oc create configmap west-ca-root-cert --from-file=root-cert.pem=remote-west-mesh-cert.pem -n $FED_1_SMCP_NAMESPACE"
 oc create configmap west-ca-root-cert --from-file=root-cert.pem=remote-west-mesh-cert.pem -n $FED_1_SMCP_NAMESPACE
 echo
 sleep 15
@@ -399,7 +421,7 @@ echo '---------------------- Step 3 - Retrieve AWS LB Addresses to setup Service
 sleep 7
 echo
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo "TODO"
 echo
@@ -409,7 +431,7 @@ echo "[EAST OCP AWS LB] $AWS_LB_SM_1"
 sleep 7
 echo
 echo "LOGIN CLUSTER 2 [WEST]: "
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 echo 'Getting LB address of ingress-east-mesh on WEST SIDE to be used on EAST side ServiceMeshPeeer'
 AWS_LB_SM_2=$(oc get svc ingress-east-mesh -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' -n $FED_2_SMCP_NAMESPACE)
@@ -421,7 +443,7 @@ echo '---------------------- Step 4a - Setup Service Mesh Peering & Service Impo
 sleep 7
 echo
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo "TODO"
 echo
@@ -470,9 +492,9 @@ spec:
     clientID: $FED_2_SMCP_NAME.local/ns/$FED_2_SMCP_NAMESPACE/sa/egress-east-mesh-service-account
     certificateChain:
       kind: ConfigMap
-      name: west-ca-root-cert" |oc apply -f -      
+      name: west-ca-root-cert" |oc apply -f -
 sleep 7
-echo 
+echo
 echo "
 kind: ImportedServiceSet
 apiVersion: federation.maistra.io/v1
@@ -498,7 +520,7 @@ spec:
     nameSelector:
       importAsLocal: false
       namespace: travel-agency
-      name: discounts" |oc apply -f -      
+      name: discounts" |oc apply -f -
 sleep 15
 echo
 echo
@@ -506,7 +528,7 @@ echo '---------------------- Step 4b - Setup Service Mesh Peering & Service Expo
 sleep 7
 echo
 echo "LOGIN CLUSTER 2 [WEST]: "
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 echo "TODO"
 echo
@@ -555,9 +577,9 @@ spec:
     clientID: $FED_1_SMCP_NAME.local/ns/$FED_1_SMCP_NAMESPACE/sa/egress-west-mesh-service-account
     certificateChain:
       kind: ConfigMap
-      name: east-ca-root-cert" |oc apply -f -      
+      name: east-ca-root-cert" |oc apply -f -
 sleep 7
-echo 
+echo
 echo "
 kind: ExportedServiceSet
 apiVersion: federation.maistra.io/v1
@@ -565,7 +587,7 @@ metadata:
   name: $FED_1_SMCP_NAME
   namespace: $FED_2_SMCP_NAMESPACE
 spec:
-  exportRules:  
+  exportRules:
   - type: NameSelector
     nameSelector:
       namespace: west-travel-agency
@@ -580,14 +602,14 @@ metadata:
   name: $FED_1_SMCP_NAME
   namespace: $FED_2_SMCP_NAMESPACE
 spec:
-  exportRules:  
+  exportRules:
   - type: NameSelector
     nameSelector:
       namespace: west-travel-agency
       name: discounts
       alias:
         namespace: travel-agency
-        name: discounts" |oc apply -f -        
+        name: discounts" |oc apply -f -
 sleep 10
 echo
 echo
@@ -595,7 +617,7 @@ echo '---------------------- Step 4c - Verify Service Mesh Peering Connection (E
 sleep 7
 echo
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo 'Check if status \"connected: true\" 305 times with 1 sec delay as 5 mins peering synced'
 echo "oc get servicemeshpeer $FED_2_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].watch.connected}' -n $FED_1_SMCP_NAMESPACE"
@@ -607,7 +629,7 @@ echo '---------------------- Step 4d - Verify Service Mesh Peering Connection (W
 sleep 7
 echo
 echo "LOGIN CLUSTER 2 [WEST]: "
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 echo 'Check if status \"connected: true\" 305 times with 1 sec delay as 5 mins peering synced'
 echo "oc get servicemeshpeer $FED_1_SMCP_NAME -o jsonpath='{.status.discoveryStatus.active[0].remotes[0].connected}' -n $FED_2_SMCP_NAMESPACE"
@@ -623,7 +645,7 @@ echo '##########################################################################
 echo
 sleep 5
 echo "LOGIN CLUSTER 1 [EAST]: "
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 echo '============='
 echo 'EAST CLUSTER'
@@ -637,31 +659,31 @@ oc apply -n east-travel-control -f https://raw.githubusercontent.com/kiali/demos
 sleep 7
 echo
 echo "LOGIN CLUSTER 2 [WEST]: "
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 echo '============='
 echo 'WEST CLUSTER'
 echo '============='
 echo 'oc apply -n west-travel-agency -f https://raw.githubusercontent.com/kiali/demos/master/federated-travels/west/west-travel-agency.yaml'
 oc apply -n west-travel-agency -f https://raw.githubusercontent.com/kiali/demos/master/federated-travels/west/west-travel-agency.yaml
-sleep 15        
+sleep 15
 echo
 echo '###########################################################################'
 echo '#                                                                         #'
 echo '#   STAGE 4 - Check Federation status in KIALI Graphs                     #'
 echo '#                                                                         #'
 echo '###########################################################################'
-echo        
 echo
-oc login --token=$OCP_1_LOGIN_TOKEN --server=$OCP_1_LOGIN_SERVER
+echo
+oc_login "${OCP_1_LOGIN_SERVER}" "${OCP_1_LOGIN_TOKEN}"
 echo
 KIALI_1="http://$(oc get route kiali -o jsonpath='{.spec.host}' -n $FED_1_SMCP_NAMESPACE)"
-echo "CLUSTER 1 [EAST]: KIALI ROUTE $KIALI_1" 
+echo "CLUSTER 1 [EAST]: KIALI ROUTE $KIALI_1"
 echo
-oc login --token=$OCP_2_LOGIN_TOKEN --server=$OCP_2_LOGIN_SERVER
+oc_login "${OCP_2_LOGIN_SERVER}" "${OCP_2_LOGIN_TOKEN}"
 echo
 KIALI_2="http://$(oc get route kiali -o jsonpath='{.spec.host}' -n $FED_2_SMCP_NAMESPACE)"
-echo "CLUSTER 2 [WEST]: KIALI ROUTE $KIALI_2" 
+echo "CLUSTER 2 [WEST]: KIALI ROUTE $KIALI_2"
         
         
         
